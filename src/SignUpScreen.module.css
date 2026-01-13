@@ -1,0 +1,123 @@
+.contentSection {
+    padding: 0 25px;
+    margin-top: 50px;
+}
+
+.mainTitle {
+    color: #50AF95;
+    font-size: 1.7rem;
+    font-weight: bold;
+    margin-bottom: 60px;
+}
+
+.inputLabel {
+    color: #50AF95;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.nameInput {
+    width: 100%;
+    background: none;
+    border: none;
+    border-bottom: 2px solid #50AF95;
+    padding: 10px 0;
+    font-size: 1.2rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.footer {
+    position: absolute;
+    bottom: 50px;
+    left: 0;   /* 추가 */
+    right: 0;  /* 추가 */
+    padding: 0 25px;
+    display: flex; /* 추가 */
+    justify-content: center; /* 추가 */
+}
+
+.nextButton {
+    width: 100%;
+    height: 56px;
+    background-color: #50AF95;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.arrow {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-top: 2px solid #50AF95;
+    border-left: 2px solid #50AF95;
+    transform: rotate(-45deg); /* 왼쪽 화살표 모양 */
+    margin-left: 5px;
+}
+
+.backButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.required {
+    color: #ff4d4f;
+    margin-left: 2px;
+}
+
+.inputWrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.headerTitle {
+    flex: 1;
+    text-align: center;
+    margin-right: 40px; /* 뒤로가기 버튼과의 균형 */
+    color: #50AF95;
+    font-size: 1.2rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* 입력창 간격 */
+}
+
+.checkboxGroup {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.checkboxItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: #666;
+    cursor: pointer;
+}
+
+/* 에러 메시지 텍스트 */
+.errorMessage {
+    color: #ff4d4f;
+    font-size: 0.75rem;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+/* 에러 발생 시 입력창 밑줄 색상 변경 */
+.inputError {
+    border-bottom: 2px solid #ff4d4f !important;
+}
+
