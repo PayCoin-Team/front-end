@@ -51,5 +51,20 @@
     text-decoration: underline;
     text-underline-offset: 4px;
     cursor: pointer;
+    margin-bottom: 12px;
+}
+
+/* 신규 스타일: 하단 찾기 메뉴 컨테이너 */
+.findMenu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #50AF95;
+    font-size: 0.85rem;
+    text-decoration: underline;
+}
+
+.findMenu span {
+    cursor: pointer;
 }
 
