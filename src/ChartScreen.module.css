@@ -1,0 +1,116 @@
+/* 요소들의 크기 계산 방식을 통일 (패딩 포함) */
+* {
+  box-sizing: border-box;
+}
+
+/* 헤더 */
+.header {
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: white; /* 배경색 명시 */
+  width: 100%;
+  flex-shrink: 0; /* 헤더 크기 고정 */
+}
+
+.backBtn, .starBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #333;
+  padding: 5px; /* 터치 영역 확보 */
+}
+
+.headerTitle { font-weight: bold; font-size: 1.1rem; }
+.currency { font-size: 0.8rem; color: #888; font-weight: normal; margin-left: 4px; }
+
+/* 메인 영역 (스크롤 가능, 가로 넘침 방지) */
+.mainContent {
+  flex: 1;
+  overflow-y: auto;      /* 세로 스크롤 허용 */
+  overflow-x: hidden;    /* 가로 스크롤 금지 (화면 깨짐 방지) */
+  width: 100%;           /* 부모 너비에 딱 맞춤 */
+  padding-bottom: 20px;  /* 하단 여유 공간 */
+  background-color: white;
+}
+
+/* 스크롤바 숨기기 (선택사항) */
+.mainContent::-webkit-scrollbar {
+  display: none;
+}
+
+/* 가격 정보 */
+.priceSection {
+  padding: 20px;
+  width: 100%;
+}
+
+.currentPrice {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #169279;
+}
+
+.currentPrice span { font-size: 1rem; color: #888; margin-left: 5px; }
+
+.priceChange {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: #169279;
+  font-weight: 500;
+}
+
+.plus { margin-right: 10px; }
+
+/* 차트 영역 컨테이너 */
+.chartContainer {
+  border-top: 8px solid #f8f9fa;
+  border-bottom: 8px solid #f8f9fa;
+  padding: 15px 0;
+  background: #fff;
+  width: 100%;
+}
+
+/* 시간 탭 */
+.timeTab {
+  display: flex;
+  gap: 20px;
+  padding: 0 20px 15px 20px;
+  font-size: 0.85rem;
+  color: #888;
+  width: 100%;
+}
+
+.timeTab span { cursor: pointer; }
+.timeTab .active { color: #333; font-weight: bold; }
+
+/* 차트 래퍼 (Recharts가 넘치지 않도록 제어) */
+.chartWrapper {
+  width: 100%;
+  height: 220px;
+  padding-right: 10px; /* 오른쪽 끝이 잘리지 않게 여백 줌 */
+}
+
+/* 호가창 */
+.orderBook { 
+  padding: 20px; 
+  width: 100%;
+}
+
+.orderRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.sellPrice { color: #e53935; background: #ffebee; width: 50%; padding-left: 10px; border-radius: 4px; }
+.buyPrice { color: #169279; background: #e0f2f1; width: 50%; padding-left: 10px; border-radius: 4px; }
+.mainPrice { font-weight: bold; font-size: 1.1rem; width: 50%; padding-left: 10px; }
+.vol { color: #888; }

@@ -1,0 +1,138 @@
+/* 전체 레이아웃 */
+.container {
+  flex: 1;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+/* 상단 헤더 */
+.header {
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #169279; /* 시안의 초록색 포인트 */
+  font-weight: bold;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #169279;
+}
+
+/* 메인 텍스트: "잔고에 충전할 금액" */
+.mainLabel {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #169279;
+  margin-bottom: 30px;
+  letter-spacing: -0.5px;
+}
+
+/* 입력창 박스 */
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 2px solid #169279;
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+}
+
+.chargeInput {
+  flex: 1;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  outline: none;
+  color: #333;
+}
+
+.chargeInput::placeholder {
+  color: #a0a0a0;
+  font-weight: normal;
+}
+
+/* USDT 단위 텍스트 */
+.unit {
+  font-size: 1.0rem;
+  font-weight: 500;
+  color: #169279;
+  margin-left: 10px;
+}
+
+/* 버튼 영역 */
+.btnWrapper {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end; /* 시안처럼 오른쪽 정렬 */
+}
+
+.submitBtn {
+  background-color: #169279;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submitBtn:active {
+  background-color: #127a63;
+  transform: scale(0.98);
+}
+
+/* 반응형 대응: 숫자가 없을 때 버튼 투명도 조절 (선택 사항) */
+.submitBtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* 3. 하단 네비게이션 (녹색 배경) */
+.bottomNav {
+  height: 70px;
+  background-color: #169279; /* 메인 테마 색 */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 0; 
+  padding-bottom: 10px; /* 아이폰 하단 바 고려 */
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  gap: 4px;
+}
+
+.navItem.active {
+  color: white;
+  font-weight: bold;
+}
+
+.navIcon {
+  font-size: 1.2rem;
+}
+
+.navText {
+  font-size: 0.7rem;
+}

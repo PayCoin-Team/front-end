@@ -167,6 +167,7 @@
   display: flex; align-items: center; justify-content: center;
   border-radius: 12px;
   margin-bottom: 10px;
+  border-radius: 50%;
 }
 
 .cardIcon img {
@@ -248,5 +249,12 @@
   align-items: center;
   justify-content: flex-end;
   gap: 8px; /* 국기, 텍스트, 화살표 사이 간격 */
+}
+
+.addressIconImg {
+  width: 14px;  /* 텍스트 크기에 맞춰 조절하세요 */
+  height: 14px;
+  object-fit: contain;
+  opacity: 0.8; /* 너무 튀지 않게 약간 투명도 주기 (선택사항) */
 }
 
