@@ -7,7 +7,7 @@
     color: #50AF95;
     font-size: 1.7rem;
     font-weight: bold;
-    margin-bottom: 60px;
+    margin-bottom: 20px;
 }
 
 .inputLabel {
@@ -17,6 +17,7 @@
 }
 
 .nameInput {
+    flex: 1;
     width: 100%;
     background: none;
     border: none;
@@ -112,8 +113,9 @@
 .errorMessage {
     color: #ff4d4f;
     font-size: 0.75rem;
-    margin-top: 5px;
+    margin-top: 8px;
     font-weight: bold;
+    text-align: left;
 }
 
 /* 에러 발생 시 입력창 밑줄 색상 변경 */
@@ -121,3 +123,70 @@
     border-bottom: 2px solid #ff4d4f !important;
 }
 
+.emailInputRow {
+    display: flex;
+    align-items: flex-end; /* 입력창 밑줄 높이에 맞춤 */
+    gap: 10px;
+}
+
+/* 중복 확인 버튼 디자인 */
+.duplicateCheckButton {
+    white-space: nowrap; /* 글자가 줄바꿈되지 않도록 */
+    background-color: #50AF95;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 12px; /* 입력창 밑줄 위치와 시각적 균형 */
+    transition: opacity 0.2s;
+}
+
+.duplicateCheckButton:active {
+    opacity: 0.8;
+}
+
+.passwordInputContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.eyeButton {
+    position: absolute;
+    right: 0;
+    bottom: 12px; /* 입력창 밑줄 위로 띄움 */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eyeInactive {
+    fill: #ccc; /* 꺼져있을 때 회색 */
+    width: 24px;
+    height: 24px;
+}
+
+.eyeActive {
+    fill: #50AF95; /* 켜져있을 때 메인 색상 */
+    width: 24px;
+    height: 24px;
+}
+
+.findMenu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #50AF95;
+    font-size: 0.85rem;
+}
+
+.findMenu span {
+    cursor: pointer;
+}

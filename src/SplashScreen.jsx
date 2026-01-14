@@ -18,16 +18,22 @@ const SplashScreen = () => {
         <div className={common.layout}>
             <div className={styles.topSection}>
                 <img src={usdtLogoPath} alt="Logo" className={styles.logoImage} />
-                <h1 className={styles.title}>CrossCoin</h1>
+                <h1 className={styles.title}>CrossPay</h1>
             </div>
 
             {isAppReady && (
                 <div className={`${styles.bottomSection} ${common.fadeIn}`}>
                     <button className={styles.loginButton} onClick={() => navigate('/login')}>
-                        이메일로 로그인
+                        로그인
                     </button>
                     <div className={styles.signupLink} onClick={() => navigate('/signup')}>
                         회원가입
+                    </div>
+
+                    {/* 신규 추가: 아이디 찾기 및 비밀번호 재설정 영역 */}
+                    <div className={styles.findMenu}>
+                        <span onClick={() => navigate('/FindIdScreen')}>아이디 찾기</span>
+                        <span onClick={() => navigate('/reset-password')}>비밀번호 재설정</span>
                     </div>
                 </div>
             )}

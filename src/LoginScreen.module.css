@@ -74,3 +74,17 @@
     display: flex;
     align-items: center;
 }
+
+.findMenu {
+    display: flex;
+    align-items: left;
+    gap: 10px;
+    color: #50AF95;
+    font-size: 0.85rem;
+    margin-top:10px;
+    text-decoration: underline;
+}
+
+.findMenu span {
+    cursor: pointer;
+}
