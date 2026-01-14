@@ -1,0 +1,252 @@
+/* 전체 레이아웃 폰트 설정 */
+.header {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  flex-shrink: 0;
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1A9276; /* CrossPay Green */
+  margin: 0;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.topBtn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.greenBtn {
+  background-color: #1A9276;
+  color: white;
+}
+
+.grayBtn {
+  background-color: #f0f0f0;
+  color: #999;
+}
+
+/* 메인 콘텐츠 영역 */
+.mainContent {
+  flex: 1;
+  padding: 10px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  scrollbar-width: none;
+}
+.mainContent::-webkit-scrollbar { display: none; }
+
+/* 1. 잔고 카드 (진한 녹색) */
+.balanceCard {
+  background-color: #0E7355; /* 이미지의 진한 녹색 */
+  border-radius: 24px;
+  padding: 24px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 180px;
+  box-shadow: 0 4px 12px rgba(26, 146, 118, 0.2);
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.walletIcon {
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  width: 40px; 
+  height: 40px;
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.walletIcon img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.balanceInfo {
+  text-align: right;
+}
+
+.usdtAmount {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.krwAmount {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin: 4px 0 0 0;
+}
+
+.walletAddress {
+  align-self: flex-end;
+  background: rgba(255,255,255,0.1);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.cardBottom {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  padding-top: 15px;
+}
+
+/* 2. 메뉴 그리드 (2열 구조) */
+.menuGrid {
+  display: flex;
+  gap: 15px;
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.menuCard {
+  background-color: #23bf94; /* 밝은 민트색 */
+  border-radius: 20px;
+  padding: 20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 140px; /* 기본 높이 */
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.menuCard:active {
+  transform: scale(0.98);
+}
+
+/* 결제하기 카드는 더 크게 */
+.largeCard {
+  background-color: #14a17a; /* 약간 더 진한 색 */
+  flex-grow: 1; /* 남은 공간 차지 */
+  min-height: 180px; 
+}
+
+.cardIcon {
+  font-size: 1.5rem;
+  background: rgba(255,255,255,0.8);
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.cardIcon img {
+  width: 24px;  /* 아이콘 크기 (조절 가능) */
+  height: 24px;
+  object-fit: contain;
+}
+
+.cardTitleArea {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.menuCard h3 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* 3. 하단 네비게이션 (녹색 배경) */
+.bottomNav {
+  height: 70px;
+  background-color: #169279; /* 메인 테마 색 */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 0; 
+  padding-bottom: 10px; /* 아이폰 하단 바 고려 */
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  gap: 4px;
+}
+
+.navItem.active {
+  color: white;
+  font-weight: bold;
+}
+
+.navIcon {
+  font-size: 1.2rem;
+}
+
+.navText {
+  font-size: 0.7rem;
+}
+
+/* ... 기존 스타일 그대로 유지 ... */
+
+/* 새로 추가: 국기 이미지 스타일 */
+.flagImg {
+  width: 24px;       /* 너비 */
+  height: 16px;      /* 높이 */
+  object-fit: cover; /* 비율 유지하며 꽉 채우기 */
+  border-radius: 3px; /* 모서리 살짝 둥글게 */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* 약간의 그림자 */
+  display: block;
+}
+
+/* 드롭다운 아이템 정렬 보정 */
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* 국기와 글자 사이 간격 */
+  /* ... 기존 스타일 유지 ... */
+}
+
+/* 텍스트 옆 국기 정렬 보정 */
+.convertedAmount {
+  /* ... 기존 스타일 유지 ... */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px; /* 국기, 텍스트, 화살표 사이 간격 */
+}
+
