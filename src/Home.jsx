@@ -188,7 +188,7 @@ const Home = () => {
                     </div>
                     <h3>충전</h3>
                 </div>
-                <div className={styles.menuCard}>
+                <div className={styles.menuCard} onClick={() => navigate('/history')}>
                     <div className={styles.cardIcon}>
                       <img src={menuHistoryIcon} alt="거래기록" />
                     </div>
