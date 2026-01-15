@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// ⭐ [추가] Recharts 라이브러리 임포트
 import {
   AreaChart,
   Area,
@@ -15,14 +14,25 @@ import styles from './ChartScreen.module.css';
 const ChartScreen = () => {
   const navigate = useNavigate();
   const [activeTime, setActiveTime] = useState('1H'); 
+  
+  // ⭐ [추가 1] 선택된 화폐 상태 관리
+  const [selectedCurrency, setSelectedCurrency] = useState('KRW');
 
-  // ⭐ [변경] 선 그래프용 임시 데이터 생성
-  // 실제로는 서버에서 받아온 시간(time)과 가격(price) 데이터가 들어갑니다.
+  // ⭐ [추가 2] 환율 데이터 (1 USDT 기준)
+  const exchangeRates = {
+    KRW: { flag: '🇰🇷' }, // KRW는 차트 데이터를 따름
+    USD: { rate: 1.00, flag: '🇺🇸' },
+    JPY: { rate: 152.4, flag: '🇯🇵' },
+    CNY: { rate: 7.23, flag: '🇨🇳' },
+    GBP: { rate: 0.79, flag: '🇬🇧' },
+    EUR: { rate: 0.92, flag: '🇪🇺' },
+  };
+
+  // --- 기존 차트 데이터 로직 유지 ---
   const generateData = () => {
     const data = [];
     let price = 1450;
     for (let i = 0; i < 30; i++) {
-      // 가격이 조금씩 랜덤하게 변하도록 설정
       price = price + Math.floor(Math.random() * 10 - 4); 
       data.push({
         time: `${i}분`,
@@ -33,11 +43,19 @@ const ChartScreen = () => {
   };
 
   const chartData = generateData();
+  const currentPrice = chartData[chartData.length - 1].price;
+  // ---------------------------------
+
+  // ⭐ [추가 3] 화면에 표시할 가격 계산
+  // KRW면 차트의 currentPrice를 쓰고, 아니면 고정 환율 테이블 값을 사용
+  const displayPrice = selectedCurrency === 'KRW' 
+    ? currentPrice 
+    : exchangeRates[selectedCurrency].rate;
 
   return (
     <div className={common.layout}>
       
-      {/* 1. 상단 헤더 */}
+      {/* 1. 상단 헤더 (유지) */}
       <header className={styles.header}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>←</button>
         <div className={styles.headerTitle}>
@@ -48,16 +66,17 @@ const ChartScreen = () => {
 
       {/* 2. 메인 콘텐츠 */}
       <div className={`${styles.mainContent} ${common.fadeIn}`}>
-        {/* 가격 정보 */}
+        
+        {/* 가격 정보 (유지 - KRW 기준) */}
         <div className={styles.priceSection}>
-            <h1 className={styles.currentPrice}>1,458<span>KRW</span></h1>
+            <h1 className={styles.currentPrice}>{currentPrice.toLocaleString()}<span>KRW</span></h1>
             <div className={styles.priceChange}>
                 <span className={styles.plus}>+0.85%</span>
                 <span className={styles.amount}>▲ 12.00</span>
             </div>
         </div>
 
-        {/* 차트 영역 */}
+        {/* 차트 영역 (유지) */}
         <div className={styles.chartContainer}>
             <div className={styles.timeTab}>
                 {['15m', '1H', '4H', '1D', '1W'].map((time) => (
@@ -75,13 +94,11 @@ const ChartScreen = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
-                    {/* 그래프 아래 채워지는 그라데이션 효과 */}
                     <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#169279" stopOpacity={0.4}/>
                       <stop offset="95%" stopColor="#169279" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  {/* 축(Axis)은 깔끔하게 숨김 처리 */}
                   <XAxis dataKey="time" hide={true} />
                   <YAxis hide={true} domain={['dataMin - 5', 'dataMax + 5']} />
                   <Tooltip 
@@ -89,45 +106,62 @@ const ChartScreen = () => {
                     labelStyle={{ display: 'none' }}
                     formatter={(value) => [`${value.toLocaleString()} KRW`]}
                   />
-                  {/* 실제 선과 영역을 그리는 부분 (type="monotone"이 부드러운 곡선) */}
                   <Area 
                     type="monotone" 
                     dataKey="price" 
-                    stroke="#ae1717" /* 선 색상 (테마색) */
+                    stroke="#ae1717"
                     strokeWidth={2}
                     fillOpacity={1} 
-                    fill="url(#colorPrice)" /* 그라데이션 적용 */
+                    fill="url(#colorPrice)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
         </div>
 
-        {/* 호가 정보 (그대로 유지) */}
-        <div className={styles.orderBook}>
-            <div className={styles.orderRow}>
-                <span className={styles.sellPrice}>1,460</span>
-                <span className={styles.vol}>0.452</span>
+        {/* ⭐ [변경] 하단 변환 카드 (국가 선택 기능 추가) */}
+        <div className={styles.conversionCard}>
+            <div className={styles.conversionHeader}>환산 가치 확인</div>
+            <div className={styles.conversionBody}>
+                
+                {/* 왼쪽: 1 USDT 고정 */}
+                <div className={styles.currencyBox}>
+                    <span className={styles.icon}>🇺🇸</span>
+                    <span className={styles.unit}>1 USDT</span>
+                </div>
+                
+                <div className={styles.equalIcon}>=</div>
+                
+                {/* 오른쪽: 국가 선택 및 값 표시 */}
+                <div className={`${styles.currencyBox} ${styles.selectBox}`}>
+                    {/* 선택된 국가 국기 */}
+                    <span className={styles.icon}>{exchangeRates[selectedCurrency].flag}</span>
+                    
+                    {/* 숨겨진 Select 태그 */}
+                    <select 
+                        className={styles.currencySelect}
+                        value={selectedCurrency} 
+                        onChange={(e) => setSelectedCurrency(e.target.value)}
+                    >
+                        <option value="KRW">KRW</option>
+                        <option value="USD">USD</option>
+                        <option value="JPY">JPY</option>
+                        <option value="CNY">CNY</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                    </select>
+
+                    {/* 보여지는 텍스트 */}
+                    <div className={styles.valueDisplay}>
+                        <span className={styles.val}>{displayPrice.toLocaleString()}</span>
+                        <span className={styles.unitSmall}>{selectedCurrency}</span>
+                    </div>
+                </div>
+
             </div>
-            <div className={styles.orderRow}>
-                <span className={styles.sellPrice}>1,459</span>
-                <span className={styles.vol}>1.200</span>
-            </div>
-            <div className={`${styles.orderRow} ${styles.current}`}>
-                <span className={styles.mainPrice}>1,458</span>
-                <span className={styles.vol}>5.120</span>
-            </div>
-            <div className={styles.orderRow}>
-                <span className={styles.buyPrice}>1,457</span>
-                <span className={styles.vol}>2.441</span>
-            </div>
-            <div className={styles.orderRow}>
-                <span className={styles.buyPrice}>1,456</span>
-                <span className={styles.vol}>0.899</span>
-            </div>
+            <p className={styles.infoText}>선택한 통화 기준의 대략적인 환산 금액입니다.</p>
         </div>
       </div>
-
     </div>
   );
 };
