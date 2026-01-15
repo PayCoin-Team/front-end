@@ -7,6 +7,8 @@ import styles from './MyPageScreen.module.css';
 import navHomeIcon from './assets/nav_home.svg';
 import navPayIcon from './assets/nav_pay.svg';
 import navUserIcon from './assets/nav_user.svg';
+import UsdtLogo from './component/UsdtLogo.svg';
+import walletAddressIcon from './assets/wallet.svg';
 
 const MyPageScreen = () => {
   const navigate = useNavigate();
@@ -19,6 +21,14 @@ const MyPageScreen = () => {
     name: "홍길동",
     email: "user@example.com",
     avatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png" // 임시 프로필 이미지 주소
+  };
+  
+  const myWalletAddress = "A1B2-C3D4"; 
+
+  // ⭐ [추가] 주소 복사 함수
+  const handleCopyAddress = () => {
+    navigator.clipboard.writeText(myWalletAddress);
+    alert(`지갑 주소가 복사되었습니다!\n📋 ${myWalletAddress}`);
   };
 
   const menuItems = [
@@ -41,8 +51,14 @@ const MyPageScreen = () => {
       
       {/* 1. 상단 헤더 */}
       <header className={styles.header}>
-        <h2 className={styles.headerTitle}>CrossPay</h2>
-        <button className={styles.settingBtn}>⚙️</button>
+
+        <div className={`${styles.content} ${common.fadeIn}`}>
+                        {/* 2. 브랜드 로고 영역 (UsdtLogo + CrossPay) */}
+                        <div className={styles.brandLogo}>
+                            <img src={UsdtLogo} alt="USDT Logo" className={styles.usdtIcon} />
+                            <h1 className={styles.logoText}>CrossPay</h1>
+         </div>
+        </div>
       </header>
 
       {/* 2. 메인 콘텐츠 */}
@@ -56,9 +72,15 @@ const MyPageScreen = () => {
             <div className={styles.userInfo}>
                 <h3 className={styles.userName}>{user.name} 님</h3>
                 <p className={styles.userEmail}>{user.email}</p>
-                <p className={styles.userEmail}>{user.email}</p>
+                <div className={styles.walletBox} onClick={handleCopyAddress}>
+                    <div className={styles.walletIcon}>
+                        <img src={walletAddressIcon} alt="wallet" />
+                    </div>
+                   
+                    <span className={styles.walletText}>{myWalletAddress}</span>
+                    <span className={styles.copyBtn}>복사</span>
+                </div>
             </div>
-            <button className={styles.editProfileBtn}>프로필 편집</button>
         </section>
 
         {/* 메뉴 리스트 */}
