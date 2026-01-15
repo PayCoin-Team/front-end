@@ -10,6 +10,7 @@ import MyPageScreen from './MyPageScreen'; // 마이페이지 컴포넌트 임�
 import PayScreen from './PayScreen';       // 결제 컴포넌트 임포트
 import QrGenerate from './QrGenerate';
 import HistoryScreen from'./HistoryScreen';
+import SendScreen from './SendScreen';
 
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
         <Route path="/pay" element={<PayScreen />} />
         <Route path="/qr" element={<QrGenerate />} />
         {/* 혹시 몰라 추가하는 예외 처리 (잘못된 주소 입력 시 홈으로) */}
-
+        <Route path="/send" element={<SendScreen />} />
         <Route path="/history" element={<HistoryScreen />} />
         <Route path="*" element={<Home />} />
         
