@@ -34,3 +34,51 @@
 .fadeIn {
     animation: fadeInUp 0.6s ease-out forwards;
 }
+
+/* ... 기존 내용들 (layout, fadeIn 등) ... */
+
+/* 👇👇👇 하단 네비게이션 공통 스타일 (여기 추가!) 👇👇👇 */
+
+.bottomNav {
+  height: 70px;
+  background-color: #169279; 
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 0; 
+  padding-bottom: 10px; 
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  gap: 4px;
+  flex: 1;
+}
+
+.navItem.active {
+  color: white;
+  font-weight: bold;
+  opacity: 1;
+}
+
+.navImg {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-bottom: 2px;
+  /* 활성화된 탭은 조금 더 밝게 보이도록 필터 적용 가능 */
+}
+
+.navItem.active .navImg {
+  filter: brightness(1.2); 
+}
+
+.navText {
+  font-size: 0.7rem;
+  font-weight: 500;
+}

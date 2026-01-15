@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import common from './Common.module.css'; 
 import styles from './Home.module.css';
 
-// 👇 1. 카드 아이콘 SVG 가져오기 (경로: src/assets/Credit_Card_01.svg)
+// 👇 1. 카드 아이콘 SVG 가져오기 
 import cardIconImg from './assets/Shopping_Bag_01.svg'; 
 import navHomeIcon from './assets/nav_home.svg';
 import navPayIcon from './assets/nav_pay.svg';
@@ -14,6 +14,7 @@ import menuPayIcon from './assets/menu_pay.svg';
 import menuQrIcon from './assets/menu_qr.svg';
 import menuChargeIcon from './assets/menu_charge.svg';
 import menuHistoryIcon from './assets/menu_history.svg';
+import walletAddressIcon from './assets/wallet.svg';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -26,6 +27,16 @@ const Home = () => {
 
   // 보유 USDT (예시 데이터)
   const usdtAmount = 200; 
+
+  // ⭐ [수정 1] 지갑 주소 고유번호 변수 설정
+  // 나중에 서버에서 받아온 데이터로 바꾸기 쉽습니다.
+  const myWalletAddress = " A1B2-C3D4"; 
+
+  // ⭐ [수정 2] 지갑 주소 복사 기능 함수
+  const handleCopyAddress = () => {
+    navigator.clipboard.writeText(myWalletAddress);
+    alert(`지갑 주소가 복사되었습니다!\n📋 ${myWalletAddress}`);
+  };
 
   // 3. 환율 정보
   const currencyRates = {
@@ -65,7 +76,8 @@ const Home = () => {
         </div>
         <div className={styles.headerButtons}>
             <button className={`${styles.topBtn} ${styles.greenBtn}`}>지갑 연동</button>
-            <button className={`${styles.topBtn} ${styles.grayBtn}`}>USDT 차트</button>
+            <button className={`${styles.topBtn} ${styles.grayBtn}`}onClick={() => navigate('/chart')}
+            >USDT 차트</button>
         </div>
       </header>
 
@@ -121,8 +133,13 @@ const Home = () => {
             </div>
           </div>
           
-          <div className={styles.walletAddress}>
-             📄 A1B2-C3D4
+          <div className={styles.walletAddress}
+             onClick={handleCopyAddress}
+            title="클릭해서 주소 복사"
+          >
+             <img src={walletAddressIcon} alt="주소 아이콘" className={styles.addressIconImg} />
+             {myWalletAddress}
+             <span className={styles.copyHint}></span>
           </div>
 
           <div className={styles.cardBottom}>
@@ -134,7 +151,8 @@ const Home = () => {
         {/* 메뉴 그리드 */}
         <div className={styles.menuGrid}>
             <div className={styles.column}>
-                <div className={`${styles.menuCard} ${styles.largeCard}`}>
+                <div className={`${styles.menuCard} ${styles.largeCard}`}
+                     onClick={() => navigate('/pay')}>
                     <div className={styles.cardIcon}>
                       <img src={menuPayIcon} alt="결제하기" />
                     </div>
@@ -152,7 +170,7 @@ const Home = () => {
             </div>
 
             <div className={styles.column}>
-                <div className={styles.menuCard}>
+                  <div className={styles.menuCard} onClick={() => navigate('/charge')}>
                     <div className={styles.cardIcon}>
                       <img src={menuChargeIcon} alt="충전" />
                     </div>
@@ -169,18 +187,20 @@ const Home = () => {
       </div>
 
       {/* 3. 하단 네비게이션 바 */}
-      <nav className={styles.bottomNav}>
-        <div className={`${styles.navItem} ${styles.active}`}>
-            <img src={navHomeIcon} className={styles.navImg} alt="홈" />
-            <span className={styles.navText}>홈</span>
+      <nav className={common.bottomNav}>
+        <div className={`${common.navItem} ${common.active}`}>
+            <img src={navHomeIcon} className={common.navImg} alt="홈" />
+            <span className={common.navText}>홈</span>
         </div>
-        <div className={styles.navItem}>
-            <img src={navPayIcon} className={styles.navImg} alt="결제" />
-            <span className={styles.navText}>결제</span>
+        <div className={common.navItem}>
+            <img src={navPayIcon} className={common.navImg} alt="결제" />
+            <span className={common.navText}>결제</span>
         </div>
-        <div className={styles.navItem}>
-            <img src={navUserIcon} className={styles.navImg} alt="마이페이지" />
-            <span className={styles.navText}>마이페이지</span>
+        <div className={common.navItem}
+             onClick={() => navigate('/mypage')}
+        >
+            <img src={navUserIcon} className={common.navImg} alt="마이페이지" />
+            <span className={common.navText}>마이페이지</span>
         </div>
       </nav>
     </div>
