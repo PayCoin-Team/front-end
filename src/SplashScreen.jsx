@@ -32,8 +32,8 @@ const SplashScreen = () => {
 
                     {/* 신규 추가: 아이디 찾기 및 비밀번호 재설정 영역 */}
                     <div className={styles.findMenu}>
-                        <span onClick={() => navigate('/FindIdScreen')}>아이디 찾기</span>
-                        <span onClick={() => navigate('/reset-password')}>비밀번호 재설정</span>
+                        <span onClick={() => navigate('/findId')}>아이디 찾기</span>
+                        <span onClick={() => navigate('/resetPw')}>비밀번호 재설정</span>
                     </div>
                 </div>
             )}

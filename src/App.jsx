@@ -10,8 +10,11 @@ import MyPageScreen from './MyPageScreen'; // 마이페이지 컴포넌트 임�
 import PayScreen from './PayScreen';       // 결제 컴포넌트 임포트
 import QrGenerate from './QrGenerate';
 import HistoryScreen from'./HistoryScreen';
+import FindIdScreen from './FindIdScreen';
+import ResetPassword from './ResetPassword';
 import SendScreen from './SendScreen';
 import Processing from './Processing';
+
 
 
 function App() {
@@ -21,6 +24,8 @@ function App() {
         <Route path="/" element={<SplashScreen />} />
         <Route path="/signup" element={<SignUpScreen />} />
         <Route path="/login" element={<LoginScreen />} />
+        <Route path="/findId" element={<FindIdScreen />} />
+        <Route path="/resetPw" element={<ResetPassword />} />
         {/* 일반 사용자 메인 홈 화면 (추가됨) */}
         <Route path="/home" element={<Home />} />
         <Route path="/chart" element={<ChartScreen />} />

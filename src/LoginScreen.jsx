@@ -62,10 +62,10 @@ const LoginScreen = () => {
                 </form>
 
                 <div className={styles.findMenu}>
-                    <span onClick={() => navigate('/find-id')}>
+                    <span onClick={() => navigate('/findId')}>
                         아이디 찾기
                     </span>
-                    <span onClick={() => navigate('/reset-password')}>
+                    <span onClick={() => navigate('/resetPw')}>
                         비밀번호 재설정
                     </span>
                 </div>
