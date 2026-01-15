@@ -74,6 +74,7 @@
 .balanceCard {
   background-color: #0E7355; /* 이미지의 진한 녹색 */
   border-radius: 24px;
+  border-radius: 24px 4px 24px 4px;
   padding: 24px;
   color: white;
   display: flex;
@@ -158,6 +159,7 @@
 .menuCard {
   background-color: #23bf94; /* 밝은 민트색 */
   border-radius: 20px;
+  border-radius: 26px 26px 4px 26px;
   padding: 20px;
   color: white;
   display: flex;
@@ -173,7 +175,9 @@
 }
 
 /* 결제하기 카드는 더 크게 */
-.largeCard {
+.largeCard,
+.column:last-child .menuCard:last-child
+ {
   background-color: #14a17a; /* 약간 더 진한 색 */
   flex-grow: 1; /* 남은 공간 차지 */
   min-height: 180px; 
@@ -203,7 +207,7 @@
 }
 
 .menuCard h3 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: bold;
   margin: 0;
 }

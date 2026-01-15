@@ -12,6 +12,9 @@ import QrGenerate from './QrGenerate';
 import HistoryScreen from'./HistoryScreen';
 import FindIdScreen from './FindIdScreen';
 import ResetPassword from './ResetPassword';
+import SendScreen from './SendScreen';
+import Processing from './Processing';
+
 
 
 function App() {
@@ -31,8 +34,9 @@ function App() {
         <Route path="/pay" element={<PayScreen />} />
         <Route path="/qr" element={<QrGenerate />} />
         {/* 혹시 몰라 추가하는 예외 처리 (잘못된 주소 입력 시 홈으로) */}
-
+        <Route path="/send" element={<SendScreen />} />
         <Route path="/history" element={<HistoryScreen />} />
+        <Route path="/pro" element={<Processing />} />
         <Route path="*" element={<Home />} />
         
       </Routes>

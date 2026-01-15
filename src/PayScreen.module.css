@@ -118,7 +118,69 @@
   height: 100%;
 }
 
-/* 타이머 */
+/* 지갑 주소 입력 박스 */
+.addressInputBox {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #169279;
+  border-radius: 10px;
+  padding: 6px 8px 6px 16px;  
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 320px;          
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #fff;
+}
+
+/* 입력 input */
+.addrInput {
+  flex: 1; 
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  min-width: 0; 
+}
+
+.addrInput::placeholder {
+  color: #169279; 
+  opacity: 0.7;
+}
+
+/* '주소 확인' 버튼 */
+.checkBtn {
+  background-color: #169279;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 8px; 
+  white-space: nowrap;
+}
+
+/* 화살표(Go) 버튼 */
+.goBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 1.5px solid #169279;
+  color: #169279;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding-bottom: 2px; 
+}
+
+/* 타이머 영역 */
 .timerWrapper {
   display: flex;
   align-items: center;
@@ -146,63 +208,4 @@
   font-size: 0.85rem;
   text-align: center;
   line-height: 1.4;
-}
-
-/* ... 기존 스타일 유지 ... */
-
-/* guideText 아래 여백 추가 */
-.guideText {
-  color: #999;
-  font-size: 0.85rem;
-  text-align: center;
-  line-height: 1.4;
-  margin-bottom: 30px; /* 아래쪽 주소칸과 간격 벌리기 */
-}
-
-/* 👇 [추가] 지갑 주소 섹션 스타일 */
-.addressSection {
-  width: 100%;
-  margin-top: auto; /* 화면 맨 밑으로 밀어내기 */
-  padding-bottom: 20px;
-}
-
-.addressLabel {
-  font-size: 0.8rem;
-  color: #666;
-  margin-bottom: 8px;
-  margin-left: 4px;
-}
-
-.addressBox {
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.addressBox:active {
-  background-color: #e0e0e0;
-  transform: scale(0.98);
-}
-
-.addressText {
-  font-family: monospace; /* 주소는 고정폭 글꼴로 */
-  font-size: 0.9rem;
-  color: #333;
-  font-weight: 500;
-}
-
-.copyIcon {
-  font-size: 0.8rem;
-  color: #169279; /* 테마 색상 */
-  font-weight: bold;
-  background: white;
-  padding: 4px 8px;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
