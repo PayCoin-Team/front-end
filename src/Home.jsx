@@ -15,6 +15,11 @@ import menuQrIcon from './assets/menu_qr.svg';
 import menuChargeIcon from './assets/menu_charge.svg';
 import menuHistoryIcon from './assets/menu_history.svg';
 import walletAddressIcon from './assets/wallet.svg';
+import topWalletIcon from './assets/top_wallet.svg';
+import chartIcon from './assets/Chart.svg';
+import LogoIcon from './component/UsdtLogo.svg';
+
+
 
 const Home = () => {
   const navigate = useNavigate();
@@ -72,12 +77,19 @@ const Home = () => {
       {/* 1. 상단 헤더 */}
       <header className={styles.header}>
         <div className={styles.logoRow}>
+          <img src={LogoIcon} alt="로고" className={styles.logoImg} />
             <h1 className={styles.logo}>CrossPay</h1>
         </div>
         <div className={styles.headerButtons}>
-            <button className={`${styles.topBtn} ${styles.greenBtn}`}>지갑 연동</button>
-            <button className={`${styles.topBtn} ${styles.grayBtn}`}onClick={() => navigate('/chart')}
-            >USDT 차트</button>
+            <button className={`${styles.topBtn} ${styles.greenBtn}`}>
+              <img src={topWalletIcon} alt="지갑" className={styles.topBtnIcon} />
+                  지갑 연동
+            </button>
+            <button className={`${styles.topBtn} ${styles.greenBtn}`}
+                onClick={() => navigate('/chart')}
+            > <img src={chartIcon} alt="차트" className={styles.topBtnIcon} />
+              USDT 차트
+           </button>
         </div>
       </header>
 
@@ -161,8 +173,8 @@ const Home = () => {
                         <span className={styles.arrowIcon}>→</span>
                     </div>
                 </div>
-                <div className={styles.menuCard}>
-                    <div className={styles.cardIcon}>
+                <div className={styles.menuCard} onClick={() => navigate('/qr')}>
+                    <div className={styles.cardIcon} >
                       <img src={menuQrIcon} alt="QR생성" />
                       </div>
                     <h3>QR 생성</h3>
@@ -192,7 +204,9 @@ const Home = () => {
             <img src={navHomeIcon} className={common.navImg} alt="홈" />
             <span className={common.navText}>홈</span>
         </div>
-        <div className={common.navItem}>
+        <div className={common.navItem} 
+                onClick={() => navigate('/pay')}
+        >
             <img src={navPayIcon} className={common.navImg} alt="결제" />
             <span className={common.navText}>결제</span>
         </div>
