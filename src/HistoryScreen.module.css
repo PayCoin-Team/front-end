@@ -1,0 +1,287 @@
+/* 상단 헤더 */
+.header {
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  background-color: #fff;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #169279;
+}
+
+.headerTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #169279;
+}
+
+/* 메인 콘텐츠 영역 */
+.mainContent {
+  flex: 1;
+  overflow-y: auto; /* 스크롤 가능 */
+  padding: 0 20px 80px 20px; /* 하단 네비게이션 공간 확보 */
+  background-color: #fff;
+}
+
+/* 날짜 네비게이션 (2026 v 01 v) */
+.dateNav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0 20px 0;
+  gap: 20px;
+}
+
+.dateArrow {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #8ce9d3; /* 연한 민트색 */
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.dateText {
+  font-size: 18px;
+  font-weight: 800;
+  color: #169279;
+}
+
+.downArrow {
+  font-size: 12px;
+  margin-left: 2px;
+  vertical-align: middle;
+}
+
+/* 필터 탭 (전체, 충전...) */
+.filterTabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 30px;
+}
+
+.filterBtn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: #61c5aa;
+  color: white;
+  transition: all 0.2s;
+}
+
+.activeFilter {
+  background-color: #169279; /* 활성: 진한 초록 */
+  color: #fff;
+}
+
+/* 날짜 헤더 (01.13 화) */
+.dateHeader {
+  font-size: 14px;
+  font-weight: 700;
+  color: #999;
+  margin-bottom: 12px;
+  margin-top: 24px;
+}
+
+.transactionList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* 개별 거래 내역 아이템 */
+.transactionItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 아이콘 래퍼 */
+.iconWrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.greenBg {
+  background-color: #169279; /* 테더 로고 배경 */
+}
+
+.grayBg {
+  background-color: #dbeedb; /* 사용자 아이콘 배경 (연두색 느낌) */
+}
+
+.tokenIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.userIcon {
+  font-size: 24px;
+  opacity: 0.5;
+  color: #3f703f;
+}
+
+/* 내용 텍스트 */
+.infoWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.title {
+  font-size: 13px;
+  color: #aaa;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 긴 텍스트 ... 처리 */
+  max-width: 240px;
+}
+
+.amount {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* 입금/출금 색상 */
+.plus {
+  color: #ff3b3b; /* 빨간색 (+) */
+}
+
+.minus {
+  color: #2b75ff; /* 파란색 (-) */
+}
+
+/* 하단 네비게이션 (Home과 동일) */
+.bottomNav {
+  height: 80px;
+  background-color: #169279;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: 15px;
+  position: sticky;
+  bottom: 0;
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  gap: 6px;
+  flex: 1;
+}
+
+.navImg {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+  opacity: 0.6;
+}
+
+.navText {
+  font-size: 11px;
+}
+
+/* 날짜 네비게이션 컨테이너 */
+.dateNav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0 20px 0;
+  gap: 20px;
+  position: relative; /* 드롭다운 위치 기준 */
+  z-index: 10; /* 필터 버튼보다 위에 오도록 */
+}
+
+/* 날짜 표시 영역 (연도 + 월) */
+.dateDisplay {
+  display: flex;
+  gap: 8px; /* 연도와 월 사이 간격 */
+  align-items: center;
+}
+
+.selectWrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.dateText {
+  font-size: 18px;
+  font-weight: 800;
+  color: #169279;
+  display: flex; /* 화살표 정렬용 */
+  align-items: center;
+  gap: 4px;
+}
+
+/* 화살표 아이콘 */
+.downArrow {
+  font-size: 10px;
+  margin-top: 2px;
+  color: #169279;
+}
+
+.dropdownList {
+  position: absolute;
+  top: 100%; /* 글자 바로 아래 */
+  left: 50%;
+  transform: translateX(-50%); /* 가운데 정렬 */
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  list-style: none;
+  padding: 5px;
+  margin-top: 8px;
+  width: 80px;
+  max-height: 200px;
+  overflow-y: auto; /* 내용 많으면 스크롤 */
+  z-index: 100;
+}
+
+.monthList {
+  width: 60px;
+}
+
+.dropdownList li {
+  padding: 8px;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.dropdownList li:hover {
+  background-color: #f1f3f5;
+  color: #169279;
+  font-weight: bold;
+}
+
+.dropdownList::-webkit-scrollbar {
+  width: 4px;
+}
+.dropdownList::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
