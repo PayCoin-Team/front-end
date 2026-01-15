@@ -10,8 +10,6 @@ const SAMPLE_QR = "https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_f
 const PayScreen = () => {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(180);
-  
-  // ⭐ [추가] 지갑 주소 입력 상태 관리
   const [inputAddress, setInputAddress] = useState('');
 
   useEffect(() => {
@@ -25,6 +23,15 @@ const PayScreen = () => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
+  const handleAddressChange = (e) => {
+    let value = e.target.value.toUpperCase();
+    value = value.replace(/[^A-Z0-9]/g, '');
+    if (value.length > 8) {
+      value = value.slice(0, 8);
+    }
+    setInputAddress(value);
   };
 
   return (
@@ -51,7 +58,7 @@ const PayScreen = () => {
             {/* 탭 버튼 */}
             <div className={styles.tabGroup}>
                 <span className={`${styles.tab} ${styles.active}`}>결제</span>
-                <span className={styles.tab} onClick={() => navigate('/send')} style={{ cursor: 'pointer' }}>송금</span>
+                <span className={styles.tab} onClick={() => navigate('/send')}>송금</span>
             </div>
 
             {/* 바코드 & QR코드 */}
@@ -62,17 +69,18 @@ const PayScreen = () => {
                 <img src={SAMPLE_QR} className={styles.qrImg} alt="QR Code" />
             </div>
 
-            {/* ⭐ [추가] 지갑 주소 입력 영역 */}
+            
             <div className={styles.addressInputBox}>
                 <input 
                     type="text" 
-                    placeholder="지갑 주소 입력" 
+                    placeholder="지갑 주소 (8자리)" 
                     className={styles.addrInput}
                     value={inputAddress}
-                    onChange={(e) => setInputAddress(e.target.value)}
+                    onChange={handleAddressChange} 
+                    maxLength={8}
                 />
                 <button className={styles.checkBtn}>주소 확인</button>
-                <button className={styles.goBtn}>›</button>
+                <button className={styles.goBtn} onClick={() => navigate('/pro')}  >›  </button>
             </div>
 
             {/* 타이머 */}
@@ -84,7 +92,7 @@ const PayScreen = () => {
             </div>
         </div>
 
-        {/* 안내 문구 수정 */}
+        {/* 안내 문구 */}
         <p className={styles.guideText}>
             코드를 스캔하거나 지갑주소를 입력하여<br/>결제를 진행합니다.
         </p>

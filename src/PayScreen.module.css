@@ -118,37 +118,7 @@
   height: 100%;
 }
 
-/* 타이머 */
-.timerWrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.timerText {
-  color: #e53935; /* 시간은 빨간색으로 강조 */
-  font-weight: bold;
-}
-
-.refreshBtn {
-  background: white;
-  border: 1px solid #ddd;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.guideText {
-  color: #999;
-  font-size: 0.85rem;
-  text-align: center;
-  line-height: 1.4;
-}
-
-
+/* 지갑 주소 입력 박스 */
 .addressInputBox {
   display: flex;
   align-items: center;
@@ -193,7 +163,7 @@
   white-space: nowrap;
 }
 
-
+/* 화살표(Go) 버튼 */
 .goBtn {
   width: 28px;
   height: 28px;
@@ -212,11 +182,30 @@
 
 /* 타이머 영역 */
 .timerWrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    color: #555;
-    margin-top: 10px; 
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.timerText {
+  color: #e53935; /* 시간은 빨간색으로 강조 */
+  font-weight: bold;
+}
+
+.refreshBtn {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.guideText {
+  color: #999;
+  font-size: 0.85rem;
+  text-align: center;
+  line-height: 1.4;
 }
