@@ -10,9 +10,21 @@
 
 .logo {
   font-size: 1.4rem;
-  font-weight: 800;
+  font-weight: 500;
   color: #1A9276; /* CrossPay Green */
   margin: 0;
+}
+
+.logoImg {
+  width: 28px; /* 원하는 크기로 조절 (예: 24px ~ 32px) */
+  height: 28px;
+  object-fit: contain;
+}
+
+.logoRow {
+  display: flex;
+  align-items: center; /* 수직 중앙 정렬 */
+  gap: 6px;
 }
 
 .headerButtons {
@@ -25,8 +37,15 @@
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.75rem;
-  font-weight: bold;
+  font-weight: middle;
   cursor: pointer;
+  
+}
+
+.topBtnIcon {
+    width: 10px; 
+    height: 10px;
+    margin-right: 5px;
 }
 
 .greenBtn {
@@ -226,10 +245,10 @@
 
 /* 새로 추가: 국기 이미지 스타일 */
 .flagImg {
-  width: 24px;       /* 너비 */
-  height: 16px;      /* 높이 */
-  object-fit: cover; /* 비율 유지하며 꽉 채우기 */
-  border-radius: 3px; /* 모서리 살짝 둥글게 */
+  width: 24px;      
+  height: 16px;     
+  object-fit: cover; 
+  border-radius: 3px; 
   box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* 약간의 그림자 */
   display: block;
 }
