@@ -11,23 +11,19 @@
   transition: all 0.3s ease-in-out;
 }
 
-/* 로딩/완료 화면일 때 컨테이너를 수직/수평 중앙 정렬 모드로 변경 */
 .centerMode {
   justify-content: center;
   align-items: center;
-  padding-bottom: 80px; /* 네비게이션 바 높이만큼 시각적 보정 */
+  padding-bottom: 80px; 
 }
 
-/* =========================================
-   2. 상단 헤더 (입력 화면용)
-   ========================================= */
+
 .header {
   height: 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 5px; /* 패딩 약간 조정 */
-  /* border-bottom 제거 (이미지 시안상 헤더 밑줄 없음) */
+  padding: 0 5px; 
 }
 
 .backBtn {
@@ -35,8 +31,9 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #169279; /* 시안의 초록색 포인트 */
+  color: #169279; 
   font-weight: bold;
+  padding: 10px; 
 }
 
 .title {
@@ -45,10 +42,7 @@
   color: #169279;
 }
 
-/* =========================================
-   3. [STEP 1] 입력 화면 스타일
-   ========================================= */
-/* 메인 텍스트: "잔고에 충전할 금액" */
+
 .mainLabel {
   font-size: 1.8rem;
   font-weight: bold;
@@ -57,7 +51,7 @@
   letter-spacing: -0.5px;
 }
 
-/* 입력창 박스 */
+
 .inputWrapper {
   position: relative;
   display: flex;
@@ -95,7 +89,7 @@
 .btnWrapper {
   margin-top: 10px;
   display: flex;
-  justify-content: flex-end; /* 오른쪽 정렬 */
+  justify-content: flex-end; 
 }
 
 .submitBtn {
@@ -115,34 +109,32 @@
   transform: scale(0.98);
 }
 
-/* =========================================
-   4. [STEP 2 & 3] 로딩 및 완료 화면 스타일 (추가됨)
-   ========================================= */
+
 .statusContent {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   width: 100%;
+  animation: fadeIn 0.5s ease-out; 
 }
 
-/* PayCoin 로고 영역 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .logoArea {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.logoIcon {
-  font-size: 2.5rem;
-}
-
-.logoText {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #169279; /* 브랜드 컬러 */
-  letter-spacing: -0.5px;
+.logoImg {
+  width: 80px;  /* 로고 크기 적절히 설정 */
+  height: 80px;
+  object-fit: contain;
 }
 
 /* 상태 메시지 ("충전이 진행중입니다") */
@@ -150,7 +142,16 @@
   font-size: 1.4rem;
   font-weight: 700;
   color: #169279;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
+  line-height: 1.4; /* 두 줄 이상일 때 간격 */
+}
+
+
+.amountText {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #333; /* 금액은 진한 회색/검정으로 강조 */
+  margin-bottom: 40px;
 }
 
 /* 완료 화면의 확인 버튼 (하단 꽉 차는 버튼) */
@@ -171,20 +172,22 @@
 
 .confirmBtn:active {
   opacity: 0.9;
+  transform: scale(0.98);
 }
 
 /* =========================================
    5. 하단 네비게이션 (녹색 배경)
    ========================================= */
 .bottomNav {
-  height: 80px; /* 높이 약간 확보 */
-  background-color: #169279; /* 메인 테마 색 */
+  height: 80px; 
+  background-color: #169279; 
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding-bottom: 15px; /* 아이폰 하단 바 고려 */
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+  padding-bottom: 15px; 
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
 }
 
 .navItem {
@@ -192,19 +195,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.6); /* 비활성 텍스트: 반투명 흰색 */
+  color: rgba(255, 255, 255, 0.6); 
   cursor: pointer;
   gap: 6px;
-  flex: 1; /* 터치 영역 균등 분배 */
+  flex: 1; 
 }
 
-/* SVG 아이콘 스타일 */
 .navImg {
   width: 24px;
   height: 24px;
-  /* 중요: 아이콘을 흰색으로 변경하는 필터 (SVG가 검은색일 경우 필수) */
   filter: brightness(0) invert(1); 
-  opacity: 0.6; /* 비활성 상태 투명도 */
+  opacity: 0.6; 
   transition: opacity 0.2s;
 }
 
@@ -213,13 +214,12 @@
   font-weight: 500;
 }
 
-/* 활성화(Active) 상태 스타일 */
 .navItem.active {
-  color: #ffffff; /* 활성 텍스트: 완전 흰색 */
+  color: #ffffff; 
 }
 
 .navItem.active .navImg {
-  opacity: 1; /* 활성 아이콘: 완전 불투명 */
+  opacity: 1; 
 }
 
 .navItem.active .navText {
