@@ -154,7 +154,7 @@ const Home = () => {
              <span className={styles.copyHint}></span>
           </div>
 
-          <div className={styles.cardBottom}>
+          <div className={styles.cardBottom} onClick={() => navigate('/withdraw')}>
             <span>잔고 및 출금</span>
             <span className={styles.arrowIcon}>→</span>
           </div>

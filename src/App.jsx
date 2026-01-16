@@ -14,6 +14,7 @@ import FindIdScreen from './FindIdScreen';
 import ResetPassword from './ResetPassword';
 import SendScreen from './SendScreen';
 import Processing from './Processing';
+import Withdraw from './WithdrawScreen';
 
 
 
@@ -33,6 +34,7 @@ function App() {
         <Route path="/charge" element={<ChargeScreen />} />
         <Route path="/pay" element={<PayScreen />} />
         <Route path="/qr" element={<QrGenerate />} />
+        <Route path="/withdraw" element={<Withdraw/>}/>
         {/* 혹시 몰라 추가하는 예외 처리 (잘못된 주소 입력 시 홈으로) */}
         <Route path="/send" element={<SendScreen />} />
         <Route path="/history" element={<HistoryScreen />} />
