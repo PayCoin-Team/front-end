@@ -1,9 +1,7 @@
-/* 요소들의 크기 계산 방식을 통일 (패딩 포함) */
 * {
   box-sizing: border-box;
 }
 
-/* 헤더 */
 .header {
   height: 60px;
   display: flex;
@@ -11,180 +9,191 @@
   align-items: center;
   padding: 0 15px;
   border-bottom: 1px solid #f0f0f0;
-  background-color: white; /* 배경색 명시 */
+  background-color: white;
   width: 100%;
-  flex-shrink: 0; /* 헤더 크기 고정 */
+  flex-shrink: 0;
 }
 
-.backBtn, .starBtn {
+.backBtn {
   background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
   color: #333;
-  padding: 5px; /* 터치 영역 확보 */
+  padding: 5px;
 }
 
-.headerTitle { font-weight: bold; font-size: 1.1rem; }
+.headerTitle { 
+    font-weight: bold; 
+    font-size: 1.1rem; 
+    display: flex;
+    align-items: baseline;
+}
+
+.coinName { font-weight: 800; color: #333; }
 .currency { font-size: 0.8rem; color: #888; font-weight: normal; margin-left: 4px; }
 
-/* 메인 영역 (스크롤 가능, 가로 넘침 방지) */
 .mainContent {
   flex: 1;
-  overflow-y: auto;      /* 세로 스크롤 허용 */
-  overflow-x: hidden;    /* 가로 스크롤 금지 (화면 깨짐 방지) */
-  width: 100%;           /* 부모 너비에 딱 맞춤 */
-  padding-bottom: 20px;  /* 하단 여유 공간 */
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  padding-bottom: 30px;
   background-color: white;
 }
+.mainContent::-webkit-scrollbar { display: none; }
 
-/* 스크롤바 숨기기 (선택사항) */
-.mainContent::-webkit-scrollbar {
-  display: none;
-}
-
-/* 가격 정보 */
-.priceSection {
-  padding: 20px;
-  width: 100%;
-}
+.priceSection { padding: 20px 20px 10px 20px; width: 100%; }
 
 .currentPrice {
   margin: 0;
   font-size: 2rem;
-  font-weight: bold;
+  font-weight: 800;
   color: #169279;
+  letter-spacing: -0.5px;
 }
-
-.currentPrice span { font-size: 1rem; color: #888; margin-left: 5px; }
+.currentPrice span { font-size: 1rem; color: #888; margin-left: 6px; font-weight: normal; }
 
 .priceChange {
   margin-top: 5px;
   font-size: 0.9rem;
   color: #169279;
-  font-weight: 500;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.plus { margin-right: 10px; }
-
-/* 차트 영역 컨테이너 */
 .chartContainer {
+  margin-top: 10px;
   border-top: 8px solid #f8f9fa;
   border-bottom: 8px solid #f8f9fa;
-  padding: 15px 0;
+  padding: 20px 0;
   background: #fff;
   width: 100%;
 }
 
-/* 시간 탭 */
 .timeTab {
   display: flex;
   gap: 20px;
-  padding: 0 20px 15px 20px;
-  font-size: 0.85rem;
-  color: #888;
+  padding: 0 20px 20px 20px;
+  font-size: 0.9rem;
+  color: #adb5bd;
+  font-weight: 500;
   width: 100%;
 }
-
-.timeTab span { cursor: pointer; }
-.timeTab .active { color: #333; font-weight: bold; }
-
-/* 차트 래퍼 (Recharts가 넘치지 않도록 제어) */
-.chartWrapper {
-  width: 100%;
-  height: 220px;
-  padding-right: 10px; /* 오른쪽 끝이 잘리지 않게 여백 줌 */
+.timeTab span { cursor: pointer; transition: color 0.2s; }
+.timeTab .active { 
+    color: #333; font-weight: 800; 
+    border-bottom: 2px solid #333; padding-bottom: 2px;
 }
-
-/* --- 새로 추가/변경된 하단 변환 카드 스타일 --- */
+.chartWrapper { width: 100%; height: 240px; padding-right: 0; }
 
 .conversionCard {
-  margin-top: 20px;
-  background-color: #f8f9fa; /* 연한 회색 배경 */
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  margin: 20px;
+  background-color: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
-.conversionHeader {
-  font-size: 14px;
-  color: #868e96;
-  font-weight: 600;
-  margin-bottom: 12px;
-}
+.conversionHeader { display: none; }
 
 .conversionBody {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #ffffff;
-  padding: 10px 15px;
-  border-radius: 12px;
-  border: 1px solid #e9ecef;
+  gap: 12px;
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  height: auto;
 }
 
-.currencyBox {
+.currencyBox, .selectBox {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 8px;
-  position: relative; /* Select 배치 기준점 */
-}
-
-/* 오른쪽 Select Box 영역 스타일 */
-.selectBox {
-  background-color: #f1f3f5;
-  padding: 6px 12px;
-  border-radius: 8px;
-  min-width: 130px; /* 최소 너비 확보 */
   justify-content: space-between;
+  height: 50px;
+  padding: 0 15px;
+  background-color: #fff;
+  border: 1px solid #169279;
+  border-radius: 5px;
+  position: relative;
 }
 
-/* 실제 select 태그 (투명하게 처리하여 클릭 영역만 확보) */
-.currencySelect {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
-/* 텍스트 표시 영역 (클릭 이벤트를 뒤쪽 select로 통과시킴) */
-.valueDisplay {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  pointer-events: none; 
-}
-
-.icon {
-  font-size: 20px;
-}
-
-.unit {
-  font-weight: 700;
-  font-size: 16px;
-  color: #333;
-}
-
-.unitSmall {
-    font-size: 10px;
-    color: #868e96;
-    font-weight: 700;
-    margin-top: -2px;
-}
+.equalIcon { display: none; }
+.icon { display: none; }
 
 .val {
-  font-weight: 700;
   font-size: 16px;
-  color: #ae1717; /* 차트 테마색 */
+  color: #333;
+  font-weight: 400;
 }
 
-.equalIcon {
-  font-size: 18px;
-  color: #adb5bd;
-  font-weight: bold;
+.amountInput {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #333;
+  font-weight: 400;
+  padding: 0;
+  margin: 0;
+}
+
+.amountInput::-webkit-outer-spin-button,
+.amountInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.amountInput[type=number] {
+  -moz-appearance: textfield;
+}
+
+.amountInput::placeholder {
+  color: #ccc;
+}
+
+.unitText {
+  font-size: 13px;
+  color: #169279;
+  font-weight: 400;
+  border-left: 1px solid #ccc; 
+  padding-left: 12px;
+  margin-left: 10px;
+  height: 16px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.selectBox {
+  background-color: #f8f9fa;
+  min-width: 0;
+}
+
+
+.selectBox:active {
+    background-color: #f8f9fa;
+}
+
+.currencySelect {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0; cursor: pointer; z-index: 10;
+}
+
+.valueDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  pointer-events: none;
 }
 
 .infoText {
