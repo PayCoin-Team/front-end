@@ -1,26 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import common from './Common.module.css';
 import styles from './ChartScreen.module.css';
 
+import useExchangeRate from './hooks/useExchangeRate'; 
+
 const ChartScreen = () => {
   const navigate = useNavigate();
-  const [activeTime, setActiveTime] = useState('1H'); 
+  const [activeTime, setActiveTime] = useState('1H');
   
-  // ⭐ [추가 1] 선택된 화폐 상태 관리
+  // 기본 선택 통화
   const [selectedCurrency, setSelectedCurrency] = useState('KRW');
 
-  // ⭐ [추가 2] 환율 데이터 (1 USDT 기준)
+  const [usdtAmount, setUsdtAmount] = useState(1);
+
+  // 실시간 KRW 환율 가져오기
+  const { rate: krwRealTimeRate, loading } = useExchangeRate();
+
   const exchangeRates = {
-    KRW: { flag: '🇰🇷' }, // KRW는 차트 데이터를 따름
+    KRW: { rate: krwRealTimeRate > 0 ? krwRealTimeRate : 1450, flag: '🇰🇷' },
     USD: { rate: 1.00, flag: '🇺🇸' },
     JPY: { rate: 152.4, flag: '🇯🇵' },
     CNY: { rate: 7.23, flag: '🇨🇳' },
@@ -28,55 +29,74 @@ const ChartScreen = () => {
     EUR: { rate: 0.92, flag: '🇪🇺' },
   };
 
-  // --- 기존 차트 데이터 로직 유지 ---
-  const generateData = () => {
+  // 현재 선택된 통화의 1 USDT 당 가격
+  const currentRate = exchangeRates[selectedCurrency].rate;
+  const convertedValue = usdtAmount * currentRate;
+  const chartData = useMemo(() => {
     const data = [];
-    let price = 1450;
+    let price = currentRate;
+    
     for (let i = 0; i < 30; i++) {
-      price = price + Math.floor(Math.random() * 10 - 4); 
+      const percentChange = (Math.random() * 0.004) - 0.002; 
+      price = price * (1 + percentChange); 
+      
       data.push({
         time: `${i}분`,
         price: price,
       });
     }
     return data;
+  }, [currentRate]); 
+
+  const lastPrice = chartData.length > 0 ? chartData[chartData.length - 1].price : currentRate;
+
+
+  const handleAmountChange = (e) => {
+      const val = e.target.value;
+      // 빈 값일 때는 비워두고, 아니면 실수형으로 변환
+      if (val === '') {
+          setUsdtAmount(''); 
+      } else {
+          setUsdtAmount(parseFloat(val));
+      }
   };
-
-  const chartData = generateData();
-  const currentPrice = chartData[chartData.length - 1].price;
-  // ---------------------------------
-
-  // ⭐ [추가 3] 화면에 표시할 가격 계산
-  // KRW면 차트의 currentPrice를 쓰고, 아니면 고정 환율 테이블 값을 사용
-  const displayPrice = selectedCurrency === 'KRW' 
-    ? currentPrice 
-    : exchangeRates[selectedCurrency].rate;
 
   return (
     <div className={common.layout}>
       
-      {/* 1. 상단 헤더 (유지) */}
+      {/* 헤더 */}
       <header className={styles.header}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>←</button>
         <div className={styles.headerTitle}>
             <span className={styles.coinName}>USDT</span>
-            <span className={styles.currency}>/KRW</span>
+            <span className={styles.currency}>/{selectedCurrency}</span>
         </div>
       </header>
 
-      {/* 2. 메인 콘텐츠 */}
+      {/* 메인 콘텐츠 */}
       <div className={`${styles.mainContent} ${common.fadeIn}`}>
         
-        {/* 가격 정보 (유지 - KRW 기준) */}
+
         <div className={styles.priceSection}>
-            <h1 className={styles.currentPrice}>{currentPrice.toLocaleString()}<span>KRW</span></h1>
+            {loading && selectedCurrency === 'KRW' && krwRealTimeRate === 0 ? (
+                <h1 className={styles.currentPrice} style={{color: '#999', fontSize: '24px'}}>불러오는 중...</h1>
+            ) : (
+                <h1 className={styles.currentPrice}>
+                    {selectedCurrency === 'USD' || selectedCurrency === 'EUR' || selectedCurrency === 'GBP'
+                        ? lastPrice.toFixed(4)
+                        : Math.floor(lastPrice).toLocaleString() 
+                    }
+                    <span>{selectedCurrency}</span>
+                </h1>
+            )}
+            
             <div className={styles.priceChange}>
                 <span className={styles.plus}>+0.85%</span>
-                <span className={styles.amount}>▲ 12.00</span>
+                <span className={styles.amount}>▲ {(lastPrice * 0.0085).toFixed(2)}</span> 
             </div>
         </div>
 
-        {/* 차트 영역 (유지) */}
+        {/* 차트 영역 */}
         <div className={styles.chartContainer}>
             <div className={styles.timeTab}>
                 {['15m', '1H', '4H', '1D', '1W'].map((time) => (
@@ -100,11 +120,11 @@ const ChartScreen = () => {
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="time" hide={true} />
-                  <YAxis hide={true} domain={['dataMin - 5', 'dataMax + 5']} />
+                  <YAxis hide={true} domain={['dataMin', 'dataMax']} />
                   <Tooltip 
                     contentStyle={{ background: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}
                     labelStyle={{ display: 'none' }}
-                    formatter={(value) => [`${value.toLocaleString()} KRW`]}
+                    formatter={(value) => [`${value.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${selectedCurrency}`]}
                   />
                   <Area 
                     type="monotone" 
@@ -119,25 +139,28 @@ const ChartScreen = () => {
             </div>
         </div>
 
-        {/* ⭐ [변경] 하단 변환 카드 (국가 선택 기능 추가) */}
+     
         <div className={styles.conversionCard}>
-            <div className={styles.conversionHeader}>환산 가치 확인</div>
+            <div className={styles.conversionHeader}>통화 설정 및 환산</div>
             <div className={styles.conversionBody}>
                 
-                {/* 왼쪽: 1 USDT 고정 */}
+                {/* 왼쪽 박스: 사용자 입력 (Input) */}
                 <div className={styles.currencyBox}>
-                    <span className={styles.icon}>🇺🇸</span>
-                    <span className={styles.unit}>1 USDT</span>
+                    <input 
+                        type="number" 
+                        className={styles.amountInput} 
+                        value={usdtAmount}
+                        onChange={handleAmountChange}
+                        placeholder="0"
+                    />
+                    <span className={styles.unitText}>USDT</span>
                 </div>
                 
+                {/* 등호(=)는 CSS에서 hidden 처리됨 */}
                 <div className={styles.equalIcon}>=</div>
                 
-                {/* 오른쪽: 국가 선택 및 값 표시 */}
-                <div className={`${styles.currencyBox} ${styles.selectBox}`}>
-                    {/* 선택된 국가 국기 */}
-                    <span className={styles.icon}>{exchangeRates[selectedCurrency].flag}</span>
-                    
-                    {/* 숨겨진 Select 태그 */}
+                {/* 오른쪽 박스: 결과 표시 (Select) */}
+                <div className={styles.selectBox}>
                     <select 
                         className={styles.currencySelect}
                         value={selectedCurrency} 
@@ -151,15 +174,22 @@ const ChartScreen = () => {
                         <option value="GBP">GBP</option>
                     </select>
 
-                    {/* 보여지는 텍스트 */}
                     <div className={styles.valueDisplay}>
-                        <span className={styles.val}>{displayPrice.toLocaleString()}</span>
-                        <span className={styles.unitSmall}>{selectedCurrency}</span>
+                        <span className={styles.val}>
+                            {/* 값이 없거나 NaN이면 0 표시 */}
+                            {(usdtAmount && !isNaN(convertedValue)) 
+                                ? convertedValue.toLocaleString(undefined, { maximumFractionDigits: 2 })
+                                : '0'
+                            }
+                        </span>
+                        <span className={styles.unitText}>{selectedCurrency}</span>
                     </div>
                 </div>
 
             </div>
-            <p className={styles.infoText}>선택한 통화 기준의 대략적인 환산 금액입니다.</p>
+            <p className={styles.infoText}>
+                {loading ? '환율 정보를 불러오는 중...' : '입력한 수량에 따른 실시간 환산 금액입니다.'}
+            </p>
         </div>
       </div>
     </div>
