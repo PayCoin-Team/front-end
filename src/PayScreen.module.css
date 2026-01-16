@@ -74,6 +74,7 @@
   border-radius: 20px;
   padding: 4px;
   margin-bottom: 30px;
+  transition: all 0.2s ease;
 }
 
 .tab {
@@ -90,6 +91,12 @@
   font-weight: bold;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
+
+.tab:hover {
+  background-color: white; 
+  color: #169279;         
+  font-weight: bold; }
+
 
 /* 바코드 & QR */
 .barcodeArea {

@@ -79,7 +79,7 @@
 .inputWrapper {
   display: flex;
   align-items: center;
-  border-bottom: 2px solid #169279; /* 입력창 하단 녹색 줄 */
+  border-bottom: 2px solid #169279; 
   padding-bottom: 10px;
   width: 60%;
   min-width: 350px;
@@ -105,16 +105,16 @@
 .unit {
   font-size: 16px;
   font-weight: 600;
-  color: #169279; /* USDT 단위 색상 */
-  flex-shrink:0;       /* 화면이 좁아져도 절대 줄어들지 않게 고정 */
-  white-space: nowrap;  /* 글자가 줄바꿈되지 않게 설정 */
-  padding-right: 5px;   /* 오른쪽 끝에 딱 붙지 않게 여백 추가 */
+  color: #169279; 
+  flex-shrink:0;      
+  white-space: nowrap; 
+  padding-right: 5px;   
 }
 
 /* 3. 버튼 영역 스타일 */
 .actionArea {
   display: flex;
-  justify-content: flex-end; /* 버튼 오른쪽 정렬 */
+  justify-content: flex-end; 
   margin-top: 10px;
 }
 

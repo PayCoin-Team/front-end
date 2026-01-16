@@ -25,7 +25,7 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-/* 페이드인 애니메이션 (동일) */
+
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -35,12 +35,9 @@
     animation: fadeInUp 0.6s ease-out forwards;
 }
 
-/* ... 기존 내용들 (layout, fadeIn 등) ... */
-
-/* 👇👇👇 하단 네비게이션 공통 스타일 (여기 추가!) 👇👇👇 */
 
 .bottomNav {
-  height: 70px;
+  height: 75px;
   background-color: #169279; 
   display: flex;
   justify-content: space-around;
@@ -71,7 +68,6 @@
   height: 24px;
   object-fit: contain;
   margin-bottom: 2px;
-  /* 활성화된 탭은 조금 더 밝게 보이도록 필터 적용 가능 */
 }
 
 .navItem.active .navImg {

@@ -3,13 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import common from './Common.module.css'; 
 import styles from './Home.module.css';
 
-// 👇 1. 카드 아이콘 SVG 가져오기 
+
 import cardIconImg from './assets/Shopping_Bag_01.svg'; 
 import navHomeIcon from './assets/nav_home.svg';
 import navPayIcon from './assets/nav_pay.svg';
 import navUserIcon from './assets/nav_user.svg';
-
-// 👇 2. 메인 메뉴 아이콘 4개 불러오기 (새로 추가됨)
 import menuPayIcon from './assets/menu_pay.svg';
 import menuQrIcon from './assets/menu_qr.svg';
 import menuChargeIcon from './assets/menu_charge.svg';
@@ -18,6 +16,7 @@ import walletAddressIcon from './assets/wallet.svg';
 import topWalletIcon from './assets/top_wallet.svg';
 import chartIcon from './assets/Chart.svg';
 import LogoIcon from './component/UsdtLogo.svg';
+import axios from 'axios'; // API 통신 라이브러리
 
 
 
@@ -100,7 +99,7 @@ const Home = () => {
         <section className={styles.balanceCard}>
           <div className={styles.cardTop}>
             
-            {/* 👇 2. 기존 이모지(👜)를 삭제하고 img 태그로 교체 */}
+
             <div className={styles.walletIcon}>
                 <img src={cardIconImg} alt="지갑 아이콘" />
             </div>
