@@ -6,6 +6,9 @@
   align-items: center;
   padding: 0 15px;
   background-color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 50; 
 }
 
 .backBtn {
@@ -14,6 +17,7 @@
   font-size: 24px;
   cursor: pointer;
   color: #169279;
+  padding: 8px; /* 터치 영역 확대 */
 }
 
 .headerTitle {
@@ -22,95 +26,189 @@
   color: #169279;
 }
 
-/* 메인 콘텐츠 영역 */
+
 .mainContent {
   flex: 1;
-  overflow-y: auto; /* 스크롤 가능 */
-  padding: 0 20px 80px 20px; /* 하단 네비게이션 공간 확보 */
+  overflow-y: auto; /* 내용 스크롤 */
+  padding: 0 20px 80px 20px;
   background-color: #fff;
+  position: relative; 
 }
 
-/* 날짜 네비게이션 (2026 v 01 v) */
 .dateNav {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 10px 0 20px 0;
   gap: 20px;
+
+  position: relative; 
+  z-index: 20; 
 }
 
 .dateArrow {
   background: none;
   border: none;
-  font-size: 20px;
-  color: #8ce9d3; /* 연한 민트색 */
+  font-size: 24px;
+  color: #169279; /* 메인 컬러와 통일 */
   cursor: pointer;
   font-weight: bold;
+  padding: 0 10px; 
+}
+
+.dateDisplay {
+  display: flex;
+  gap: 12px; /* 간격 조금 더 넓힘 */
+  align-items: center;
+}
+
+
+.selectWrapper {
+  position: relative;
+  cursor: pointer;
+  /* 드롭다운 메뉴가 이 안에서 위치를 잡음 */
 }
 
 .dateText {
   font-size: 18px;
   font-weight: 800;
   color: #169279;
+  display: flex; 
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px; /* 클릭감 좋게 */
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.dateText:hover {
+  background-color: #f0fdf9; 
 }
 
 .downArrow {
   font-size: 12px;
-  margin-left: 2px;
-  vertical-align: middle;
+  margin-top: 2px;
+  color: #169279;
+}
+
+.dropdownList {
+  position: absolute;
+  top: 110%; 
+  left: 50%;
+  transform: translateX(-50%); 
+  
+  background: white;
+  border: 1px solid #d1d5db; 
+  border-radius: 12px; /* 둥글게 */
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12); /* 그림자 더 부드럽게 */
+  
+  list-style: none;
+  padding: 6px;
+  margin-top: 4px;
+  
+  width: 90px; /* 너비 살짝 키움 */
+  max-height: 220px; /* 너무 길어지지 않게 */
+  overflow-y: auto; 
+  z-index: 1000; /* 무조건 제일 위에 뜨도록 */
+}
+
+.monthList {
+  width: 70px; /* 월 선택창 너비 */
+}
+
+.dropdownList li {
+  padding: 10px;
+  text-align: center;
+  font-size: 15px;
+  color: #4b5563;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-bottom: 2px;
+  transition: all 0.2s;
+}
+
+.dropdownList li:hover {
+  background-color: #e6fffa; 
+  color: #169279;
+  font-weight: 700;
+}
+
+
+.dropdownList::-webkit-scrollbar {
+  width: 4px;
+}
+.dropdownList::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+}
+.dropdownList::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 /* 필터 탭 (전체, 충전...) */
 .filterTabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  padding-bottom: 10px; 
+  overflow-x: auto; 
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 스크롤바 숨기기 (선택사항) */
+.filterTabs::-webkit-scrollbar {
+    display: none; 
 }
 
 .filterBtn {
   padding: 8px 16px;
-  border-radius: 6px;
-  border: none;
-  font-size: 12px;
+  border-radius: 20px; /* 캡슐 모양으로 변경 */
+  border: 1px solid #e5e7eb;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  background-color: #61c5aa;
-  color: white;
+  background-color: #fff;
+  color: #6b7280;
   transition: all 0.2s;
+  flex-shrink: 0; /* 찌그러짐 방지 */
 }
 
 .activeFilter {
-  background-color: #169279; /* 활성: 진한 초록 */
+  background-color: #169279; 
   color: #fff;
+  border-color: #169279;
+  box-shadow: 0 2px 8px rgba(22, 146, 121, 0.25);
 }
 
 /* 날짜 헤더 (01.13 화) */
 .dateHeader {
   font-size: 14px;
   font-weight: 700;
-  color: #999;
+  color: #9ca3af;
   margin-bottom: 12px;
   margin-top: 24px;
+  padding-left: 4px;
 }
 
 .transactionList {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
 /* 개별 거래 내역 아이템 */
 .transactionItem {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  padding: 4px 0; /* 터치 영역 */
 }
 
 /* 아이콘 래퍼 */
 .iconWrapper {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: 16px; /* 조금 더 둥글게 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,22 +216,22 @@
 }
 
 .greenBg {
-  background-color: #169279; /* 테더 로고 배경 */
+  background-color: #e6fffa; /* 배경색 아주 연하게 변경 */
 }
+/* 실제 아이콘이 들어갈 때 배경색 조절 필요하면 여기서 */
 
 .grayBg {
-  background-color: #dbeedb; /* 사용자 아이콘 배경 (연두색 느낌) */
+  background-color: #f3f4f6; 
 }
 
 .tokenIcon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
 }
 
 .userIcon {
   font-size: 24px;
-  opacity: 0.5;
-  color: #3f703f;
+  color: #9ca3af;
 }
 
 /* 내용 텍스트 */
@@ -142,33 +240,33 @@
   flex-direction: column;
   gap: 4px;
   width: 100%;
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
 }
 
 .title {
-  font-size: 13px;
-  color: #aaa;
+  font-size: 15px;
+  color: #374151; /* 조금 더 진한 회색 */
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* 긴 텍스트 ... 처리 */
-  max-width: 240px;
+  text-overflow: ellipsis; 
 }
 
 .amount {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 /* 입금/출금 색상 */
 .plus {
-  color: #ff3b3b; /* 빨간색 (+) */
+  color: #ef4444; /* 빨간색 (+) */
 }
 
 .minus {
-  color: #2b75ff; /* 파란색 (-) */
+  color: #3b82f6; /* 파란색 (-) */
 }
 
-/* 하단 네비게이션 (Home과 동일) */
+/* 하단 네비게이션 (Home과 동일하게 맞춤) */
 .bottomNav {
   height: 80px;
   background-color: #169279;
@@ -178,6 +276,7 @@
   padding-bottom: 15px;
   position: sticky;
   bottom: 0;
+  z-index: 50; /* 리스트 위에 떠있어야 함 */
 }
 
 .navItem {
@@ -185,7 +284,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   gap: 6px;
   flex: 1;
@@ -195,93 +294,10 @@
   width: 24px;
   height: 24px;
   filter: brightness(0) invert(1);
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .navText {
   font-size: 11px;
-}
-
-/* 날짜 네비게이션 컨테이너 */
-.dateNav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 10px 0 20px 0;
-  gap: 20px;
-  position: relative; /* 드롭다운 위치 기준 */
-  z-index: 10; /* 필터 버튼보다 위에 오도록 */
-}
-
-/* 날짜 표시 영역 (연도 + 월) */
-.dateDisplay {
-  display: flex;
-  gap: 8px; /* 연도와 월 사이 간격 */
-  align-items: center;
-}
-
-.selectWrapper {
-  position: relative;
-  cursor: pointer;
-}
-
-.dateText {
-  font-size: 18px;
-  font-weight: 800;
-  color: #169279;
-  display: flex; /* 화살표 정렬용 */
-  align-items: center;
-  gap: 4px;
-}
-
-/* 화살표 아이콘 */
-.downArrow {
-  font-size: 10px;
-  margin-top: 2px;
-  color: #169279;
-}
-
-.dropdownList {
-  position: absolute;
-  top: 100%; /* 글자 바로 아래 */
-  left: 50%;
-  transform: translateX(-50%); /* 가운데 정렬 */
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  list-style: none;
-  padding: 5px;
-  margin-top: 8px;
-  width: 80px;
-  max-height: 200px;
-  overflow-y: auto; /* 내용 많으면 스크롤 */
-  z-index: 100;
-}
-
-.monthList {
-  width: 60px;
-}
-
-.dropdownList li {
-  padding: 8px;
-  text-align: center;
-  font-size: 14px;
-  color: #333;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.dropdownList li:hover {
-  background-color: #f1f3f5;
-  color: #169279;
-  font-weight: bold;
-}
-
-.dropdownList::-webkit-scrollbar {
-  width: 4px;
-}
-.dropdownList::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 4px;
+  font-weight: 500;
 }
