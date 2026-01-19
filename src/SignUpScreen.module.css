@@ -1,6 +1,6 @@
+/* 기존 contentSection의 여백 조정 */
 .contentSection {
     padding: 0 25px;
-    margin-top: 50px;
 }
 
 .mainTitle {
@@ -50,16 +50,7 @@
     cursor: pointer;
 }
 
-.arrow {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-top: 2px solid #50AF95;
-    border-left: 2px solid #50AF95;
-    transform: rotate(-45deg); /* 왼쪽 화살표 모양 */
-    margin-left: 5px;
-}
-
+/* 뒤로가기 버튼 스타일 유지 및 정렬 */
 .backButton {
     background: none;
     border: none;
@@ -67,6 +58,17 @@
     padding: 10px;
     display: flex;
     align-items: center;
+}
+
+/* 화살표 모양 (로그인 화면과 동일하게 수정) */
+.arrow {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-top: 2px solid #50AF95;
+    border-left: 2px solid #50AF95;
+    transform: rotate(-45deg); /* 왼쪽 화살표 방향 */
+    margin-left: 5px;
 }
 
 .required {
@@ -189,4 +191,10 @@
 
 .findMenu span {
     cursor: pointer;
+}
+
+.header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
 }
