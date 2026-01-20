@@ -6,19 +6,20 @@ import styles from './LoginScreen.module.css';
 const LoginScreen = () => {
     const navigate = useNavigate();
 
-    const [email, setEmail] = useState('');
+    // 이메일 대신 아이디 상태 사용
+    const [id, setId] = useState('');
     const [password, setPassword] = useState('');
 
     const handleLogin = (e) => {
-        e.preventDefault(); // form submit 기본 동작 방지
+        e.preventDefault();
 
-        if (!email || !password) {
-            alert("이메일과 비밀번호를 입력해주세요.");
+        // 유효성 검사 메시지 수정
+        if (!id || !password) {
+            alert("아이디와 비밀번호를 입력해주세요.");
             return;
         }
 
-        // TODO: 실제 로그인 API 연동
-        console.log("로그인 성공 → 홈으로 이동");
+        console.log("로그인 성공 → 홈으로 이동", { username: id });
         navigate('/home');
     };
 
@@ -35,15 +36,17 @@ const LoginScreen = () => {
             </div>
 
             <div className={`${styles.content} ${common.fadeIn}`}>
-                <h2 className={styles.title}>이메일로 로그인</h2>
+                {/* 타이틀 수정 */}
+                <h2 className={styles.title}>아이디로 로그인</h2>
 
                 <form onSubmit={handleLogin} className={styles.inputGroup}>
+                    {/* type을 email에서 text로, placeholder 수정 */}
                     <input 
-                        type="email"
-                        placeholder="이메일 입력"
+                        type="text"
+                        placeholder="아이디 입력"
                         className={styles.input}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={id}
+                        onChange={(e) => setId(e.target.value)}
                     />
                     <input 
                         type="password"

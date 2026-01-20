@@ -80,7 +80,7 @@ const Home = () => {
             <h1 className={styles.logo}>CrossPay</h1>
         </div>
         <div className={styles.headerButtons}>
-            <button className={`${styles.topBtn} ${styles.greenBtn}`}>
+            <button className={`${styles.topBtn} ${styles.greenBtn}`} onClick={() => navigate('/wallet')}>
               <img src={topWalletIcon} alt="지갑" className={styles.topBtnIcon} />
                   지갑 연동
             </button>
