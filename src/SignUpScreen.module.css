@@ -1,12 +1,13 @@
+/* 기존 contentSection의 여백 조정 */
 .contentSection {
     padding: 0 25px;
-    margin-top: 50px;
 }
 
 .mainTitle {
     color: #50AF95;
     font-size: 1.7rem;
     font-weight: bold;
+    margin-top: 0px;
     margin-bottom: 20px;
 }
 
@@ -50,16 +51,7 @@
     cursor: pointer;
 }
 
-.arrow {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-top: 2px solid #50AF95;
-    border-left: 2px solid #50AF95;
-    transform: rotate(-45deg); /* 왼쪽 화살표 모양 */
-    margin-left: 5px;
-}
-
+/* 뒤로가기 버튼 스타일 유지 및 정렬 */
 .backButton {
     background: none;
     border: none;
@@ -69,14 +61,28 @@
     align-items: center;
 }
 
+/* 화살표 모양 (로그인 화면과 동일하게 수정) */
+.arrow {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-top: 2px solid #50AF95;
+    border-left: 2px solid #50AF95;
+    transform: rotate(-45deg); /* 왼쪽 화살표 방향 */
+    margin-left: 5px;
+}
+
 .required {
     color: #ff4d4f;
     margin-left: 2px;
 }
 
+/* 1. absolute 관련 설정 제거 및 간격 조정 */
 .inputWrapper {
     display: flex;
     flex-direction: column;
+    /* position: relative;  <- 제거해도 무방합니다 */
+    margin-bottom: 5px; /* 하단 여백 최적화 */
 }
 
 .headerTitle {
@@ -87,10 +93,11 @@
     font-size: 1.2rem;
 }
 
+/* 3. 입력창 사이의 전체 간격 최적화 */
 .formGroup {
     display: flex;
     flex-direction: column;
-    gap: 30px; /* 입력창 간격 */
+    gap: 15px; /* 에러 메시지 공간이 확보되었으므로 gap을 줄여도 됩니다 */
 }
 
 .checkboxGroup {
@@ -109,13 +116,17 @@
     cursor: pointer;
 }
 
-/* 에러 메시지 텍스트 */
+/* 2. 에러 메시지가 자리를 미리 차지하게 수정 */
 .errorMessage {
     color: #ff4d4f;
     font-size: 0.75rem;
-    margin-top: 8px;
     font-weight: bold;
     text-align: left;
+    margin-top: 4px;
+    
+    /* 핵심: 에러가 없어도 15px의 높이를 유지하여 레이아웃 밀림 방지 */
+    min-height: 15px; 
+    line-height: 1.2;
 }
 
 /* 에러 발생 시 입력창 밑줄 색상 변경 */
@@ -189,4 +200,10 @@
 
 .findMenu span {
     cursor: pointer;
+}
+
+.header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
 }

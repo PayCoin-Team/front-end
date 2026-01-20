@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 // 1. 필요한 아이콘들 모두 import
 import { Wallet, Key, ShieldCheck, RefreshCw, Home, Settings, ChevronLeft } from 'lucide-react';
 
@@ -39,13 +40,11 @@ const WalletConnect = () => {
       if (resUser.ok) {
         const userData = await resUser.json();
         setMyWalletInfo(userData);
-
         const resExt = await fetch(`${BASE_URL}/wallet/external/me`);
         if (resExt.ok) {
           const extData = await resExt.json();
           setExternalWallet(extData);
         }
-        
         setStep(3); 
       } else {
         setStep(1); 
@@ -109,6 +108,7 @@ const WalletConnect = () => {
   const mockSign = () => setSignature(`signed_${nonce}_key`);
 
   return (
+
     <div className={common.layout}>
       
       {/* --- 헤더 --- */}
@@ -219,6 +219,7 @@ const WalletConnect = () => {
         )}
 
         {/* STEP 3: 연동 완료 */}
+
         {step === 3 && (
           <div className={`${styles.greenCard} ${common.fadeIn}`}>
             <div className={styles.iconCircle}>
@@ -264,7 +265,6 @@ const WalletConnect = () => {
         )}
 
       </div>
-
       {/* --- 하단 네비게이션 바 (Home과 동일하게 수정) --- */}
       <nav className={common.bottomNav}>
         {/* 1. 홈 탭: /home 으로 이동 */}
@@ -296,9 +296,10 @@ const WalletConnect = () => {
           <span className={common.navText}>설정</span>
         </div>
       </nav>
-      
+
     </div>
   );
 };
 
 export default WalletConnect;
+

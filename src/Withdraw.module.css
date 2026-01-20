@@ -1,220 +1,145 @@
-.contentWrapper{
-    flex:1;
-    display:flex;
-    flex-direction: column;
+/* Withdraw.module.css */
+
+.container {
+  width: 100%;
+  flex: 1; /* common.layout의 남은 공간을 꽉 채움 */
+  display: flex;
+  flex-direction: column;
+  padding: 0px 20px;
+  background-color: #ffffff;
+  /* 하단바(75px)에 가려지지 않도록 패딩 추가 */
+  padding-bottom: 85px; 
+  overflow-y: auto; /* 내용이 많아지면 스크롤 가능하게 */
 }
 
+/* 중앙 정렬 모드 (로딩/완료) */
+.centerMode {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* 헤더 - 충전 화면과 동일하게 */
 .header {
-    width: 100%;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    position: relative;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.backButton {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
+.backBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #169279;
+  cursor: pointer;
+  padding: 10px;
 }
 
-.arrow {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-top: 2px solid #50AF95;
-    border-left: 2px solid #50AF95;
-    transform: rotate(-45deg);
+.title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #169279;
 }
 
-.headerTitle {
-    font-size: 1.2rem;
-    color: #50AF95;
-    font-weight: bold;
+/* 잔고 표시 섹션 */
+.mainLabel {
+  margin-bottom: 30px;
+  line-height: 1.4;
 }
 
-.content {
-    flex: 1;
-    padding: 60px 25px; /* 상단 여백을 시안에 맞춰 조정 */
+.mainLabel p {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 0;
 }
 
-.balanceSummary {
-    width: 100%;
-    margin-bottom: 50px;
+.mainLabel span {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #169279;
+  display: block;
+  margin-top: 5px;
 }
 
-/* 문구와 금액을 한 줄로, 우측 정렬 */
-.balanceRow {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    white-space: nowrap;
+/* 입력창 - 충전 화면의 시그니처 스타일 */
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  border: 2px solid #169279;
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin-bottom: 20px;
 }
 
-.balanceText {
-    font-size: 1.15rem;
-    color: #333;
-    display: inline-block;
+.chargeInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background: transparent;
 }
 
-.usdtHighlight {
-    color: #50AF95;
-    font-size: 2.2rem; /* 금액 강조를 위해 크게 설정 */
-    font-weight: bold;
-    display: inline-block;
-    line-height: 1;
+.unit {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #169279;
+  margin-left: 10px;
 }
 
-.krwEquivalent {
-    text-align: right;
-    color: #999;
-    font-size: 1.05rem;
-    margin-top: 4px;
+/* 출금 버튼 위치 */
+.btnWrapper {
+  display: flex;
+  justify-content: flex-end;
 }
 
-.inputContainer {
-    display: flex;
-    align-items: center;
-    border: 2px solid #50AF95;
-    border-radius: 12px;
-    padding: 18px 20px;
-    margin-bottom: 15px;
+.submitBtn {
+  background-color: #169279;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 35px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.amountInput {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 1.1rem;
-    color: #333;
-    background: transparent;
+.submitBtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
-.amountInput::placeholder {
-    color: #ccc;
+/* 완료 화면 스타일 */
+.statusContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
-.unitText {
-    color: #50AF95;
-    font-weight: bold;
+.logoImg {
+  width: 100px;
+  margin-bottom: 20px;
 }
 
-.buttonWrapper {
-    display: flex;
-    justify-content: flex-end;
+.statusText {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #169279;
+  margin-bottom: 40px;
 }
 
-.withdrawButton {
-    background-color: #23A883;
-    color: white;
-    border: none;
-    padding: 5px 20px;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.disabledButton{
-    background-color: #ccc;
-    color: #fff;
-    border: none;
-    padding: 5px 20px;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: not-allowed;
-}
-
-/* 하단 네비게이션 */
-.bottomNav {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 80px;
-    background-color: #23A883;
-}
-
-.navItem {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: white;
-    cursor: pointer;
-    height: 100%;
-    justify-content: center;
-    opacity: 0.8;
-}
-
-.navImg {
-    width: 26px;
-    height: 26px;
-    filter: brightness(0) invert(1);
-    margin-bottom: 4px;
-}
-
-.navText {
-    font-size: 0.8rem;
-}
-
-.successWrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0 25px;
-}
-
-.successContent{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.brandArea{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 30px;
-}
-
-.usdtLogoImg{
-    width: 40px;
-    height: 40px;
-}
-
-.brandTitle{
-    font-size: 2.2rem;
-    color: #50AF95;
-    font-weight: bold;
-}
-
-.successMessage{
-    font-size: 1.5rem;
-    color: #23A883;
-    font-weight: bold;
-    margin-bottom: 100px;
-}
-
-
-.confirmButton{
-    background-color: #23A883;
-    color: white;
-    border: none;
-    padding: 15px 60px;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-    max-width: 200px;
+.confirmBtn {
+  width: 80%;
+  max-width: 300px;
+  background-color: #169279;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 0;
+  font-size: 1.1rem;
+  font-weight: bold;
 }

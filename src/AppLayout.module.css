@@ -2,10 +2,26 @@
 
 .container {
   display: flex;
+  flex-direction: column;
   width: 100vw;
-  height: 100vh;
+  height: 98vh;
   background-color: #f3f4f6; 
   overflow: hidden; 
+}
+
+.overSection{
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 98vh;
+  background-color: #f3f4f6; 
+  overflow: hidden; 
+
+}
+
+.underSection{
+  height: 2vh;
+  background-color: #50AF95;
 }
 
 .leftSection {
@@ -14,16 +30,13 @@
   flex-direction: column;
   justify-content: center;
   padding-left: 100px; 
-  background-color: #ffffff;
+  background-color: #f3f4f6;
 }
 
-.logoIcon {
-  width: 60px;        
-  height: 60px;
-  border-radius: 50%;   
-  object-fit: cover;    
-  box-shadow: 0 4px 10px rgba(26, 146, 118, 0.3);
-  background-color: #50AF95;
+.logoImage {
+    width: 60px;
+    height: auto;
+    margin-bottom: 10px;
 }
 
 .logoArea {
@@ -38,29 +51,36 @@
   color: #50AF95;
   letter-spacing: 1px;
   line-height: 1;      
-  padding-top: 8px;
+  padding-bottom: 8px;
+  vertical-align: middle;
 }
 
 .sloganArea h2 {
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 2.2rem;
+  font-weight: 800;
   color: #1A9276;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 
 .sloganArea h1 {
   font-size: 2.2rem;
   font-weight: 800;
   color: #333;
+  margin-top: 0px;
   margin-bottom: 20px;
   line-height: 1.4;
   word-break: keep-all;
+}
+
+.sloganArea h2 span{
+  color: #333;
 }
 
 .sloganArea p {
   font-size: 1rem;
   color: #666;
   line-height: 1.6;
+  font-weight: 700;
 }
 
 .rightSection {
@@ -72,11 +92,8 @@
 }
 .mobileFrame {
   width: 390px; /* 아이폰 너비 */
-  height: 800px; /* 높이 */
-  max-height: 90vh; /* 화면보다 작게 */
+  height: 100%; /* 높이 */
   background-color: white;
-  border: 2px solid #2d2d2d; /* 베젤 */
-  border-radius: 40px;
   box-shadow: 0 30px 60px rgba(0,0,0,0.15); /* 입체감 그림자 */
   overflow: hidden; /* 내부 스크롤이 밖으로 안 튀어나오게 */
   position: relative;
