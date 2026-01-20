@@ -16,6 +16,15 @@ export const translations = {
         idPlaceholder: '아이디를 입력하세요',
         pwPlaceholder: '비밀번호를 입력하세요',
         welcome: '환영합니다',
+
+        // [아이디 찾기 화면] (추가됨)
+        emailPlaceholder: '이메일 입력',
+        sendCode: '인증번호 전송',
+        codePlaceholder: '인증 번호 입력',
+        findIdBtn: '아이디 찾기', 
+        idResultPrefix: '회원님의 아이디는',
+        idResultSuffix: '입니다.',
+        goHome: '홈으로',
         
         // [홈 화면 - 상단 & 카드]
         walletConnect: '지갑 연동',
@@ -31,7 +40,7 @@ export const translations = {
         charge: '충전',
         history: '거래 기록',
 
-        // [충전 화면] (추가됨)
+        // [충전 화면]
         chargeTitle: '충전',
         chargeLabel: '잔고에 충전할 금액',
         amountPlaceholder: '금액 입력',
@@ -65,6 +74,15 @@ export const translations = {
         idPlaceholder: 'Enter your ID',
         pwPlaceholder: 'Enter your Password',
         welcome: 'Welcome',
+
+        // [Find ID Screen]
+        emailPlaceholder: 'Enter Email',
+        sendCode: 'Send Code',
+        codePlaceholder: 'Enter Verification Code',
+        findIdBtn: 'Find ID',
+        idResultPrefix: 'Your ID is',
+        idResultSuffix: '.',
+        goHome: 'Go Home',
         
         walletConnect: 'Connect Wallet',
         usdtChart: 'USDT Chart',
@@ -110,6 +128,15 @@ export const translations = {
         idPlaceholder: '请输入账号',
         pwPlaceholder: '请输入密码',
         welcome: '欢迎',
+
+        // [Find ID Screen]
+        emailPlaceholder: '请输入邮箱',
+        sendCode: '发送验证码',
+        codePlaceholder: '请输入验证码',
+        findIdBtn: '找回账号',
+        idResultPrefix: '您的账号是',
+        idResultSuffix: '。',
+        goHome: '返回首页',
         
         walletConnect: '连接钱包',
         usdtChart: 'USDT 图表',
@@ -155,6 +182,15 @@ export const translations = {
         idPlaceholder: 'Ingrese su ID',
         pwPlaceholder: 'Ingrese su contraseña',
         welcome: 'Bienvenido',
+
+        // [Find ID Screen]
+        emailPlaceholder: 'Ingrese su email',
+        sendCode: 'Enviar código',
+        codePlaceholder: 'Ingrese el código',
+        findIdBtn: 'Buscar ID',
+        idResultPrefix: 'Su ID es',
+        idResultSuffix: '.',
+        goHome: 'Ir al Inicio',
         
         walletConnect: 'Conectar Billetera',
         usdtChart: 'Gráfico USDT',
@@ -201,6 +237,15 @@ export const translations = {
         pwPlaceholder: 'パスワードを入力してください',
         welcome: 'ようこそ',
 
+        // [Find ID Screen] (추가됨)
+        emailPlaceholder: 'メールアドレスを入力',
+        sendCode: '認証コード送信',
+        codePlaceholder: '認証コードを入力',
+        findIdBtn: 'IDを検索',
+        idResultPrefix: 'お客様のIDは',
+        idResultSuffix: 'です。',
+        goHome: 'ホームへ',
+
         walletConnect: 'ウォレット連携',
         usdtChart: 'USDTチャート',
         wallet: 'ウォレット',
@@ -245,6 +290,15 @@ export const translations = {
         idPlaceholder: 'Введите ID',
         pwPlaceholder: 'Введите пароль',
         welcome: 'Добро пожаловать',
+
+        // [Find ID Screen] (추가됨)
+        emailPlaceholder: 'Введите Email',
+        sendCode: 'Отправить код',
+        codePlaceholder: 'Введите код',
+        findIdBtn: 'Найти ID',
+        idResultPrefix: 'Ваш ID:',
+        idResultSuffix: '.',
+        goHome: 'На главную',
 
         walletConnect: 'Подключить кошелек',
         usdtChart: 'График USDT',
@@ -291,6 +345,15 @@ export const translations = {
         pwPlaceholder: 'अपना पासवर्ड दर्ज करें',
         welcome: 'स्वागत है',
 
+        // [Find ID Screen] (추가됨)
+        emailPlaceholder: 'ईमेल दर्ज करें',
+        sendCode: 'कोड भेजें',
+        codePlaceholder: 'कोड दर्ज करें',
+        findIdBtn: 'आईडी खोजें',
+        idResultPrefix: 'आपकी आईडी है',
+        idResultSuffix: '।',
+        goHome: 'होम पर जाएं',
+
         walletConnect: 'वॉलेट कनेक्ट करें',
         usdtChart: 'USDT चार्ट',
         wallet: 'वॉलेट',
@@ -336,6 +399,15 @@ export const translations = {
         pwPlaceholder: 'Passwort eingeben',
         welcome: 'Willkommen',
 
+        // [Find ID Screen] (추가됨)
+        emailPlaceholder: 'E-Mail eingeben',
+        sendCode: 'Code senden',
+        codePlaceholder: 'Bestätigungscode',
+        findIdBtn: 'ID suchen',
+        idResultPrefix: 'Ihre ID ist',
+        idResultSuffix: '.',
+        goHome: 'Zum Start',
+
         walletConnect: 'Wallet verbinden',
         usdtChart: 'USDT-Chart',
         wallet: 'Brieftasche',
@@ -380,6 +452,15 @@ export const translations = {
         idPlaceholder: 'Entrez votre ID',
         pwPlaceholder: 'Entrez votre mot de passe',
         welcome: 'Bienvenue',
+
+        // [Find ID Screen] (추가됨)
+        emailPlaceholder: 'Entrez votre email',
+        sendCode: 'Envoyer le code',
+        codePlaceholder: 'Entrez le code',
+        findIdBtn: 'Trouver l\'ID',
+        idResultPrefix: 'Votre ID est',
+        idResultSuffix: '.',
+        goHome: 'Retour à l\'accueil',
 
         walletConnect: 'Connecter le portefeuille',
         usdtChart: 'Graphique USDT',
