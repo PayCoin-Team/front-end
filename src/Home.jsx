@@ -1,120 +1,237 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import common from './Common.module.css';
-import styles from './SplashScreen.module.css';
-import usdtLogoPath from './component/UsdtLogo.svg';
+import common from './Common.module.css'; 
+import styles from './Home.module.css';
 
-const SplashScreen = () => {
-    const [isAppReady, setIsAppReady] = useState(false);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 열림 여부
-    const [selectedLang, setSelectedLang] = useState('ko'); // 기본 언어
-    const navigate = useNavigate();
-    
-    // 드롭다운 외부 클릭 감지용 Ref
-    const dropdownRef = useRef(null);
+import cardIconImg from './assets/Shopping_Bag_01.svg'; 
+import navHomeIcon from './assets/nav_home.svg';
+import navPayIcon from './assets/nav_pay.svg';
+import navUserIcon from './assets/nav_user.svg';
+import menuPayIcon from './assets/menu_pay.svg';
+import menuQrIcon from './assets/menu_qr.svg';
+import menuChargeIcon from './assets/menu_charge.svg';
+import menuHistoryIcon from './assets/menu_history.svg';
+import walletAddressIcon from './assets/wallet.svg';
+import topWalletIcon from './assets/top_wallet.svg';
+import chartIcon from './assets/Chart.svg';
+import LogoIcon from './component/UsdtLogo.svg';
+import axios from 'axios'; 
 
-    // 언어 데이터 (flagcdn용 국가 코드를 별도로 추가)
-    const languages = {
-        ko: { label: '한국어', country: 'kr' },
-        en: { label: 'English', country: 'us' },
-        zh: { label: '中文', country: 'cn' },
-        es: { label: 'Español', country: 'es' },
-    };
+// ⭐ [수정 1] 번역 데이터 가져오기 (경로가 src/utils/translations.js 라고 가정)
+import { translations } from './utils/translations'; 
 
-    useEffect(() => {
-        const timer = setTimeout(() => setIsAppReady(true), 1500);
-        return () => clearTimeout(timer);
-    }, []);
+const Home = () => {
+  const navigate = useNavigate();
 
-    // 외부 클릭 시 드롭다운 닫기
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsDropdownOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+  // ⭐ [수정 2] 저장된 언어 설정 가져오기 (없으면 한국어 'ko')
+  const language = localStorage.getItem('appLanguage') || 'ko';
+  const t = translations[language];
 
-    const handleSelectLanguage = (code) => {
-        setSelectedLang(code);
-        setIsDropdownOpen(false);
-        localStorage.setItem('appLanguage', code);
+  // 1. 드롭다운 열림/닫힘 상태 관리
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  // 2. 현재 선택된 통화 (기본값: KRW)
+  const [selectedCurrency, setSelectedCurrency] = useState('KRW');
+
+  // 보유 USDT (예시 데이터)
+  const usdtAmount = 200; 
+
+  // 지갑 주소 고유번호
+  const myWalletAddress = " A1B2-C3D4"; 
+
+  // 지갑 주소 복사 기능 함수
+  const handleCopyAddress = () => {
+    navigator.clipboard.writeText(myWalletAddress);
+    // ⭐ [수정 3] 알림 메시지 번역 적용
+    alert(`${t.copyAlert}\n📋 ${myWalletAddress}`);
+  };
+
+  // 3. 환율 정보
+  const currencyRates = {
+    KRW: { rate: 1458.57, country: 'kr' },
+    USD: { rate: 1.00,    country: 'us' },
+    JPY: { rate: 150.23,  country: 'jp' },
+    CNY: { rate: 7.25,    country: 'cn' },
+    GBP: { rate: 0.79,    country: 'gb' },
+    EUR: { rate: 0.95,    country: 'eu' },
+    VND: { rate: 25300,   country: 'vn' },
+  };
+
+  // 현재 선택된 통화로 금액 계산
+  const convertedAmount = (usdtAmount * currencyRates[selectedCurrency].rate).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  // 드롭다운 토글 함수
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  // 통화 선택 함수
+  const handleSelectCurrency = (currency) => {
+    setSelectedCurrency(currency);
+    setIsDropdownOpen(false); 
+  };
+
+  return (
+    <div className={common.layout}>
+      
+      {/* 1. 상단 헤더 */}
+      <header className={styles.header}>
+        <div className={styles.logoRow}>
+          <img src={LogoIcon} alt="로고" className={styles.logoImg} />
+            <h1 className={styles.logo}>CrossPay</h1>
+        </div>
+        <div className={styles.headerButtons}>
+            <button className={`${styles.topBtn} ${styles.greenBtn}`} onClick={() => navigate('/wallet')}>
+              <img src={topWalletIcon} alt="지갑" className={styles.topBtnIcon} />
+                  {/* ⭐ [수정] 지갑 연동 텍스트 */}
+                  {t.walletConnect}
+            </button>
+            <button className={`${styles.topBtn} ${styles.greenBtn}`}
+                onClick={() => navigate('/chart')}
+            > <img src={chartIcon} alt="차트" className={styles.topBtnIcon} />
+              {/* ⭐ [수정] 차트 텍스트 */}
+              {t.usdtChart}
+           </button>
+        </div>
+      </header>
+
+      {/* 2. 메인 콘텐츠 */}
+      <div className={`${styles.mainContent} ${common.fadeIn}`}>
         
-        // 언어 선택 후 페이지 이동 (필요하면 주석 해제)
-        // navigate('/login');
-    };
-
-    return (
-        <div className={common.layout} style={{ position: 'relative' }}> 
+        {/* 잔고 카드 */}
+        <section className={styles.balanceCard}>
+          <div className={styles.cardTop}>
             
-            {/* 오른쪽 상단 커스텀 드롭다운 */}
-            {isAppReady && (
-                <div 
-                    className={`${styles.topRightLang} ${common.fadeIn}`} 
-                    ref={dropdownRef}
-                >
-                    {/* 1. 선택된 언어 표시 (버튼 역할) */}
-                    <div 
-                        className={styles.selectedLangBox} 
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            <div className={styles.walletIcon}>
+                <img src={cardIconImg} alt="지갑 아이콘" />
+            </div>
+
+            <div className={styles.balanceInfo}>
+                <h2 className={styles.usdtAmount}>{usdtAmount} USDT</h2>
+                
+                {/* 환산 금액 및 드롭다운 영역 */}
+                <div className={styles.currencyWrapper}>
+                    <p 
+                        className={styles.convertedAmount} 
+                        onClick={toggleDropdown}
                     >
                         <img 
-                            src={`https://flagcdn.com/w40/${languages[selectedLang].country}.png`} 
-                            alt="flag" 
-                            className={styles.flagImg} 
+                            src={`https://flagcdn.com/w40/${currencyRates[selectedCurrency].country}.png`}
+                            alt="flag"
+                            className={styles.flagImg}
                         />
-                        <span className={styles.langText}>{languages[selectedLang].label}</span>
-                        <span className={styles.arrowIcon}>▾</span>
-                    </div>
+                        ≈ {convertedAmount} {selectedCurrency} <span className={styles.smallArrow}>⌄</span>
+                    </p>
 
-                    {/* 2. 드롭다운 메뉴 리스트 */}
+                    {/* 드롭다운 메뉴 */}
                     {isDropdownOpen && (
                         <ul className={styles.dropdownMenu}>
-                            {Object.keys(languages).map((code) => (
+                            {Object.keys(currencyRates).map((code) => (
                                 <li 
                                     key={code} 
-                                    className={styles.dropdownItem} 
-                                    onClick={() => handleSelectLanguage(code)}
+                                    className={styles.dropdownItem}
+                                    onClick={() => handleSelectCurrency(code)}
                                 >
                                     <img 
-                                        src={`https://flagcdn.com/w40/${languages[code].country}.png`} 
-                                        alt={code} 
+                                        src={`https://flagcdn.com/w40/${currencyRates[code].country}.png`} 
+                                        alt={code}
                                         className={styles.flagImg} 
                                     />
-                                    <span>{languages[code].label}</span>
+                                    <span className={styles.code}>{code}</span>
                                 </li>
                             ))}
                         </ul>
                     )}
                 </div>
-            )}
-
-            {/* 메인 로고 영역 */}
-            <div className={styles.topSection}>
-                <img src={usdtLogoPath} alt="Logo" className={styles.logoImage} />
-                <h1 className={styles.title}>CrossPay</h1>
             </div>
+          </div>
+          
+          <div className={styles.walletAddress}
+             onClick={handleCopyAddress}
+             // ⭐ [수정] 툴팁 텍스트
+             title={t.copyTooltip}
+          >
+             <img src={walletAddressIcon} alt="주소 아이콘" className={styles.addressIconImg} />
+             {myWalletAddress}
+             <span className={styles.copyHint}></span>
+          </div>
 
-            {/* 하단 버튼 영역 */}
-            {isAppReady && (
-                <div className={`${styles.bottomSection} ${common.fadeIn}`}>
-                    <button className={styles.loginButton} onClick={() => navigate('/login')}>
-                        로그인
-                    </button>
-                    <div className={styles.signupLink} onClick={() => navigate('/signup')}>
-                        회원가입
+          <div className={styles.cardBottom} onClick={() => navigate('/withdraw')}>
+            {/* ⭐ [수정] 잔고 및 출금 텍스트 */}
+            <span>{t.balanceWithdraw}</span>
+            <span className={styles.arrowIcon}>→</span>
+          </div>
+        </section>
+
+        {/* 메뉴 그리드 */}
+        <div className={styles.menuGrid}>
+            <div className={styles.column}>
+                <div className={`${styles.menuCard} ${styles.largeCard}`}
+                     onClick={() => navigate('/pay')}>
+                    <div className={styles.cardIcon}>
+                      <img src={menuPayIcon} alt="결제하기" />
                     </div>
-
-                    <div className={styles.findMenu}>
-                        <span onClick={() => navigate('/findId')}>아이디 찾기</span>
-                        <span onClick={() => navigate('/resetPw')}>비밀번호 재설정</span>
+                    <div className={styles.cardTitleArea}>
+                        {/* ⭐ [수정] 결제하기 */}
+                        <h3>{t.payBtn}</h3>
+                        <span className={styles.arrowIcon}>→</span>
                     </div>
                 </div>
-            )}
+                <div className={styles.menuCard} onClick={() => navigate('/qr')}>
+                    <div className={styles.cardIcon} >
+                      <img src={menuQrIcon} alt="QR생성" />
+                      </div>
+                    {/* ⭐ [수정] QR 생성 */}
+                    <h3>{t.createQr}</h3>
+                </div>
+            </div>
+
+            <div className={styles.column}>
+                  <div className={styles.menuCard} onClick={() => navigate('/charge')}>
+                    <div className={styles.cardIcon}>
+                      <img src={menuChargeIcon} alt="충전" />
+                    </div>
+                    {/* ⭐ [수정] 충전 */}
+                    <h3>{t.charge}</h3>
+                </div>
+                <div className={styles.menuCard} onClick={() => navigate('/history')}>
+                    <div className={styles.cardIcon}>
+                      <img src={menuHistoryIcon} alt="거래기록" />
+                    </div>
+                    {/* ⭐ [수정] 거래 기록 */}
+                    <h3>{t.history}</h3>
+                </div>
+            </div>
         </div>
-    );
+      </div>
+
+      {/* 3. 하단 네비게이션 바 */}
+      <nav className={common.bottomNav}>
+        <div className={`${common.navItem} ${common.active}`}>
+            <img src={navHomeIcon} className={common.navImg} alt="홈" />
+            {/* ⭐ [수정] 홈 */}
+            <span className={common.navText}>{t.home}</span>
+        </div>
+        <div className={common.navItem} 
+                onClick={() => navigate('/pay')}
+        >
+            <img src={navPayIcon} className={common.navImg} alt="결제" />
+            {/* ⭐ [수정] 결제 */}
+            <span className={common.navText}>{t.payNav}</span>
+        </div>
+        <div className={common.navItem}
+             onClick={() => navigate('/mypage')}
+        >
+            <img src={navUserIcon} className={common.navImg} alt="마이페이지" />
+            {/* ⭐ [수정] 마이페이지 */}
+            <span className={common.navText}>{t.myPage}</span>
+        </div>
+      </nav>
+    </div>
+  );
 };
 
-export default SplashScreen;
+export default Home;

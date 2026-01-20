@@ -9,8 +9,15 @@ import navPayIcon from './assets/nav_pay.svg';
 import navUserIcon from './assets/nav_user.svg';
 import usdtLogo from './component/UsdtLogo.svg';
 
+// [변경 1] 번역 파일 Import (경로가 다르다면 맞춰주세요)
+import { translations } from './utils/translations';
+
 const ChargeScreen = () => {
   const navigate = useNavigate();
+
+  // [변경 2] 현재 언어 설정 가져오기 (기본값 'ko')
+  const language = localStorage.getItem('appLanguage') || 'ko';
+  const t = translations[language];
 
   // 상태 관리
   const [step, setStep] = useState('input');
@@ -25,7 +32,7 @@ const ChargeScreen = () => {
       };
   }, []);
 
-  // [API] 2. 상태 확인 함수 (Enum 값 반영: PENDING, PROCESSING, COMPLETED, FAILED)
+  // [API] 2. 상태 확인 함수
   const pollTransactionStatus = async (txId) => {
     try {
         const token = localStorage.getItem('accessToken');
@@ -34,43 +41,41 @@ const ChargeScreen = () => {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
-        // 서버에서 받은 Enum 값 (String)
         const status = response.data.status; 
-        const type = response.data.type; // 'DEPOSIT' 확인용 (필요시 사용)
+        const type = response.data.type; 
 
         console.log(`[Polling] ID: ${txId}, Type: ${type}, Status: ${status}`);
 
-        // ⭐ Enum 로직 처리
         if (status === 'COMPLETED') {
             // 1. 완료 (성공)
             setStep('success');
 
         } else if (status === 'PENDING' || status === 'PROCESSING') {
-            // 2. 진행 중 (대기 or 처리 중) -> 2초 뒤 재요청
+            // 2. 진행 중 -> 2초 뒤 재요청
             pollingRef.current = setTimeout(() => pollTransactionStatus(txId), 2000);
 
         } else if (status === 'FAILED') {
-            // 3. 실패
-            alert('충전 처리에 실패했습니다. (관리자 문의 요망)');
+            // 3. 실패 -> [변경] 다국어 알림
+            alert(t.alertFail); 
             setStep('input');
         } else {
             // 그 외 알 수 없는 상태
-            alert(`알 수 없는 상태입니다: ${status}`);
+            alert(`Unknown Status: ${status}`);
             setStep('input');
         }
 
     } catch (error) {
         console.error("상태 확인 중 오류:", error);
-        // 네트워크 에러 등이 나도 잠시 후 다시 시도하게 할지, 멈출지 결정.
-        // 여기서는 안전하게 멈추고 유저에게 알림
-        alert('상태 확인 중 통신 오류가 발생했습니다.');
+        // [변경] 다국어 알림
+        alert(t.alertError);
         setStep('input');
     }
   };
 
   // [API] 1. 충전 신청 함수
   const handleCharge = async () => {
-    if (!amount || Number(amount) <= 0) return alert("올바른 금액을 입력해주세요.");
+    // [변경] 다국어 알림
+    if (!amount || Number(amount) <= 0) return alert(t.alertValidAmount);
 
     try {
         const token = localStorage.getItem('accessToken');
@@ -91,17 +96,18 @@ const ChargeScreen = () => {
                 // 신청 성공 -> 상태 확인 시작
                 pollTransactionStatus(txId);
             } else {
-                alert('응답에 Transaction ID가 없습니다.');
+                alert('No Transaction ID in response.');
                 setStep('input');
             }
         } else {
-            alert('충전 요청 실패');
+            alert('Charge Request Failed');
             setStep('input');
         }
 
     } catch (error) {
         console.error("충전 요청 오류:", error);
-        alert('서버 통신 오류');
+        // [변경] 다국어 알림
+        alert(t.alertError);
         setStep('input');
     }
   };
@@ -113,7 +119,8 @@ const ChargeScreen = () => {
       {step === 'input' && (
         <header className={styles.header}>
           <button className={styles.backBtn} onClick={() => navigate(-1)}>←</button>
-          <h2 className={styles.title}>충전</h2>
+          {/* [변경] 타이틀 번역 */}
+          <h2 className={styles.title}>{t.chargeTitle}</h2>
           <div style={{ width: 24 }}></div>
         </header>
       )}
@@ -124,11 +131,13 @@ const ChargeScreen = () => {
         {/* STEP 1: 입력 */}
         {step === 'input' && (
           <>
-            <h1 className={styles.mainLabel}>잔고에 충전할 금액</h1>
+            {/* [변경] 라벨 번역 */}
+            <h1 className={styles.mainLabel}>{t.chargeLabel}</h1>
             <div className={styles.inputWrapper}>
               <input 
                 type="number" 
-                placeholder="금액 입력" 
+                // [변경] Placeholder 번역
+                placeholder={t.amountPlaceholder}
                 className={styles.chargeInput}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
@@ -137,7 +146,8 @@ const ChargeScreen = () => {
             </div>
             <div className={styles.btnWrapper}>
               <button className={styles.submitBtn} onClick={handleCharge}>
-                충전
+                {/* [변경] 버튼 텍스트 번역 */}
+                {t.chargeBtn}
               </button>
             </div>
           </>
@@ -150,9 +160,10 @@ const ChargeScreen = () => {
               <img src={usdtLogo} alt="USDT Logo" className={styles.logoImg} />
             </div>
             <p className={styles.statusText}>
-               충전 진행 중입니다...<br/>
+               {/* [변경] 로딩 멘트 번역 */}
+               {t.chargingProgress}<br/>
                <span style={{fontSize: '14px', color: '#999', fontWeight: 'normal'}}>
-                 잠시만 기다려주세요.
+                 {t.waitMoment}
                </span>
             </p>
           </div>
@@ -164,11 +175,13 @@ const ChargeScreen = () => {
             <div className={styles.logoArea}>
               <img src={usdtLogo} alt="USDT Logo" className={styles.logoImg} />
             </div>
-            <p className={styles.statusText}>충전이 완료되었습니다!</p>
+            {/* [변경] 완료 멘트 번역 */}
+            <p className={styles.statusText}>{t.chargeComplete}</p>
             <p className={styles.amountText}>+ {Number(amount).toLocaleString()} USDT</p>
             
             <button className={styles.confirmBtn} onClick={() => navigate('/home')}>
-              확인
+              {/* [변경] 확인 버튼 번역 */}
+              {t.confirm}
             </button>
           </div>
         )}
@@ -178,16 +191,17 @@ const ChargeScreen = () => {
       {/* 하단 네비게이션 */}
       <nav className={styles.bottomNav}>
         <div className={styles.navItem} onClick={() => navigate('/home')}>
-            <img src={navHomeIcon} className={styles.navImg} alt="홈" />
-            <span className={styles.navText}>홈</span>
+            <img src={navHomeIcon} className={styles.navImg} alt="Home" />
+            {/* [변경] 네비 텍스트 번역 */}
+            <span className={styles.navText}>{t.home}</span>
         </div>
         <div className={styles.navItem} onClick={() => navigate('/pay')}>
-            <img src={navPayIcon} className={styles.navImg} alt="결제" />
-            <span className={styles.navText}>결제</span>
+            <img src={navPayIcon} className={styles.navImg} alt="Pay" />
+            <span className={styles.navText}>{t.payNav}</span>
         </div>
         <div className={`${styles.navItem} ${styles.active}`} onClick={() => navigate('/mypage')}>
-            <img src={navUserIcon} className={styles.navImg} alt="마이페이지" />
-            <span className={styles.navText}>마이페이지</span>
+            <img src={navUserIcon} className={styles.navImg} alt="MyPage" />
+            <span className={styles.navText}>{t.myPage}</span>
         </div>
       </nav>
        

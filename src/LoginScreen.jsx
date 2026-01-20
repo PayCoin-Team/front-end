@@ -36,7 +36,7 @@ const LoginScreen = () => {
                 <button
                     type="button"
                     className={styles.backButton}
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate('/home')}
                 >
                     <span className={styles.arrow} />
                 </button>
