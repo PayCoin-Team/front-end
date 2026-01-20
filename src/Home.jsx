@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import common from './Common.module.css'; 
 import styles from './Home.module.css';
 
-
 import cardIconImg from './assets/Shopping_Bag_01.svg'; 
 import navHomeIcon from './assets/nav_home.svg';
 import navPayIcon from './assets/nav_pay.svg';
@@ -16,12 +15,17 @@ import walletAddressIcon from './assets/wallet.svg';
 import topWalletIcon from './assets/top_wallet.svg';
 import chartIcon from './assets/Chart.svg';
 import LogoIcon from './component/UsdtLogo.svg';
-import axios from 'axios'; // API 통신 라이브러리
+import axios from 'axios'; 
 
-
+// ⭐ [수정 1] 번역 데이터 가져오기 (경로가 src/utils/translations.js 라고 가정)
+import { translations } from './utils/translations'; 
 
 const Home = () => {
   const navigate = useNavigate();
+
+  // ⭐ [수정 2] 저장된 언어 설정 가져오기 (없으면 한국어 'ko')
+  const language = localStorage.getItem('appLanguage') || 'ko';
+  const t = translations[language];
 
   // 1. 드롭다운 열림/닫힘 상태 관리
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -32,14 +36,14 @@ const Home = () => {
   // 보유 USDT (예시 데이터)
   const usdtAmount = 200; 
 
-  // ⭐ [수정 1] 지갑 주소 고유번호 변수 설정
-  // 나중에 서버에서 받아온 데이터로 바꾸기 쉽습니다.
+  // 지갑 주소 고유번호
   const myWalletAddress = " A1B2-C3D4"; 
 
-  // ⭐ [수정 2] 지갑 주소 복사 기능 함수
+  // 지갑 주소 복사 기능 함수
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(myWalletAddress);
-    alert(`지갑 주소가 복사되었습니다!\n📋 ${myWalletAddress}`);
+    // ⭐ [수정 3] 알림 메시지 번역 적용
+    alert(`${t.copyAlert}\n📋 ${myWalletAddress}`);
   };
 
   // 3. 환율 정보
@@ -82,12 +86,14 @@ const Home = () => {
         <div className={styles.headerButtons}>
             <button className={`${styles.topBtn} ${styles.greenBtn}`} onClick={() => navigate('/wallet')}>
               <img src={topWalletIcon} alt="지갑" className={styles.topBtnIcon} />
-                  지갑 연동
+                  {/* ⭐ [수정] 지갑 연동 텍스트 */}
+                  {t.walletConnect}
             </button>
             <button className={`${styles.topBtn} ${styles.greenBtn}`}
                 onClick={() => navigate('/chart')}
             > <img src={chartIcon} alt="차트" className={styles.topBtnIcon} />
-              USDT 차트
+              {/* ⭐ [수정] 차트 텍스트 */}
+              {t.usdtChart}
            </button>
         </div>
       </header>
@@ -99,7 +105,6 @@ const Home = () => {
         <section className={styles.balanceCard}>
           <div className={styles.cardTop}>
             
-
             <div className={styles.walletIcon}>
                 <img src={cardIconImg} alt="지갑 아이콘" />
             </div>
@@ -146,7 +151,8 @@ const Home = () => {
           
           <div className={styles.walletAddress}
              onClick={handleCopyAddress}
-            title="클릭해서 주소 복사"
+             // ⭐ [수정] 툴팁 텍스트
+             title={t.copyTooltip}
           >
              <img src={walletAddressIcon} alt="주소 아이콘" className={styles.addressIconImg} />
              {myWalletAddress}
@@ -154,7 +160,8 @@ const Home = () => {
           </div>
 
           <div className={styles.cardBottom} onClick={() => navigate('/withdraw')}>
-            <span>잔고 및 출금</span>
+            {/* ⭐ [수정] 잔고 및 출금 텍스트 */}
+            <span>{t.balanceWithdraw}</span>
             <span className={styles.arrowIcon}>→</span>
           </div>
         </section>
@@ -168,7 +175,8 @@ const Home = () => {
                       <img src={menuPayIcon} alt="결제하기" />
                     </div>
                     <div className={styles.cardTitleArea}>
-                        <h3>결제하기</h3>
+                        {/* ⭐ [수정] 결제하기 */}
+                        <h3>{t.payBtn}</h3>
                         <span className={styles.arrowIcon}>→</span>
                     </div>
                 </div>
@@ -176,7 +184,8 @@ const Home = () => {
                     <div className={styles.cardIcon} >
                       <img src={menuQrIcon} alt="QR생성" />
                       </div>
-                    <h3>QR 생성</h3>
+                    {/* ⭐ [수정] QR 생성 */}
+                    <h3>{t.createQr}</h3>
                 </div>
             </div>
 
@@ -185,13 +194,15 @@ const Home = () => {
                     <div className={styles.cardIcon}>
                       <img src={menuChargeIcon} alt="충전" />
                     </div>
-                    <h3>충전</h3>
+                    {/* ⭐ [수정] 충전 */}
+                    <h3>{t.charge}</h3>
                 </div>
                 <div className={styles.menuCard} onClick={() => navigate('/history')}>
                     <div className={styles.cardIcon}>
                       <img src={menuHistoryIcon} alt="거래기록" />
                     </div>
-                    <h3>거래 기록</h3>
+                    {/* ⭐ [수정] 거래 기록 */}
+                    <h3>{t.history}</h3>
                 </div>
             </div>
         </div>
@@ -201,19 +212,22 @@ const Home = () => {
       <nav className={common.bottomNav}>
         <div className={`${common.navItem} ${common.active}`}>
             <img src={navHomeIcon} className={common.navImg} alt="홈" />
-            <span className={common.navText}>홈</span>
+            {/* ⭐ [수정] 홈 */}
+            <span className={common.navText}>{t.home}</span>
         </div>
         <div className={common.navItem} 
                 onClick={() => navigate('/pay')}
         >
             <img src={navPayIcon} className={common.navImg} alt="결제" />
-            <span className={common.navText}>결제</span>
+            {/* ⭐ [수정] 결제 */}
+            <span className={common.navText}>{t.payNav}</span>
         </div>
         <div className={common.navItem}
              onClick={() => navigate('/mypage')}
         >
             <img src={navUserIcon} className={common.navImg} alt="마이페이지" />
-            <span className={common.navText}>마이페이지</span>
+            {/* ⭐ [수정] 마이페이지 */}
+            <span className={common.navText}>{t.myPage}</span>
         </div>
       </nav>
     </div>
