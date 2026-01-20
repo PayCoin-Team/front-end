@@ -3,10 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import common from './Common.module.css';
 import styles from './ResetPassword.module.css';
 import eyeIcon from './component/eye.svg';
-import UsdtLogo from './component/UsdtLogo.svg'; // 로고 아이콘으로 사용
+import UsdtLogo from './component/UsdtLogo.svg'; 
+import { translations } from './utils/translations'; // [1] 번역 데이터 가져오기
 
 const ResetPassword = () => {
     const navigate = useNavigate();
+    
+    // [2] 언어 설정 가져오기
+    const lang = localStorage.getItem('appLanguage') || 'ko';
+    const t = translations[lang];
+
     const [step, setStep] = useState(1);
 
     // 입력 상태 변수들
@@ -34,66 +40,103 @@ const ResetPassword = () => {
             </div>
 
             <div className={`${styles.contentSection} ${common.fadeIn}`}>
-                {/* 1단계와 2단계 로직은 유지됩니다 */}
                 {step === 1 && (
                     <>
-                        <h2 className={styles.mainTitle}>비밀번호 재설정</h2>
+                        {/* "비밀번호 재설정" */}
+                        <h2 className={styles.mainTitle}>{t.resetPw}</h2>
                         <div className={styles.inputBox}>
-                            <input type="email" placeholder="이메일 입력" className={styles.inputField} value={email} onChange={(e) => setEmail(e.target.value)} />
-                            <button className={`${styles.inlineButton} ${email.length > 0 ? styles.activeInlineBtn : ''}`}>인증번호 전송</button>
+                            <input 
+                                type="email" 
+                                placeholder={t.emailPlaceholder} /* "이메일 입력" */
+                                className={styles.inputField} 
+                                value={email} 
+                                onChange={(e) => setEmail(e.target.value)} 
+                            />
+                            {/* "인증번호 전송" */}
+                            <button className={`${styles.inlineButton} ${email.length > 0 ? styles.activeInlineBtn : ''}`}>
+                                {t.sendCode}
+                            </button>
                         </div>
                         <div className={styles.inputBox}>
-                            <input type="text" placeholder="인증 번호 입력" className={styles.inputField} value={authCode} onChange={(e) => setAuthCode(e.target.value)} />
-                            <button className={`${styles.inlineButton} ${authCode.length > 0 ? styles.activeInlineBtn : ''}`}>확인</button>
+                            <input 
+                                type="text" 
+                                placeholder={t.codePlaceholder} /* "인증 번호 입력" */
+                                className={styles.inputField} 
+                                value={authCode} 
+                                onChange={(e) => setAuthCode(e.target.value)} 
+                            />
+                            {/* "확인" */}
+                            <button className={`${styles.inlineButton} ${authCode.length > 0 ? styles.activeInlineBtn : ''}`}>
+                                {t.confirm}
+                            </button>
                         </div>
+                        {/* "비밀번호 재설정" (버튼) */}
                         <button className={`${styles.fullButton} ${authCode ? styles.activeFullBtn : ''}`} onClick={() => setStep(2)}>
-                            비밀번호 재설정
+                            {t.resetPw}
                         </button>
                     </>
                 )}
 
                 {step === 2 && (
                     <>
-                        <h2 className={styles.mainTitle}>비밀번호 재설정</h2>
-                        <div className={styles.inputLabel}>새 비밀번호 *</div>
+                        {/* "비밀번호 재설정" */}
+                        <h2 className={styles.mainTitle}>{t.resetPw}</h2>
+                        
+                        {/* "새 비밀번호 *" */}
+                        <div className={styles.inputLabel}>{t.newPwLabel}</div>
                         <div className={styles.underlineInput}>
-                            <input type={showPassword ? "text" : "password"} className={styles.inputField} value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <input 
+                                type={showPassword ? "text" : "password"} 
+                                className={styles.inputField} 
+                                value={password} 
+                                onChange={(e) => setPassword(e.target.value)} 
+                            />
                             <button type="button" className={styles.eyeButton} onClick={() => setShowPassword(!showPassword)}>
                                 <img src={eyeIcon} alt="view" className={`${styles.eyeIconImage} ${showPassword ? styles.eyeActive : styles.eyeInactive}`} />
                             </button>
                         </div>
 
-                        <div className={styles.inputLabel}>새 비밀번호 확인 *</div>
+                        {/* "새 비밀번호 확인 *" */}
+                        <div className={styles.inputLabel}>{t.newPwConfirmLabel}</div>
                         <div className={styles.underlineInput}>
-                            <input type={showConfirmPassword ? "text" : "password"} className={styles.inputField} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                            <input 
+                                type={showConfirmPassword ? "text" : "password"} 
+                                className={styles.inputField} 
+                                value={confirmPassword} 
+                                onChange={(e) => setConfirmPassword(e.target.value)} 
+                            />
                             <button type="button" className={styles.eyeButton} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                                 <img src={eyeIcon} alt="view" className={`${styles.eyeIconImage} ${showConfirmPassword ? styles.eyeActive : styles.eyeInactive}`} />
                             </button>
                         </div>
 
+                        {/* "확인" */}
                         <button 
                             className={`${styles.fullButton} ${isPasswordValid && isConfirmValid ? styles.activeGreenBtn : ''}`}
                             onClick={() => isPasswordValid && isConfirmValid && setStep(3)}
                         >
-                            확인
+                            {t.confirm}
                         </button>
                     </>
                 )}
 
-                {/* 3단계: 완료 화면 (텍스트 유지 + 왼쪽 로고 추가) */}
+                {/* 3단계: 완료 화면 */}
                 {step === 3 && (
                     <div className={styles.completeContainer}>
                         <div className={styles.brandLogoRow}>
                              <img src={UsdtLogo} alt="LogoIcon" className={styles.usdtIcon} />
-                             <span className={styles.brandName}>CrossPay</span>
+                             {/* "CrossPay" (앱 이름) */}
+                             <span className={styles.brandName}>{t.appName}</span>
                         </div>
-                        <p className={styles.completeMessage}>비밀번호 재설정이 완료되었습니다.</p>
+                        {/* "비밀번호 재설정이 완료되었습니다." */}
+                        <p className={styles.completeMessage}>{t.pwResetComplete}</p>
                         
                         <button 
                             className={styles.homeButton} 
                             onClick={() => navigate('/')} 
                         >
-                            홈으로
+                            {/* "홈으로" */}
+                            {t.goHome}
                         </button>
                     </div>
                 )}

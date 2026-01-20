@@ -3,21 +3,18 @@
 export const translations = {
     // 1. 한국어 (Korean)
     ko: {
-        // [공통 / 버튼]
         appName: 'CrossPay',
         login: '로그인',
         signup: '회원가입',
         confirm: '확인',
         cancel: '취소',
         
-        // [스플래시 & 로그인 화면]
         findId: '아이디 찾기',
         resetPw: '비밀번호 재설정',
         idPlaceholder: '아이디를 입력하세요',
         pwPlaceholder: '비밀번호를 입력하세요',
         welcome: '환영합니다',
 
-        // [아이디 찾기 화면] (추가됨)
         emailPlaceholder: '이메일 입력',
         sendCode: '인증번호 전송',
         codePlaceholder: '인증 번호 입력',
@@ -25,8 +22,12 @@ export const translations = {
         idResultPrefix: '회원님의 아이디는',
         idResultSuffix: '입니다.',
         goHome: '홈으로',
+
+        // [비밀번호 재설정 화면] (신규 추가됨)
+        newPwLabel: '새 비밀번호 *',
+        newPwConfirmLabel: '새 비밀번호 확인 *',
+        pwResetComplete: '비밀번호 재설정이 완료되었습니다.',
         
-        // [홈 화면 - 상단 & 카드]
         walletConnect: '지갑 연동',
         usdtChart: 'USDT 차트',
         wallet: '내 지갑',
@@ -34,13 +35,11 @@ export const translations = {
         copyAlert: '지갑 주소가 복사되었습니다!',
         copyTooltip: '클릭해서 주소 복사',
 
-        // [홈 화면 - 메뉴]
         payBtn: '결제하기',
         createQr: 'QR 생성',
         charge: '충전',
         history: '거래 기록',
 
-        // [충전 화면]
         chargeTitle: '충전',
         chargeLabel: '잔고에 충전할 금액',
         amountPlaceholder: '금액 입력',
@@ -52,12 +51,10 @@ export const translations = {
         alertFail: '충전 처리에 실패했습니다. (관리자 문의 요망)',
         alertError: '통신 오류가 발생했습니다.',
 
-        // [하단 네비게이션]
         home: '홈',
         payNav: '결제',
         myPage: '마이페이지',
         
-        // [언어 라벨]
         langLabel: '한국어'
     },
 
@@ -75,7 +72,6 @@ export const translations = {
         pwPlaceholder: 'Enter your Password',
         welcome: 'Welcome',
 
-        // [Find ID Screen]
         emailPlaceholder: 'Enter Email',
         sendCode: 'Send Code',
         codePlaceholder: 'Enter Verification Code',
@@ -83,6 +79,11 @@ export const translations = {
         idResultPrefix: 'Your ID is',
         idResultSuffix: '.',
         goHome: 'Go Home',
+
+        // [Reset Password Screen]
+        newPwLabel: 'New Password *',
+        newPwConfirmLabel: 'Confirm New Password *',
+        pwResetComplete: 'Password reset complete.',
         
         walletConnect: 'Connect Wallet',
         usdtChart: 'USDT Chart',
@@ -96,7 +97,6 @@ export const translations = {
         charge: 'Charge',
         history: 'History',
 
-        // [Charge Screen]
         chargeTitle: 'Charge',
         chargeLabel: 'Amount to Top Up',
         amountPlaceholder: 'Enter amount',
@@ -115,7 +115,7 @@ export const translations = {
         langLabel: 'English'
     },
 
-    // 3. 중국어 (Chinese - Simplified)
+    // 3. 중국어 (Chinese)
     zh: {
         appName: 'CrossPay',
         login: '登录',
@@ -129,7 +129,6 @@ export const translations = {
         pwPlaceholder: '请输入密码',
         welcome: '欢迎',
 
-        // [Find ID Screen]
         emailPlaceholder: '请输入邮箱',
         sendCode: '发送验证码',
         codePlaceholder: '请输入验证码',
@@ -137,6 +136,11 @@ export const translations = {
         idResultPrefix: '您的账号是',
         idResultSuffix: '。',
         goHome: '返回首页',
+
+        // [Reset Password Screen]
+        newPwLabel: '新密码 *',
+        newPwConfirmLabel: '确认新密码 *',
+        pwResetComplete: '密码重置已完成。',
         
         walletConnect: '连接钱包',
         usdtChart: 'USDT 图表',
@@ -150,7 +154,6 @@ export const translations = {
         charge: '充值',
         history: '交易记录',
 
-        // [Charge Screen]
         chargeTitle: '充值',
         chargeLabel: '充值金额',
         amountPlaceholder: '请输入金额',
@@ -183,7 +186,6 @@ export const translations = {
         pwPlaceholder: 'Ingrese su contraseña',
         welcome: 'Bienvenido',
 
-        // [Find ID Screen]
         emailPlaceholder: 'Ingrese su email',
         sendCode: 'Enviar código',
         codePlaceholder: 'Ingrese el código',
@@ -191,6 +193,11 @@ export const translations = {
         idResultPrefix: 'Su ID es',
         idResultSuffix: '.',
         goHome: 'Ir al Inicio',
+
+        // [Reset Password Screen]
+        newPwLabel: 'Nueva contraseña *',
+        newPwConfirmLabel: 'Confirmar contraseña *',
+        pwResetComplete: 'Restablecimiento completado.',
         
         walletConnect: 'Conectar Billetera',
         usdtChart: 'Gráfico USDT',
@@ -204,7 +211,6 @@ export const translations = {
         charge: 'Recargar',
         history: 'Historial',
 
-        // [Charge Screen]
         chargeTitle: 'Recargar',
         chargeLabel: 'Cantidad a recargar',
         amountPlaceholder: 'Ingrese cantidad',
@@ -237,7 +243,6 @@ export const translations = {
         pwPlaceholder: 'パスワードを入力してください',
         welcome: 'ようこそ',
 
-        // [Find ID Screen] (추가됨)
         emailPlaceholder: 'メールアドレスを入力',
         sendCode: '認証コード送信',
         codePlaceholder: '認証コードを入力',
@@ -245,6 +250,11 @@ export const translations = {
         idResultPrefix: 'お客様のIDは',
         idResultSuffix: 'です。',
         goHome: 'ホームへ',
+
+        // [Reset Password Screen]
+        newPwLabel: '新しいパスワード *',
+        newPwConfirmLabel: 'パスワード確認 *',
+        pwResetComplete: '再設定が完了しました。',
 
         walletConnect: 'ウォレット連携',
         usdtChart: 'USDTチャート',
@@ -258,7 +268,6 @@ export const translations = {
         charge: 'チャージ',
         history: '取引履歴',
 
-        // [Charge Screen]
         chargeTitle: 'チャージ',
         chargeLabel: 'チャージする金額',
         amountPlaceholder: '金額を入力',
@@ -291,7 +300,6 @@ export const translations = {
         pwPlaceholder: 'Введите пароль',
         welcome: 'Добро пожаловать',
 
-        // [Find ID Screen] (추가됨)
         emailPlaceholder: 'Введите Email',
         sendCode: 'Отправить код',
         codePlaceholder: 'Введите код',
@@ -299,6 +307,11 @@ export const translations = {
         idResultPrefix: 'Ваш ID:',
         idResultSuffix: '.',
         goHome: 'На главную',
+
+        // [Reset Password Screen]
+        newPwLabel: 'Новый пароль *',
+        newPwConfirmLabel: 'Подтвердите пароль *',
+        pwResetComplete: 'Сброс пароля завершен.',
 
         walletConnect: 'Подключить кошелек',
         usdtChart: 'График USDT',
@@ -312,7 +325,6 @@ export const translations = {
         charge: 'Пополнить',
         history: 'История',
 
-        // [Charge Screen]
         chargeTitle: 'Пополнить',
         chargeLabel: 'Сумма пополнения',
         amountPlaceholder: 'Введите сумму',
@@ -345,7 +357,6 @@ export const translations = {
         pwPlaceholder: 'अपना पासवर्ड दर्ज करें',
         welcome: 'स्वागत है',
 
-        // [Find ID Screen] (추가됨)
         emailPlaceholder: 'ईमेल दर्ज करें',
         sendCode: 'कोड भेजें',
         codePlaceholder: 'कोड दर्ज करें',
@@ -353,6 +364,11 @@ export const translations = {
         idResultPrefix: 'आपकी आईडी है',
         idResultSuffix: '।',
         goHome: 'होम पर जाएं',
+
+        // [Reset Password Screen]
+        newPwLabel: 'नया पासवर्ड *',
+        newPwConfirmLabel: 'पासवर्ड की पुष्टि करें *',
+        pwResetComplete: 'पासवर्ड रीसेट पूर्ण हुआ।',
 
         walletConnect: 'वॉलेट कनेक्ट करें',
         usdtChart: 'USDT चार्ट',
@@ -366,7 +382,6 @@ export const translations = {
         charge: 'रिचार्ज',
         history: 'लेनदेन इतिहास',
 
-        // [Charge Screen]
         chargeTitle: 'रिचार्ज',
         chargeLabel: 'रिचार्ज राशि',
         amountPlaceholder: 'राशि दर्ज करें',
@@ -399,7 +414,6 @@ export const translations = {
         pwPlaceholder: 'Passwort eingeben',
         welcome: 'Willkommen',
 
-        // [Find ID Screen] (추가됨)
         emailPlaceholder: 'E-Mail eingeben',
         sendCode: 'Code senden',
         codePlaceholder: 'Bestätigungscode',
@@ -407,6 +421,11 @@ export const translations = {
         idResultPrefix: 'Ihre ID ist',
         idResultSuffix: '.',
         goHome: 'Zum Start',
+
+        // [Reset Password Screen]
+        newPwLabel: 'Neues Passwort *',
+        newPwConfirmLabel: 'Passwort bestätigen *',
+        pwResetComplete: 'Passwort zurückgesetzt.',
 
         walletConnect: 'Wallet verbinden',
         usdtChart: 'USDT-Chart',
@@ -420,7 +439,6 @@ export const translations = {
         charge: 'Aufladen',
         history: 'Verlauf',
 
-        // [Charge Screen]
         chargeTitle: 'Aufladen',
         chargeLabel: 'Aufladebetrag',
         amountPlaceholder: 'Betrag eingeben',
@@ -453,7 +471,6 @@ export const translations = {
         pwPlaceholder: 'Entrez votre mot de passe',
         welcome: 'Bienvenue',
 
-        // [Find ID Screen] (추가됨)
         emailPlaceholder: 'Entrez votre email',
         sendCode: 'Envoyer le code',
         codePlaceholder: 'Entrez le code',
@@ -461,6 +478,11 @@ export const translations = {
         idResultPrefix: 'Votre ID est',
         idResultSuffix: '.',
         goHome: 'Retour à l\'accueil',
+
+        // [Reset Password Screen]
+        newPwLabel: 'Nouveau mot de passe *',
+        newPwConfirmLabel: 'Confirmer le mot de passe *',
+        pwResetComplete: 'Réinitialisation terminée.',
 
         walletConnect: 'Connecter le portefeuille',
         usdtChart: 'Graphique USDT',
@@ -474,7 +496,6 @@ export const translations = {
         charge: 'Recharger',
         history: 'Historique',
 
-        // [Charge Screen]
         chargeTitle: 'Recharger',
         chargeLabel: 'Montant à recharger',
         amountPlaceholder: 'Entrez le montant',
@@ -494,15 +515,6 @@ export const translations = {
     }
 };
 
-// 국기 아이콘 매핑 (국가 코드)
 export const flags = {
-    ko: 'kr', // 한국
-    en: 'us', // 미국
-    zh: 'cn', // 중국
-    es: 'es', // 스페인
-    ja: 'jp', // 일본
-    ru: 'ru', // 러시아
-    hi: 'in', // 인도 (힌디어)
-    de: 'de', // 독일
-    fr: 'fr'  // 프랑스
+    ko: 'kr', en: 'us', zh: 'cn', es: 'es', ja: 'jp', ru: 'ru', hi: 'in', de: 'de', fr: 'fr'
 };
