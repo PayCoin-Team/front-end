@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, Key, ShieldCheck, RefreshCw, Home, Settings } from 'lucide-react';
 
-/* * [수정 포인트] 
- * import 이름을 'commonStyles'에서 'common'으로 변경했습니다.
- * 이제 common.layout, common.bottomNav 등이 정상 작동합니다.
- */
+// 1. 필요한 아이콘들 모두 import
+import { Wallet, Key, ShieldCheck, RefreshCw, Home, Settings, ChevronLeft } from 'lucide-react';
+
 import common from './Common.module.css';
 import styles from './WalletConnect.module.css';
 
@@ -37,27 +35,23 @@ const WalletConnect = () => {
   const checkConnection = async () => {
     try {
       setLoading(true);
-      // API 1: 내 지갑 정보 조회
       const resUser = await fetch(`${BASE_URL}/wallet/users/me`);
       
       if (resUser.ok) {
         const userData = await resUser.json();
         setMyWalletInfo(userData);
-
-        // API 2: 외부 지갑 주소 조회 (연동된 경우)
         const resExt = await fetch(`${BASE_URL}/wallet/external/me`);
         if (resExt.ok) {
           const extData = await resExt.json();
           setExternalWallet(extData);
         }
-        
-        setStep(3); // 이미 연동됨 -> 완료 화면으로
+        setStep(3); 
       } else {
-        setStep(1); // 정보 없음 -> 연동 시작 화면으로
+        setStep(1); 
       }
     } catch (err) {
       console.error(err);
-      setStep(1); // 에러 발생 시 초기 화면
+      setStep(1); 
     } finally {
       setLoading(false);
     }
@@ -70,7 +64,6 @@ const WalletConnect = () => {
     setError('');
 
     try {
-      // API 3: Nonce 발급
       const res = await fetch(`${BASE_URL}/wallet?walletAddress=${walletAddress}`);
       if (!res.ok) throw new Error('Nonce 발급 실패');
       
@@ -78,8 +71,6 @@ const WalletConnect = () => {
       setNonce(data.nonce || `mock_nonce_${Date.now()}`); 
       setStep(2);
     } catch (err) {
-      // 테스트용: 실패해도 진행하려면 주석 해제
-      // setNonce('SAMPLE_NONCE_TEST'); setStep(2);
       setError('서버 연결 실패: 다시 시도해주세요.');
     } finally {
       setLoading(false);
@@ -92,7 +83,6 @@ const WalletConnect = () => {
     setLoading(true);
 
     try {
-      // API 4: 검증 및 연동
       const res = await fetch(`${BASE_URL}/wallet/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,19 +108,51 @@ const WalletConnect = () => {
   const mockSign = () => setSignature(`signed_${nonce}_key`);
 
   return (
-    /* 여기서 common.layout을 사용하므로 import common from ... 이 필수입니다 */
+
     <div className={common.layout}>
       
-      {/* 헤더 */}
-      <div className={styles.header}>
-        <h1 className={styles.headerTitle}>지갑 연동</h1>
-        <div style={{width: 24}}></div>
+      {/* --- 헤더 --- */}
+      <div 
+        className={styles.header} 
+        style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          padding: '20px'
+        }}
+      >
+        <button 
+          onClick={() => navigate(-1)}
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            cursor: 'pointer',
+            padding: 0,
+            display: 'flex',
+            alignItems: 'center'
+          }}
+        >
+          <ChevronLeft size={28} color="#333" />
+        </button>
+
+        <h1 
+          className={styles.headerTitle} 
+          style={{ 
+            margin: 0, 
+            textAlign: 'center', 
+            fontSize: '1.2rem',
+            fontWeight: 'bold'
+          }}
+        >
+          지갑 연동
+        </h1>
+        <div style={{ width: 28 }}></div>
       </div>
 
-      {/* 메인 콘텐츠 */}
+      {/* --- 메인 콘텐츠 --- */}
       <div className={styles.content}>
         
-        {/* STEP 1: 지갑 주소 입력 (흰색 카드) */}
+        {/* STEP 1: 지갑 주소 입력 */}
         {step === 1 && (
           <div className={`${styles.whiteCard} ${common.fadeIn}`}>
             <div className={styles.iconCircle}>
@@ -159,7 +181,7 @@ const WalletConnect = () => {
           </div>
         )}
 
-        {/* STEP 2: 서명 인증 (녹색 카드) */}
+        {/* STEP 2: 서명 인증 */}
         {step === 2 && (
           <div className={`${styles.greenCard} ${common.fadeIn}`}>
             <div className={styles.iconCircle}>
@@ -196,7 +218,8 @@ const WalletConnect = () => {
           </div>
         )}
 
-        {/* STEP 3: 연동 완료 (녹색 카드) */}
+        {/* STEP 3: 연동 완료 */}
+
         {step === 3 && (
           <div className={`${styles.greenCard} ${common.fadeIn}`}>
             <div className={styles.iconCircle}>
@@ -242,24 +265,41 @@ const WalletConnect = () => {
         )}
 
       </div>
-
-      {/* 하단 탭바 (common 스타일 적용) */}
+      {/* --- 하단 네비게이션 바 (Home과 동일하게 수정) --- */}
       <nav className={common.bottomNav}>
-        <div className={common.navItem} onClick={() => navigate('/')}>
+        {/* 1. 홈 탭: /home 으로 이동 */}
+        <div 
+          className={common.navItem} 
+          onClick={() => navigate('/home')}
+          style={{ cursor: 'pointer' }}
+        >
           <Home className={common.navImg} />
           <span className={common.navText}>홈</span>
         </div>
-        <div className={`${common.navItem} ${common.active}`}>
+
+        {/* 2. 지갑 탭: 현재 화면이므로 active 클래스 추가 */}
+        <div 
+          className={`${common.navItem} ${common.active}`}
+          // onClick={() => navigate('/wallet')} // 필요하다면 새로고침 개념으로 추가
+        >
           <Wallet className={common.navImg} />
           <span className={common.navText}>지갑</span>
         </div>
-        <div className={common.navItem}>
+
+        {/* 3. 설정 탭: /settings 로 이동 */}
+        <div 
+          className={common.navItem} 
+          onClick={() => navigate('/settings')}
+          style={{ cursor: 'pointer' }}
+        >
           <Settings className={common.navImg} />
           <span className={common.navText}>설정</span>
         </div>
       </nav>
+
     </div>
   );
 };
 
 export default WalletConnect;
+

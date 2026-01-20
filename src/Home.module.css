@@ -9,7 +9,7 @@
 }
 
 .logo {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 500;
   color: #1A9276; /* CrossPay Green */
   margin: 0;
@@ -34,9 +34,9 @@
 
 .topBtn {
   border: none;
-  padding: 6px 12px;
+  padding: 6px 10px;
   border-radius: 20px;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: middle;
   cursor: pointer;
   

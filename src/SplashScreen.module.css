@@ -1,70 +1,190 @@
-/* SplashScreen.module.css */
 
-/* .container 대신 내부 섹션들의 배치만 담당합니다. */
+/* src/SplashScreen.module.css */
+
+/* =========================================
+   1. 오른쪽 상단 언어 선택 (커스텀 드롭다운)
+   ========================================= */
+.topRightLang {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  z-index: 100; /* 메뉴가 펼쳐졌을 때 제일 위에 오도록 */
+  font-size: 0.85rem;
+  font-family: sans-serif;
+}
+
+/* (1) 닫혀있을 때 보이는 박스 (알약 모양) */
+.selectedLangBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 내용물 간격 배치 */
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid #50AF95;
+  border-radius: 20px;
+  padding: 8px 14px; /* 내부 여백 */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px; /* 최소 너비 확보 */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.selectedLangBox:hover {
+  background-color: white;
+  box-shadow: 0 4px 15px rgba(80, 175, 149, 0.2);
+  transform: translateY(-1px);
+}
+
+/* (2) 국기 이미지 공통 스타일 */
+.flagImg {
+  width: 22px;
+  height: auto;
+  border-radius: 3px;
+  margin-right: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  object-fit: cover;
+}
+
+/* (3) 언어 텍스트 */
+.langText {
+  color: #50AF95;
+  font-weight: 700;
+  margin-right: 8px;
+  flex: 1; /* 남은 공간 차지 */
+}
+
+/* (4) 화살표 아이콘 */
+.arrowIcon {
+  color: #50AF95;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+/* (5) 펼쳐지는 드롭다운 메뉴 리스트 */
+.dropdownMenu {
+  position: absolute;
+  top: 50px; /* 버튼 바로 아래 위치 */
+  right: 0;
+  width: 140px; /* 메뉴 전체 너비 */
+  background-color: white;
+  border: 1px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 6px;
+  list-style: none; /* 리스트 점 제거 */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  animation: slideDown 0.2s ease-out forwards;
+}
+
+/* 리스트 아이템 */
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #555;
+  font-weight: 500;
+  transition: all 0.1s;
+}
+
+.dropdownItem:hover {
+  background-color: #f0fdf9; /* 마우스 올리면 연한 민트색 */
+  color: #50AF95;
+  font-weight: 700;
+}
+
+/* 메뉴 펼쳐짐 애니메이션 */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* =========================================
+   2. 메인 로고 영역 (화면 중앙 상단)
+   ========================================= */
 .topSection {
-    flex: 1; /* 상단 영역이 화면의 대부분을 차지하게 합니다. */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 250px;
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 220px; 
 }
 
 .logoImage {
-    width: 140px;
-    height: auto;
-    margin-bottom: 10px;
+  width: 140px;
+  height: auto;
+  margin-bottom: 15px;
 }
 
 .title {
-    color: #50AF95;
-    font-size: 2.5rem;
-    font-weight: 300;
-    letter-spacing: -1px;
-    margin: 0;
+  color: #50AF95;
+  font-size: 2.5rem;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  margin: 0;
 }
 
+
+/* =========================================
+   3. 하단 버튼 영역
+   ========================================= */
 .bottomSection {
-    width: 100%;
-    padding: 0 40px 80px 40px; /* 하단에서 80px 띄움 */
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  padding: 0 40px 60px 40px; 
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .loginButton {
-    width: 100%;
-    height: 52px;
-    background-color: transparent;
-    border: 1.2px solid #50AF95;
-    border-radius: 12px;
-    color: #50AF95;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    margin-bottom: 20px;
+  width: 100%;
+  height: 52px;
+  background-color: white;
+  border: 1.5px solid #50AF95;
+  border-radius: 12px;
+  color: #50AF95;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background-color 0.2s;
+}
+
+.loginButton:active {
+  background-color: #f0fdf9; 
+  transform: scale(0.98);    
 }
 
 .signupLink {
-    color: #50AF95;
-    font-size: 0.9rem;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    cursor: pointer;
-    margin-bottom: 12px;
+  color: #50AF95;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  margin-bottom: 25px; 
 }
 
-/* 신규 스타일: 하단 찾기 메뉴 컨테이너 */
+/* 아이디/비번 찾기 메뉴 */
 .findMenu {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #50AF95;
-    font-size: 0.85rem;
-    text-decoration: underline;
+  display: flex;
+  align-items: center;
+  gap: 20px; 
+  color: #999; 
+  font-size: 0.85rem;
 }
 
 .findMenu span {
-    cursor: pointer;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.findMenu span:hover {
+  color: #50AF95;
+  text-decoration: underline;
 }
 

@@ -20,15 +20,15 @@ import SendScreen from './SendScreen';
 import Processing from './Processing';
 import Withdraw from './WithdrawScreen';
 import WalletConnect from './WalletConnect';
+
 import usdtLogo from './component/UsdtLogo.svg';
+
 
 function App() {
   return (
     <Router>
       {/* 1. 전체 레이아웃 컨테이너 */}
-      <div className={styles.container}>
-        
-        
+      <div className={styles.container}>        
         <div className={styles.overSection}>
           <div className={styles.leftSection}>
             <div className={styles.logoArea}>
@@ -81,7 +81,6 @@ function App() {
             </div>
           </div>
         </div>
-
         <div className={styles.underSection}></div>
       </div>
     </Router>

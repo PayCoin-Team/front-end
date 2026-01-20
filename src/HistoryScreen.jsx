@@ -4,7 +4,7 @@ import axios from 'axios';
 import common from './Common.module.css';
 import styles from './HistoryScreen.module.css';
 
-// 아이콘 임포트
+// 아이콘 임포트 (경로는 본인 프로젝트에 맞게 유지)
 import navHomeIcon from './assets/nav_home.svg';
 import navPayIcon from './assets/nav_pay.svg';
 import navUserIcon from './assets/nav_user.svg';
@@ -28,7 +28,7 @@ const HistoryScreen = () => {
 
   const [transactionList, setTransactionList] = useState([]);
 
-  // 날짜 포맷 함수 (예: 2026-01-13T... -> 01.13 (화))
+  // 날짜 포맷 함수
   const formatDate = (isoString) => {
       if (!isoString) return '';
       const date = new Date(isoString);
@@ -58,18 +58,13 @@ const HistoryScreen = () => {
             });
 
             if (response.status === 200) {
-                //  DTO 구조에 맞춰 데이터 매핑
                 const mappedData = response.data.content.map((item) => { 
-                    
-                    // item 구조: { historyId, type, sendUser, amount, createdAt }
                     
                     let uiType = 'pay';
                     let isPlus = false;
                     let iconType = 'user';
                     let title = '거래 내역';
 
-                    // type 문자열에 따른 분류 (백엔드 Enum값에 따라 수정 필요)
-                    // 예시: "CHARGE", "PAYMENT", "SEND", "RECEIVE" 라고 가정
                     const typeStr = item.type || '';
 
                     if (typeStr === 'CHARGE') { 
@@ -77,22 +72,21 @@ const HistoryScreen = () => {
                         title = 'USDT 충전';
                     } else if (typeStr === 'RECEIVE') {
                         uiType = 'receive'; isPlus = true; iconType = 'user';
-                        title = `받은 돈 (From: ${item.sendUser})`; // sendUser ID 활용
+                        title = `받은 돈 (From: ${item.sendUser})`; 
                     } else if (typeStr === 'WITHDRAW') {
                         uiType = 'withdraw'; isPlus = false; iconType = 'usdt';
                         title = 'USDT 출금';
                     } else { 
-                        // PAYMENT, SEND 등 나머지는 결제로 처리
                         uiType = 'pay'; isPlus = false; iconType = 'user';
                         title = `결제 (${item.sendUser})`; 
                     }
 
                     return {
-                        id: item.historyId,               // DTO: historyId
-                        date: formatDate(item.createdAt), // DTO: createdAt
+                        id: item.historyId,
+                        date: formatDate(item.createdAt),
                         type: uiType,
                         title: title,
-                        amount: `${isPlus ? '+' : '-'} ${item.amount.toLocaleString()} USDT`, // DTO: amount
+                        amount: `${isPlus ? '+' : '-'} ${item.amount.toLocaleString()} USDT`,
                         isPlus: isPlus,
                         iconType: iconType,
                         rawType: item.type 
@@ -102,6 +96,13 @@ const HistoryScreen = () => {
             }
         } catch (error) {
             console.error("내역 조회 실패:", error);
+            // 테스트용 더미 데이터 (API 실패시 확인용)
+            /*
+            setTransactionList([
+                { id: 1, date: '01.13 (화)', type: 'charge', title: 'USDT 충전', amount: '+ 1,000 USDT', isPlus: true, iconType: 'usdt' },
+                { id: 2, date: '01.13 (화)', type: 'pay', title: '친구 송금', amount: '- 50 USDT', isPlus: false, iconType: 'user' },
+            ]);
+            */
         }
     };
 
@@ -120,6 +121,21 @@ const HistoryScreen = () => {
   const filteredData = getFilteredData();
   let lastDate = '';
 
+  // 월 이동 핸들러
+  const handlePrevMonth = () => {
+      setCurrentDate(prev => {
+          if(prev.month === 1) return { year: prev.year - 1, month: 12 };
+          return { ...prev, month: prev.month - 1 };
+      });
+  };
+
+  const handleNextMonth = () => {
+      setCurrentDate(prev => {
+          if(prev.month === 12) return { year: prev.year + 1, month: 1 };
+          return { ...prev, month: prev.month + 1 };
+      });
+  };
+
   return (
     <div className={common.layout}>
       {/* 헤더 */}
@@ -132,13 +148,18 @@ const HistoryScreen = () => {
       {/* 메인 콘텐츠 */}
       <div className={`${styles.mainContent} ${common.fadeIn}`}>
         
-        {/* 날짜 네비게이션 */}
+        {/* --- [수정된 부분] 날짜 네비게이션 --- */}
         <div className={styles.dateNav}>
-            <button className={styles.dateArrow} onClick={() => setCurrentDate({...currentDate, month: currentDate.month > 1 ? currentDate.month - 1 : 12})}>‹</button>
+            {/* 왼쪽 화살표 */}
+            <button className={styles.dateArrow} onClick={handlePrevMonth}>‹</button>
+            
+            {/* 연도와 월을 가로로 묶어주는 래퍼 */}
             <div className={styles.dateDisplay}>
+                
+                {/* 연도 선택 */}
                 <div className={styles.selectWrapper}>
                     <span className={styles.dateText} onClick={() => { setIsYearOpen(!isYearOpen); setIsMonthOpen(false); }}>
-                        {currentDate.year} <span className={styles.downArrow}>∨</span>
+                        {currentDate.year} <span className={styles.downArrow}>▼</span>
                     </span>
                     {isYearOpen && (
                         <ul className={styles.dropdownList}>
@@ -148,9 +169,14 @@ const HistoryScreen = () => {
                         </ul>
                     )}
                 </div>
+
+                {/* 중간 점 (장식용) */}
+                <span style={{color: '#169279', fontWeight: 'bold', margin: '0 2px'}}>.</span>
+
+                {/* 월 선택 */}
                 <div className={styles.selectWrapper}>
                     <span className={styles.dateText} onClick={() => { setIsMonthOpen(!isMonthOpen); setIsYearOpen(false); }}>
-                        {String(currentDate.month).padStart(2, '0')} <span className={styles.downArrow}>∨</span>
+                        {String(currentDate.month).padStart(2, '0')} <span className={styles.downArrow}>▼</span>
                     </span>
                     {isMonthOpen && (
                         <ul className={`${styles.dropdownList} ${styles.monthList}`}>
@@ -161,7 +187,9 @@ const HistoryScreen = () => {
                     )}
                 </div>
             </div>
-            <button className={styles.dateArrow} onClick={() => setCurrentDate({...currentDate, month: currentDate.month < 12 ? currentDate.month + 1 : 1})}>›</button>
+
+            {/* 오른쪽 화살표 */}
+            <button className={styles.dateArrow} onClick={handleNextMonth}>›</button>
         </div>
 
         {/* 필터 탭 */}
@@ -176,7 +204,9 @@ const HistoryScreen = () => {
         {/* 리스트 출력 */}
         <div className={styles.transactionList}>
             {filteredData.length === 0 ? (
-                <div style={{textAlign: 'center', marginTop: '50px', color: '#999'}}>거래 내역이 없습니다.</div>
+                <div style={{textAlign: 'center', marginTop: '60px', color: '#bbb', fontSize: '14px'}}>
+                    거래 내역이 없습니다.
+                </div>
             ) : (
                 filteredData.map((item) => {
                     const showDateHeader = item.date !== lastDate;
@@ -186,7 +216,10 @@ const HistoryScreen = () => {
                             {showDateHeader && <div className={styles.dateHeader}>{item.date}</div>}
                             <div className={styles.transactionItem}>
                                 <div className={`${styles.iconWrapper} ${item.iconType === 'usdt' ? styles.greenBg : styles.grayBg}`}>
-                                    {item.iconType === 'usdt' ? <img src={UsdtLogo} alt="USDT" className={styles.tokenIcon} /> : <div className={styles.userIcon}>👤</div>}
+                                    {item.iconType === 'usdt' ? 
+                                        <img src={UsdtLogo} alt="USDT" className={styles.tokenIcon} /> 
+                                        : <span style={{fontSize: '24px'}}>👤</span> 
+                                    }
                                 </div>
                                 <div className={styles.infoWrapper}>
                                     <div className={styles.title}>{item.title}</div>
@@ -202,9 +235,18 @@ const HistoryScreen = () => {
 
       {/* 하단 네비게이션 */}
       <nav className={styles.bottomNav}>
-        <div className={styles.navItem} onClick={() => navigate('/home')}><img src={navHomeIcon} className={styles.navImg} alt="홈" /><span className={styles.navText}>홈</span></div>
-        <div className={styles.navItem} onClick={() => navigate('/pay')}><img src={navPayIcon} className={styles.navImg} alt="결제" /><span className={styles.navText}>결제</span></div>
-        <div className={styles.navItem} onClick={() => navigate('/mypage')}><img src={navUserIcon} className={styles.navImg} alt="마이페이지" /><span className={styles.navText}>마이페이지</span></div>
+        <div className={styles.navItem} onClick={() => navigate('/home')}>
+            <img src={navHomeIcon} className={styles.navImg} alt="홈" />
+            <span className={styles.navText}>홈</span>
+        </div>
+        <div className={styles.navItem} onClick={() => navigate('/pay')}>
+            <img src={navPayIcon} className={styles.navImg} alt="결제" />
+            <span className={styles.navText}>결제</span>
+        </div>
+        <div className={styles.navItem} onClick={() => navigate('/mypage')}>
+            <img src={navUserIcon} className={styles.navImg} alt="마이페이지" />
+            <span className={styles.navText}>마이페이지</span>
+        </div>
       </nav>
     </div>
   );

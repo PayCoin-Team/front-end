@@ -1,3 +1,11 @@
+/* 전체 레이아웃 */
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #fff;
+}
+
 /* 상단 헤더 */
 .header {
   height: 60px;
@@ -6,9 +14,7 @@
   align-items: center;
   padding: 0 15px;
   background-color: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 50; 
+  border-bottom: 1px solid #f5f5f5;
 }
 
 .backBtn {
@@ -17,7 +23,7 @@
   font-size: 24px;
   cursor: pointer;
   color: #169279;
-  padding: 8px; /* 터치 영역 확대 */
+  padding: 0;
 }
 
 .headerTitle {
@@ -26,168 +32,152 @@
   color: #169279;
 }
 
-
+/* 메인 콘텐츠 */
 .mainContent {
   flex: 1;
-  overflow-y: auto; /* 내용 스크롤 */
-  padding: 0 20px 80px 20px;
+  overflow-y: auto;
+  padding: 0 20px 20px 20px;
   background-color: #fff;
-  position: relative; 
+  padding-bottom: 90px;
 }
 
+/* --- [핵심 수정] 날짜 네비게이션 --- */
 .dateNav {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 10px 0 20px 0;
+  margin: 20px 0;
   gap: 20px;
-
-  position: relative; 
-  z-index: 20; 
+  position: relative;
+  z-index: 50; 
 }
 
+/* 화살표 버튼 (투명하게) */
 .dateArrow {
   background: none;
   border: none;
-  font-size: 24px;
-  color: #169279; /* 메인 컬러와 통일 */
+  font-size: 28px;
+  color: #8ce9d3; /* 연한 민트 */
   cursor: pointer;
-  font-weight: bold;
-  padding: 0 10px; 
+  padding: 0 10px;
+  transition: color 0.2s;
+  line-height: 1;
 }
 
+.dateArrow:hover {
+  color: #169279;
+}
+
+/* 연도와 월을 감싸는 가로 컨테이너 */
 .dateDisplay {
   display: flex;
-  gap: 12px; /* 간격 조금 더 넓힘 */
   align-items: center;
+  gap: 8px; /* 연도와 월 사이 간격 */
 }
 
-
+/* 클릭 영역 */
 .selectWrapper {
   position: relative;
   cursor: pointer;
-  /* 드롭다운 메뉴가 이 안에서 위치를 잡음 */
 }
 
+/* 날짜 텍스트 스타일 */
 .dateText {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   color: #169279;
-  display: flex; 
+  display: flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 8px; /* 클릭감 좋게 */
-  border-radius: 6px;
-  transition: background-color 0.2s;
-}
-
-.dateText:hover {
-  background-color: #f0fdf9; 
 }
 
 .downArrow {
-  font-size: 12px;
-  margin-top: 2px;
+  font-size: 8px;
   color: #169279;
+  margin-top: 2px;
 }
 
+/* 드롭다운 리스트 */
 .dropdownList {
   position: absolute;
-  top: 110%; 
+  top: 130%;
   left: 50%;
-  transform: translateX(-50%); 
-  
+  transform: translateX(-50%);
   background: white;
-  border: 1px solid #d1d5db; 
-  border-radius: 12px; /* 둥글게 */
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12); /* 그림자 더 부드럽게 */
-  
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   list-style: none;
-  padding: 6px;
-  margin-top: 4px;
-  
-  width: 90px; /* 너비 살짝 키움 */
-  max-height: 220px; /* 너무 길어지지 않게 */
-  overflow-y: auto; 
-  z-index: 1000; /* 무조건 제일 위에 뜨도록 */
+  padding: 5px;
+  width: 90px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
 }
 
 .monthList {
-  width: 70px; /* 월 선택창 너비 */
+  width: 70px;
 }
 
 .dropdownList li {
-  padding: 10px;
+  padding: 10px 0;
   text-align: center;
   font-size: 15px;
-  color: #4b5563;
+  color: #333;
   cursor: pointer;
   border-radius: 8px;
-  margin-bottom: 2px;
-  transition: all 0.2s;
 }
 
 .dropdownList li:hover {
-  background-color: #e6fffa; 
+  background-color: #f1f3f5;
   color: #169279;
-  font-weight: 700;
+  font-weight: bold;
 }
 
-
+/* 스크롤바 숨김 (깔끔하게) */
 .dropdownList::-webkit-scrollbar {
   width: 4px;
 }
 .dropdownList::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: #ddd;
   border-radius: 4px;
 }
-.dropdownList::-webkit-scrollbar-track {
-  background: transparent;
-}
 
-/* 필터 탭 (전체, 충전...) */
+/* 필터 탭 */
 .filterTabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 20px;
-  padding-bottom: 10px; 
-  overflow-x: auto; 
-  -webkit-overflow-scrolling: touch;
-}
-
-/* 스크롤바 숨기기 (선택사항) */
-.filterTabs::-webkit-scrollbar {
-    display: none; 
+  margin-bottom: 25px;
+  justify-content: flex-start; /* 왼쪽 정렬 혹은 center */
+  overflow-x: auto;
 }
 
 .filterBtn {
   padding: 8px 16px;
-  border-radius: 20px; /* 캡슐 모양으로 변경 */
-  border: 1px solid #e5e7eb;
+  border-radius: 20px; /* 둥글게 */
+  border: none;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  background-color: #fff;
-  color: #6b7280;
+  background-color: #eef7f5;
+  color: #61c5aa;
   transition: all 0.2s;
-  flex-shrink: 0; /* 찌그러짐 방지 */
+  white-space: nowrap;
 }
 
 .activeFilter {
-  background-color: #169279; 
+  background-color: #169279;
   color: #fff;
-  border-color: #169279;
-  box-shadow: 0 2px 8px rgba(22, 146, 121, 0.25);
+  box-shadow: 0 2px 5px rgba(22, 146, 121, 0.3);
 }
 
-/* 날짜 헤더 (01.13 화) */
+/* 리스트 섹션 */
 .dateHeader {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  color: #9ca3af;
-  margin-bottom: 12px;
-  margin-top: 24px;
-  padding-left: 4px;
+  color: #999;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
 .transactionList {
@@ -196,60 +186,45 @@
   gap: 16px;
 }
 
-/* 개별 거래 내역 아이템 */
 .transactionItem {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 4px 0; /* 터치 영역 */
+  gap: 15px;
 }
 
-/* 아이콘 래퍼 */
+/* 아이콘 */
 .iconWrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px; /* 조금 더 둥글게 */
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.greenBg {
-  background-color: #e6fffa; /* 배경색 아주 연하게 변경 */
-}
-/* 실제 아이콘이 들어갈 때 배경색 조절 필요하면 여기서 */
+.greenBg { background-color: #169279; }
+.grayBg { background-color: #f0f5f4; }
 
-.grayBg {
-  background-color: #f3f4f6; 
-}
+.tokenIcon { width: 24px; height: 24px; }
+.userIcon { font-size: 20px; opacity: 0.7; }
 
-.tokenIcon {
-  width: 28px;
-  height: 28px;
-}
-
-.userIcon {
-  font-size: 24px;
-  color: #9ca3af;
-}
-
-/* 내용 텍스트 */
+/* 텍스트 정보 */
 .infoWrapper {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  width: 100%;
-  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  gap: 3px;
+  overflow: hidden;
 }
 
 .title {
   font-size: 15px;
-  color: #374151; /* 조금 더 진한 회색 */
+  color: #333;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; 
+  text-overflow: ellipsis;
 }
 
 .amount {
@@ -257,16 +232,10 @@
   font-weight: 700;
 }
 
-/* 입금/출금 색상 */
-.plus {
-  color: #ef4444; /* 빨간색 (+) */
-}
+.plus { color: #ff4d4f; }
+.minus { color: #1890ff; }
 
-.minus {
-  color: #3b82f6; /* 파란색 (-) */
-}
-
-/* 하단 네비게이션 (Home과 동일하게 맞춤) */
+/* 하단 네비게이션 */
 .bottomNav {
   height: 80px;
   background-color: #169279;
@@ -276,7 +245,9 @@
   padding-bottom: 15px;
   position: sticky;
   bottom: 0;
-  z-index: 50; /* 리스트 위에 떠있어야 함 */
+  left: 0;
+  width: 100%;
+  box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
 }
 
 .navItem {
@@ -284,9 +255,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
-  gap: 6px;
+  gap: 5px;
   flex: 1;
 }
 
@@ -294,10 +265,9 @@
   width: 24px;
   height: 24px;
   filter: brightness(0) invert(1);
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .navText {
   font-size: 11px;
-  font-weight: 500;
 }
