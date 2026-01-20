@@ -3,9 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import common from './Common.module.css';
 import styles from './FindIdScreen.module.css';
 
+// [1] 번역 데이터 가져오기
+import { translations } from './utils/translations';
+
 const FindIdScreen = () => {
     const navigate = useNavigate();
     
+    // [2] 언어 설정 로직 (기본값 'ko')
+    const lang = localStorage.getItem('appLanguage') || 'ko';
+    const t = translations[lang]; // 현재 언어에 맞는 텍스트 객체
+
     // 입력값 상태
     const [email, setEmail] = useState("");
     const [verificationCode, setVerificationCode] = useState("");
@@ -34,51 +41,61 @@ const FindIdScreen = () => {
                 {!isFound ? (
                     /* 1단계: 아이디 찾기 입력 화면 */
                     <>
-                        <h2 className={styles.mainTitle}>아이디 찾기</h2>
+                        {/* [3] 텍스트 교체: "아이디 찾기" -> t.findId */}
+                        <h2 className={styles.mainTitle}>{t.findId}</h2>
+                        
                         <div className={styles.formContainer}>
                             <div className={styles.inputBox}>
                                 <input 
                                     type="email" 
-                                    placeholder="이메일 입력" 
+                                    placeholder={t.emailPlaceholder} /* "이메일 입력" */
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className={styles.inputField}
                                 />
-                                <button className={styles.innerButton}>인증번호 전송</button>
+                                {/* "인증번호 전송" */}
+                                <button className={styles.innerButton}>{t.sendCode}</button>
                             </div>
+                            
                             <div className={styles.inputBox}>
                                 <input 
                                     type="text" 
-                                    placeholder="인증 번호 입력" 
+                                    placeholder={t.codePlaceholder} /* "인증 번호 입력" */
                                     value={verificationCode}
                                     onChange={(e) => setVerificationCode(e.target.value)}
                                     className={styles.inputField}
                                 />
-                                <button className={styles.innerButton}>확인</button>
+                                {/* "확인" */}
+                                <button className={styles.innerButton}>{t.confirm}</button>
                             </div>
+                            
                             <button 
                                 className={`${styles.submitButton} ${(email && verificationCode) ? styles.activeButton : ''}`} 
                                 onClick={handleFindId}
                                 disabled={!email || !verificationCode}
                             >
-                                아이디 찾기
+                                {/* "아이디 찾기" (버튼용) */}
+                                {t.findIdBtn}
                             </button>
                         </div>
                     </>
                 ) : (
-                    /* 2단계: 아이디 찾기 결과 화면 (image_b7e769.png 반영) */
+                    /* 2단계: 아이디 찾기 결과 화면 */
                     <div className={styles.resultContainer}>
-                        <h2 className={styles.mainTitle}>회원님의 아이디는</h2>
+                        {/* "회원님의 아이디는" */}
+                        <h2 className={styles.mainTitle}>{t.idResultPrefix}</h2>
                         
                         <div className={styles.idResultBox}>
                             <p className={styles.foundIdText}>{foundId}</p>
                             <div className={styles.underline}></div>
                         </div>
                         
-                        <h2 className={styles.mainTitle}>입니다.</h2>
+                        {/* "입니다." */}
+                        <h2 className={styles.mainTitle}>{t.idResultSuffix}</h2>
 
                         <button className={styles.homeButton} onClick={() => navigate('/login')}>
-                            홈으로
+                            {/* "홈으로" */}
+                            {t.goHome}
                         </button>
                     </div>
                 )}
