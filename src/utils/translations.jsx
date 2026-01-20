@@ -23,7 +23,7 @@ export const translations = {
         idResultSuffix: '입니다.',
         goHome: '홈으로',
 
-        // [비밀번호 재설정 화면] (신규 추가됨)
+        // [비밀번호 재설정 화면]
         newPwLabel: '새 비밀번호 *',
         newPwConfirmLabel: '새 비밀번호 확인 *',
         pwResetComplete: '비밀번호 재설정이 완료되었습니다.',
@@ -50,6 +50,16 @@ export const translations = {
         alertValidAmount: '올바른 금액을 입력해주세요.',
         alertFail: '충전 처리에 실패했습니다. (관리자 문의 요망)',
         alertError: '통신 오류가 발생했습니다.',
+
+        // [송금 화면]
+        sendTitle: '송금',
+        sendToPrefix: '',         // 이름 앞
+        sendToSuffix: '님에게',    // 이름 뒤
+        recipientCheck: '받는 사람이 맞으십니까?',
+        sendAmountLabel: '보낼 금액',
+        sendBtn: '보내기',
+        sendConfirmMsg: '님에게 송금하시겠습니까?', 
+        sendDone: '송금이 완료되었습니다.',
 
         home: '홈',
         payNav: '결제',
@@ -108,6 +118,16 @@ export const translations = {
         alertFail: 'Charging failed. (Contact Admin)',
         alertError: 'Communication error occurred.',
 
+        // [Send Screen]
+        sendTitle: 'Transfer',
+        sendToPrefix: 'To ',
+        sendToSuffix: '',
+        recipientCheck: 'Is the recipient correct?',
+        sendAmountLabel: 'Amount',
+        sendBtn: 'Send',
+        sendConfirmMsg: 'Do you want to send to',
+        sendDone: 'Transfer complete.',
+
         home: 'Home',
         payNav: 'Pay',
         myPage: 'My Page',
@@ -164,6 +184,16 @@ export const translations = {
         alertValidAmount: '请输入有效的金额。',
         alertFail: '充值失败。（请联系管理员）',
         alertError: '发生通信错误。',
+
+        // [Send Screen]
+        sendTitle: '转账',
+        sendToPrefix: '给 ',
+        sendToSuffix: '',
+        recipientCheck: '收款人是否正确？',
+        sendAmountLabel: '转账金额',
+        sendBtn: '发送',
+        sendConfirmMsg: '您确定要转账给',
+        sendDone: '转账已完成。',
 
         home: '首页',
         payNav: '支付',
@@ -222,6 +252,16 @@ export const translations = {
         alertFail: 'Falló la recarga. (Contacte al admin)',
         alertError: 'Error de comunicación.',
 
+        // [Send Screen]
+        sendTitle: 'Transferencia',
+        sendToPrefix: 'A ',
+        sendToSuffix: '',
+        recipientCheck: '¿Es correcto el destinatario?',
+        sendAmountLabel: 'Monto',
+        sendBtn: 'Enviar',
+        sendConfirmMsg: '¿Desea enviar a',
+        sendDone: 'Transferencia completada.',
+
         home: 'Inicio',
         payNav: 'Pagar',
         myPage: 'Mi Página',
@@ -279,6 +319,16 @@ export const translations = {
         alertFail: 'チャージに失敗しました。（管理者にお問い合わせください）',
         alertError: '通信エラーが発生しました。',
 
+        // [Send Screen]
+        sendTitle: '送金',
+        sendToPrefix: '',
+        sendToSuffix: '様へ',
+        recipientCheck: '受取人は正しいですか？',
+        sendAmountLabel: '送金額',
+        sendBtn: '送る',
+        sendConfirmMsg: '様に送金しますか？',
+        sendDone: '送金が完了しました。',
+        
         home: 'ホーム',
         payNav: '決済',
         myPage: 'マイページ',
@@ -335,6 +385,16 @@ export const translations = {
         alertValidAmount: 'Введите корректную сумму.',
         alertFail: 'Ошибка пополнения. (Свяжитесь с админом)',
         alertError: 'Ошибка связи.',
+
+        // [Send Screen]
+        sendTitle: 'Перевод',
+        sendToPrefix: 'Кому: ',
+        sendToSuffix: '',
+        recipientCheck: 'Получатель верен?',
+        sendAmountLabel: 'Сумма перевода',
+        sendBtn: 'Отправить',
+        sendConfirmMsg: 'Вы хотите отправить',
+        sendDone: 'Перевод выполнен.',
 
         home: 'Главная',
         payNav: 'Оплата',
@@ -393,6 +453,16 @@ export const translations = {
         alertFail: 'रिचार्ज विफल। (व्यवस्थापक से संपर्क करें)',
         alertError: 'संचार त्रुटि।',
 
+        // [Send Screen]
+        sendTitle: 'पैसे भेजें',
+        sendToPrefix: 'To ',
+        sendToSuffix: '',
+        recipientCheck: 'क्या प्राप्तकर्ता सही है?',
+        sendAmountLabel: 'भेजने वाली राशि',
+        sendBtn: 'भेजें',
+        sendConfirmMsg: 'क्या आप भेजना चाहते हैं',
+        sendDone: 'लेनदेन सफल हुआ।',
+
         home: 'होम',
         payNav: 'भुगतान',
         myPage: 'मेरा पेज',
@@ -450,6 +520,16 @@ export const translations = {
         alertFail: 'Aufladen fehlgeschlagen. (Admin kontaktieren)',
         alertError: 'Kommunikationsfehler.',
 
+        // [Send Screen]
+        sendTitle: 'Senden',
+        sendToPrefix: 'An ',
+        sendToSuffix: '',
+        recipientCheck: 'Ist der Empfänger korrekt?',
+        sendAmountLabel: 'Betrag',
+        sendBtn: 'Senden',
+        sendConfirmMsg: 'Möchten Sie senden an',
+        sendDone: 'Überweisung abgeschlossen.',
+
         home: 'Startseite',
         payNav: 'Bezahlen',
         myPage: 'Meine Seite',
@@ -506,6 +586,16 @@ export const translations = {
         alertValidAmount: 'Veuillez entrer un montant valide.',
         alertFail: 'Échec du rechargement. (Contactez l\'admin)',
         alertError: 'Erreur de communication.',
+
+        // [Send Screen]
+        sendTitle: 'Envoyer',
+        sendToPrefix: 'À ',
+        sendToSuffix: '',
+        recipientCheck: 'Le destinataire est-il correct ?',
+        sendAmountLabel: 'Montant',
+        sendBtn: 'Envoyer',
+        sendConfirmMsg: 'Voulez-vous envoyer à',
+        sendDone: 'Virement terminé.',
 
         home: 'Accueil',
         payNav: 'Payer',
