@@ -91,6 +91,9 @@ export const translations = {
         //로그인 화면
         alertInputAll: "아이디와 비밀번호를 모두 입력해주세요.",
         errorLoginFail: "아이디 또는 비밀번호가 일치하지 않습니다.",
+        errorNoToken: "인증 정보를 가져올 수 없습니다. 관리자에게 문의하세요.",
+        errorNetwork: "서버에 연결할 수 없습니다. 네트워크를 확인해주세요.",
+        errorUnknown: "알 수 없는 오류가 발생했습니다.",
 
         walletConnect: '지갑 연동',
         usdtChart: 'USDT 차트',
@@ -220,6 +223,9 @@ export const translations = {
 
         alertInputAll: "Please enter both ID and password.",
         errorLoginFail: "Invalid ID or password.",
+        errorNoToken: "Failed to retrieve authentication token.",
+        errorNetwork: "Cannot connect to server. Please check your network.",
+        errorUnknown: "An unknown error occurred.",
 
         walletConnect: 'Connect Wallet',
         usdtChart: 'USDT Chart',
@@ -348,6 +354,9 @@ export const translations = {
 
         alertInputAll: "请输入账号和密码。",
         errorLoginFail: "账号或密码错误。",
+        errorNoToken: "无法获取认证令牌。",
+        errorNetwork: "无法连接到服务器。请检查您的网络。",
+        errorUnknown: "发生了未知错误。",
         
         walletConnect: '连接钱包',
         usdtChart: 'USDT 图表',
@@ -476,6 +485,9 @@ export const translations = {
 
         alertInputAll: "Por favor, ingrese ID y contraseña.",
         errorLoginFail: "ID o contraseña incorrectos.",
+        errorNoToken: "No se pudo obtener el token de autenticación.",
+        errorNetwork: "No se puede conectar al servidor. Verifique su red.",
+        errorUnknown: "Ocurrió un error desconocido.",
 
         walletConnect: 'Conectar Billetera',
         usdtChart: 'Gráfico USDT',
@@ -604,6 +616,9 @@ export const translations = {
 
         alertInputAll: "IDとパスワードを両方入力してください。",
         errorLoginFail: "IDまたはパスワードが正しくありません。",
+        errorNoToken: "認証トークンを取得できませんでした。",
+        errorNetwork: "サーバーに接続できません。ネットワークを確認してください。",
+        errorUnknown: "不明なエラーが発生しました。",
 
         walletConnect: 'ウォレット連携',
         usdtChart: 'USDTチャート',
@@ -733,6 +748,9 @@ export const translations = {
 
         alertInputAll: "Введите логин и пароль.",
         errorLoginFail: "Неверный логин или пароль.",
+        errorNoToken: "Не удалось получить токен аутентификации.",
+        errorNetwork: "Не удается подключиться к серверу. Проверьте сеть.",
+        errorUnknown: "Произошла неизвестная ошибка.",
 
         walletConnect: 'Подключить кошелек',
         usdtChart: 'График USDT',
@@ -860,6 +878,9 @@ export const translations = {
 
         alertInputAll: "कृपया आईडी और पासवर्ड दोनों दर्ज करें।",
         errorLoginFail: "अमान्य आईडी या पासवर्ड।",
+        errorNoToken: "प्रमाणीकरण टोकन प्राप्त करने में विफल।",
+        errorNetwork: "सर्वर से कनेक्ट नहीं हो सका। कृपया अपना नेटवर्क जांचें।",
+        errorUnknown: "एक अज्ञात त्रुटि हुई।",
 
         walletConnect: 'वॉलेट कनेक्ट करें',
         usdtChart: 'USDT चार्ट',
@@ -987,6 +1008,9 @@ export const translations = {
 
         alertInputAll: "Bitte ID und Passwort eingeben.",
         errorLoginFail: "Ungültige ID oder Passwort.",
+        errorNoToken: "Authentifizierungs-Token konnte nicht abgerufen werden.",
+        errorNetwork: "Verbindung zum Server fehlgeschlagen. Bitte Netzwerk prüfen.",
+        errorUnknown: "Ein unbekannter Fehler ist aufgetreten.",
 
         walletConnect: 'Wallet verbinden',
         usdtChart: 'USDT-Chart',
@@ -1114,6 +1138,9 @@ export const translations = {
 
         alertInputAll: "Veuillez saisir l'identifiant et le mot de passe.",
         errorLoginFail: "Identifiant ou mot de passe incorrect.",
+        errorNoToken: "Impossible de récupérer le jeton d'authentification.",
+        errorNetwork: "Impossible de se connecter au serveur. Vérifiez votre réseau.",
+        errorUnknown: "Une erreur inconnue s'est produite.",
 
         walletConnect: 'Connecter le portefeuille',
         usdtChart: 'Graphique USDT',

@@ -46,8 +46,8 @@
   margin-bottom: 40px;
 }
 .logoText {
-  font-size: 4rem;
-  font-weight: 500;
+  font-size: 5rem;
+  font-weight: 700;
   color: #50AF95;
   letter-spacing: 1px;
   line-height: 1;      
@@ -59,7 +59,7 @@
   font-size: 2.2rem;
   font-weight: 800;
   color: #1A9276;
-  margin-bottom: 0px;
+  margin: 0px;
 }
 
 .sloganArea h1 {
