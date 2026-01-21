@@ -54,6 +54,9 @@ const SplashScreen = () => {
         setSelectedLang(code);
         setIsDropdownOpen(false);
         localStorage.setItem('appLanguage', code);
+
+        // [중요 추가] App.jsx에 언어 변경을 알리는 이벤트를 발생시킵니다.
+        window.dispatchEvent(new Event('languageChange'));
     };
 
     // [2] 현재 언어에 맞는 텍스트 묶음 가져오기
