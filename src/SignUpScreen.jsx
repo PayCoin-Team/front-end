@@ -184,7 +184,7 @@ const SignUpScreen = () => {
                     </>
                 ) : (
                     <div className={styles.formGroup}>
-                        <h2 className={styles.mainTitle}>{t.signup}</h2>
+                        <h2 style={{marginBottom: '10px'}} className={styles.mainTitle}>{t.signup}</h2>
                         
                         <div className={styles.inputWrapper}>
                             <label className={styles.inputLabel}>{t.email} <span className={styles.required}>*</span></label>
