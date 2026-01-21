@@ -132,7 +132,7 @@
 }
 
 .logoImg {
-  width: 80px;  /* 로고 크기 적절히 설정 */
+  width: 80px;  
   height: 80px;
   object-fit: contain;
 }
@@ -143,18 +143,17 @@
   font-weight: 700;
   color: #169279;
   margin-bottom: 20px;
-  line-height: 1.4; /* 두 줄 이상일 때 간격 */
+  line-height: 1.4; 
 }
 
 
 .amountText {
   font-size: 2rem;
   font-weight: 800;
-  color: #333; /* 금액은 진한 회색/검정으로 강조 */
+  color: #333; 
   margin-bottom: 40px;
 }
 
-/* 완료 화면의 확인 버튼 (하단 꽉 차는 버튼) */
 .confirmBtn {
   width: 80%;
   max-width: 300px;

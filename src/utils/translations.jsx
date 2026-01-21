@@ -1,5 +1,3 @@
-// src/utils/translations.js
-
 export const translations = {
     // 1. 한국어 (Korean)
     ko: {
@@ -53,8 +51,10 @@ export const translations = {
 
         // [송금 화면]
         sendTitle: '송금',
-        sendToPrefix: '',         // 이름 앞
-        sendToSuffix: '님에게',    // 이름 뒤
+        recipient: '받는 사람',
+        idAddress: '아이디 / 주소',
+        sendToPrefix: '',        
+        sendToSuffix: '님에게',    
         recipientCheck: '받는 사람이 맞으십니까?',
         sendAmountLabel: '보낼 금액',
         sendBtn: '보내기',
@@ -120,6 +120,8 @@ export const translations = {
 
         // [Send Screen]
         sendTitle: 'Transfer',
+        recipient: 'Recipient',
+        idAddress: 'ID / Address',
         sendToPrefix: 'To ',
         sendToSuffix: '',
         recipientCheck: 'Is the recipient correct?',
@@ -187,6 +189,8 @@ export const translations = {
 
         // [Send Screen]
         sendTitle: '转账',
+        recipient: '收款人',
+        idAddress: '账号 / 地址',
         sendToPrefix: '给 ',
         sendToSuffix: '',
         recipientCheck: '收款人是否正确？',
@@ -254,6 +258,8 @@ export const translations = {
 
         // [Send Screen]
         sendTitle: 'Transferencia',
+        recipient: 'Destinatario',
+        idAddress: 'ID / Dirección',
         sendToPrefix: 'A ',
         sendToSuffix: '',
         recipientCheck: '¿Es correcto el destinatario?',
@@ -321,6 +327,8 @@ export const translations = {
 
         // [Send Screen]
         sendTitle: '送金',
+        recipient: '受取人',
+        idAddress: 'ID / アドレス',
         sendToPrefix: '',
         sendToSuffix: '様へ',
         recipientCheck: '受取人は正しいですか？',
@@ -388,6 +396,8 @@ export const translations = {
 
         // [Send Screen]
         sendTitle: 'Перевод',
+        recipient: 'Получатель',
+        idAddress: 'ID / Адрес',
         sendToPrefix: 'Кому: ',
         sendToSuffix: '',
         recipientCheck: 'Получатель верен?',
@@ -455,6 +465,8 @@ export const translations = {
 
         // [Send Screen]
         sendTitle: 'पैसे भेजें',
+        recipient: 'प्राप्तकर्ता',
+        idAddress: 'आईडी / पता',
         sendToPrefix: 'To ',
         sendToSuffix: '',
         recipientCheck: 'क्या प्राप्तकर्ता सही है?',
@@ -522,6 +534,8 @@ export const translations = {
 
         // [Send Screen]
         sendTitle: 'Senden',
+        recipient: 'Empfänger',
+        idAddress: 'ID / Adresse',
         sendToPrefix: 'An ',
         sendToSuffix: '',
         recipientCheck: 'Ist der Empfänger korrekt?',
@@ -589,6 +603,8 @@ export const translations = {
 
         // [Send Screen]
         sendTitle: 'Envoyer',
+        recipient: 'Destinataire',
+        idAddress: 'ID / Adresse',
         sendToPrefix: 'À ',
         sendToSuffix: '',
         recipientCheck: 'Le destinataire est-il correct ?',

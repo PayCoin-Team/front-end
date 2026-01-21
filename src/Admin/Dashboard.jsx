@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import './Dashboard.css'; // 아까 만들어드린 CSS 파일
+import './Dashboard.css';
+import { useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   
   const [dashboardData, setDashboardData] = useState({
     totalUsers: 0,
     totalAmount: 0,
-    verificationStatus: 'UNKNOWN', // 검증 상태 (MATCH / CONFLICT)
+    verificationStatus: 'UNKNOWN', 
     serviceWallet: { usdt: 0, trx: 0 },
     externalWallet: { usdt: 0, trx: 0 },
     nodeStatus: { status: 'success', latency: 96 }
@@ -113,7 +115,12 @@ const Dashboard = () => {
             return (
               <button
                 key={tabKey}
-                onClick={() => setActiveTab(tabKey)}
+                onClick={() => { if (tabKey === 'users') {
+                    navigate('/admin/users'); // '유저 및 지갑 관리' 클릭 시 이동
+                  } else {
+                    setActiveTab(tabKey); // 그 외에는 탭 상태만 변경
+                  }
+                }}
                 className={`tab-button ${activeTab === tabKey ? 'active' : 'inactive'}`}
               >
                 {tab}
