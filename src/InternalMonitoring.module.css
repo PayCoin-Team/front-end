@@ -1,0 +1,153 @@
+/* src/InternalMonitoring.module.css */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+}
+
+/* 상단 카드 */
+.topCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.card h3 {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 15px 0;
+  font-weight: 500;
+}
+
+.card p {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.card p span {
+  font-size: 16px;
+  color: #666;
+  margin-left: 5px;
+  font-weight: 500;
+}
+
+/* 하단 컨텐츠 레이아웃 */
+.contentRow {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* 거래 내역 섹션 (화면의 약 70% 차지하도록 설정) */
+.historySection {
+  flex: 2.5; /* 비율 설정 */
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  overflow: hidden;
+}
+
+/* 오른쪽 빈 공간 (화면의 약 30% 차지) */
+.emptySpace {
+  flex: 1; 
+  /* 비워두기 위해 별도 스타일 없음 */
+}
+
+.datePicker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.datePicker button {
+  border: none;
+  background: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #999;
+}
+
+.dateText span {
+  font-size: 12px;
+  margin-left: 4px;
+  vertical-align: middle;
+  color: #999;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.dateLabel {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 10px;
+}
+
+.listContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.iconWrapper {
+  width: 40px;
+  height: 40px;
+  margin-right: 15px;
+}
+
+.iconWrapper img {
+  width: 100%;
+  height: 100%;
+}
+
+.txInfo {
+  flex: 1;
+}
+
+.txTitle {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.txAmount {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.txAmount.red { color: #ff3b30; }
+.txAmount.blue { color: #007bff; }
+
+.txTime {
+  font-size: 13px;
+  color: #aaa;
+}
