@@ -13,13 +13,13 @@ const LoginScreen = () => {
     // 해당 언어의 텍스트 객체 선택 (예: translations.ko)
     const t = translations[language];
 
-    const [email, setEmail] = useState('');
+    const [id, setId] = useState('');
     const [password, setPassword] = useState('');
 
     const handleLogin = (e) => {
         e.preventDefault(); 
 
-        if (!email || !password) {
+        if (!id || !password) {
             // 알림 메시지도 언어별로 하려면 translations.js에 추가해야 합니다.
             // 우선은 기존대로 둡니다.
             alert("이메일과 비밀번호를 입력해주세요.");
@@ -48,12 +48,12 @@ const LoginScreen = () => {
 
                 <form onSubmit={handleLogin} className={styles.inputGroup}>
                     <input 
-                        type="email"
+                        type="text"
                         // placeholder도 변수로 변경 (기존: 이메일 입력 -> 변경: 아이디 입력)
                         placeholder={t.idPlaceholder} 
                         className={styles.input}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={id}
+                        onChange={(e) => setId(e.target.value)}
                     />
                     <input 
                         type="password"
