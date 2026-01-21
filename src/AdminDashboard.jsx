@@ -1,24 +1,52 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from './AdminDashboard.module.css';
-import usdtLogo from './component/UsdtLogo.svg'; // 로고 경로 확인 필요
+import usdtLogo from './component/UsdtLogo.svg'; 
+import ExternalMonitoring from './ExternalMonitoring';
+import InternalMonitoring from './InternalMonitoring';
 
-// [1] 사이드바 컴포넌트 (내부 정의)
-const Sidebar = () => (
+// [1] 사이드바 컴포넌트
+const Sidebar = ({ activeMenu, setActiveMenu }) => (
   <aside className={styles.sidebar}>
     <div className={styles.logo}>
       <img src={usdtLogo} alt="CrossPay" />
       <span>CrossPay</span>
     </div>
     <nav className={styles.menu}>
-      <div className={`${styles.menuItem} ${styles.active}`}>
+      {/* 대시보드 메뉴 */}
+      <div 
+        className={`${styles.menuItem} ${activeMenu === 'dashboard' ? styles.active : ''}`}
+        onClick={() => setActiveMenu('dashboard')}
+      >
         <span className={styles.icon}>⊞</span> 대시보드
       </div>
+
       <div className={styles.menuGroup}>
         <h3>모니터링</h3>
         <ul>
-          <li><span>Ⓑ</span> 외부 거래 모니터링</li>
-          <li><span>Ⓢ</span> 내부 거래 모니터링</li>
+          {/* 외부 거래 모니터링 */}
+          <li 
+            onClick={() => setActiveMenu('external')}
+            style={{ 
+              color: activeMenu === 'external' ? '#28a745' : 'inherit',
+              fontWeight: activeMenu === 'external' ? 'bold' : 'normal',
+              cursor: 'pointer' 
+            }}
+          >
+            <span>Ⓑ</span> 외부 거래 모니터링
+          </li>
+
+          {/* 내부 거래 모니터링 (오류 수정됨) */}
+          <li 
+            onClick={() => setActiveMenu('internal')}
+            style={{ 
+              color: activeMenu === 'internal' ? '#28a745' : 'inherit',
+              fontWeight: activeMenu === 'internal' ? 'bold' : 'normal',
+              cursor: 'pointer' 
+            }}
+          >
+            <span>Ⓢ</span> 내부 거래 모니터링
+          </li>
+
           <li><span>📊</span> 투자 모니터링</li>
         </ul>
       </div>
@@ -32,7 +60,7 @@ const Sidebar = () => (
   </aside>
 );
 
-// [2] 상단 카드 컴포넌트 (내부 정의)
+// [2] 상단 카드 컴포넌트
 const TopCards = () => {
   const cards = [
     { title: '서비스 지갑 잔고', value: '2,294,284 USDT', icon: '→' },
@@ -52,7 +80,7 @@ const TopCards = () => {
   );
 };
 
-// [3] AI 비서 컴포넌트 (내부 정의)
+// [3] AI 비서 컴포넌트
 const AiAssistant = () => (
   <div className={styles.aiContainer}>
     <div className={styles.aiHeader}>
@@ -81,34 +109,48 @@ const AiAssistant = () => (
 
 // [메인] 관리자 대시보드
 const AdminDashboard = () => {
+  // 현재 보고 있는 메뉴 상태 관리
+  const [activeMenu, setActiveMenu] = useState('dashboard');
+
   return (
     <div className={styles.dashboardContainer}>
-      <Sidebar />
+      {/* 사이드바에 상태 전달 */}
+      <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
+      
       <main className={styles.mainContent}>
         <header className={styles.header}>
           <h1>환영합니다 홍길동 님!</h1>
         </header>
-        
-        <TopCards />
-        
-        <div className={styles.contentGrid}>
-          {/* 차트 영역 (왼쪽) */}
-          <div className={styles.chartsColumn}>
-            <div className={styles.chartContainer}>
-              <h2>USDT 차트</h2>
-              <div className={styles.placeholderText}>Chart Area</div>
+
+        {/* 1. 대시보드 화면 */}
+        {activeMenu === 'dashboard' && (
+          <>
+            <TopCards />
+            <div className={styles.contentGrid}>
+              <div className={styles.chartsColumn}>
+                <div className={styles.chartContainer}>
+                  <h2>USDT 차트</h2>
+                  <div className={styles.placeholderText}>Chart Area</div>
+                </div>
+                <div className={styles.chartContainer}>
+                  <h2>채권 차트</h2>
+                  <div className={styles.placeholderText}>Chart Area</div>
+                </div>
+              </div>
+
+              <div className={styles.aiColumn}>
+                <AiAssistant />
+              </div>
             </div>
-            <div className={styles.chartContainer}>
-              <h2>채권 차트</h2>
-              <div className={styles.placeholderText}>Chart Area</div>
-            </div>
-          </div>
-          
-          {/* AI 비서 영역 (오른쪽) */}
-          <div className={styles.aiColumn}>
-            <AiAssistant />
-          </div>
-        </div>
+          </>
+        )}
+
+        {/* 2. 외부 거래 모니터링 화면 */}
+        {activeMenu === 'external' && <ExternalMonitoring />}
+
+        {/* 3. 내부 거래 모니터링 화면 */}
+        {activeMenu === 'internal' && <InternalMonitoring />}
+
       </main>
     </div>
   );
