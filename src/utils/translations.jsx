@@ -88,6 +88,10 @@ export const translations = {
         errorPasswordMatch: '비밀번호가 일치하지 않습니다.',
         alertJoinComplete: '가입이 완료되었습니다!',
 
+        //로그인 화면
+        alertInputAll: "아이디와 비밀번호를 모두 입력해주세요.",
+        errorLoginFail: "아이디 또는 비밀번호가 일치하지 않습니다.",
+
         walletConnect: '지갑 연동',
         usdtChart: 'USDT 차트',
         wallet: '내 지갑',
@@ -214,6 +218,9 @@ export const translations = {
         errorPasswordMatch: 'Passwords do not match.',
         alertJoinComplete: 'Sign up complete!',
 
+        alertInputAll: "Please enter both ID and password.",
+        errorLoginFail: "Invalid ID or password.",
+
         walletConnect: 'Connect Wallet',
         usdtChart: 'USDT Chart',
         wallet: 'My Wallet',
@@ -338,6 +345,9 @@ export const translations = {
         errorPasswordFormat: '密码格式不正确。',
         errorPasswordMatch: '密码不匹配。',
         alertJoinComplete: '注册成功！',
+
+        alertInputAll: "请输入账号和密码。",
+        errorLoginFail: "账号或密码错误。",
         
         walletConnect: '连接钱包',
         usdtChart: 'USDT 图表',
@@ -464,6 +474,9 @@ export const translations = {
         errorPasswordMatch: 'Las contraseñas no coinciden.',
         alertJoinComplete: '¡Registro completo!',
 
+        alertInputAll: "Por favor, ingrese ID y contraseña.",
+        errorLoginFail: "ID o contraseña incorrectos.",
+
         walletConnect: 'Conectar Billetera',
         usdtChart: 'Gráfico USDT',
         wallet: 'Mi Billetera',
@@ -513,7 +526,7 @@ export const translations = {
     ja: {
         sloganPart1: '一回のスキャン',
         sloganPart2: 'で',
-        sloganMain: '完結するカスタムUSDT決済プラットフォーム',
+        sloganMain: '終わるカスタムUSDT決済プラットフォーム',
         sloganSub1: '国境のない決済、遅延のない精算',
         sloganSub2: '小規模事業者とグローバルユーザーをつなぐリアルタイムUSDT決済インフラ',
 
@@ -588,6 +601,9 @@ export const translations = {
         errorPasswordFormat: 'パスワードの形式が正しくありません。',
         errorPasswordMatch: 'パスワードが一致しません。',
         alertJoinComplete: '登録が完了しました！',
+
+        alertInputAll: "IDとパスワードを両方入力してください。",
+        errorLoginFail: "IDまたはパスワードが正しくありません。",
 
         walletConnect: 'ウォレット連携',
         usdtChart: 'USDTチャート',
@@ -715,6 +731,9 @@ export const translations = {
         errorPasswordMatch: 'Пароли не совпадают.',
         alertJoinComplete: 'Регистрация завершена!',
 
+        alertInputAll: "Введите логин и пароль.",
+        errorLoginFail: "Неверный логин или пароль.",
+
         walletConnect: 'Подключить кошелек',
         usdtChart: 'График USDT',
         wallet: 'Кошелек',
@@ -838,6 +857,9 @@ export const translations = {
         errorPasswordFormat: 'अमान्य पासवर्ड प्रारूप।',
         errorPasswordMatch: 'पासवर्ड मेल नहीं खाते।',
         alertJoinComplete: 'पंजीकरण पूरा हुआ!',
+
+        alertInputAll: "कृपया आईडी और पासवर्ड दोनों दर्ज करें।",
+        errorLoginFail: "अमान्य आईडी या पासवर्ड।",
 
         walletConnect: 'वॉलेट कनेक्ट करें',
         usdtChart: 'USDT चार्ट',
@@ -963,6 +985,9 @@ export const translations = {
         errorPasswordMatch: 'Passwörter stimmen nicht überein.',
         alertJoinComplete: 'Registrierung abgeschlossen!',
 
+        alertInputAll: "Bitte ID und Passwort eingeben.",
+        errorLoginFail: "Ungültige ID oder Passwort.",
+
         walletConnect: 'Wallet verbinden',
         usdtChart: 'USDT-Chart',
         wallet: 'Brieftasche',
@@ -1086,6 +1111,9 @@ export const translations = {
         errorPasswordFormat: 'Format de mot de passe invalide.',
         errorPasswordMatch: 'Les mots de passe ne correspondent pas.',
         alertJoinComplete: 'Inscription terminée !',
+
+        alertInputAll: "Veuillez saisir l'identifiant et le mot de passe.",
+        errorLoginFail: "Identifiant ou mot de passe incorrect.",
 
         walletConnect: 'Connecter le portefeuille',
         usdtChart: 'Graphique USDT',
