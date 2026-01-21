@@ -17,34 +17,57 @@ const LoginScreen = () => {
     const handleLogin = async (e) => {
         e.preventDefault(); 
 
-        // 1. 유효성 검사: 아이디/비밀번호 미입력 시
-        if (!userId || !password) {
-            alert(t.alertInputAll); // 신규 추가 필요
+        // [보완 1] 공백 제거 후 유효성 검사 (스페이스바만 입력하는 경우 방지)
+        if (!userId.trim() || !password.trim()) {
+            alert(t.alertInputAll); 
             return;
         }
 
         try {
             setIsLoading(true);
             
-            // 2. 서버 통신 (아이디 로그인 / Access Token: Header / Refresh Token: Cookie)
+            // 서버 통신
             const response = await axios.post('http://localhost:8080/auth/login', {
                 username: userId, 
                 password: password
             }, { withCredentials: true });
 
-            // 3. 헤더에서 'access' 토큰 추출
+            // 헤더에서 토큰 추출
             const accessToken = response.headers['access'] || response.headers['Access'];
 
+            // [보완 2] 토큰이 왔는지 확실하게 검사
             if (accessToken) {
                 localStorage.setItem('accessToken', accessToken);
                 console.log("로그인 성공");
                 navigate('/home');
+            } else {
+                // 서버 응답은 성공(200)했으나, 헤더에 토큰이 없는 치명적인 상황
+                // 강제로 에러를 발생시켜 catch 블록으로 보냅니다.
+                throw new Error("NO_TOKEN");
             }
+
         } catch (error) {
-            console.error("로그인 에러:", error);
-            // 서버 에러 메시지가 있으면 우선 출력, 없으면 다국어 공통 에러 출력
-            const errorMsg = error.response?.data?.message || t.errorLoginFail; // 신규 추가 필요
-            alert(errorMsg);
+            console.error("로그인 에러 발생:", error);
+            
+            let message = "";
+
+            // [보완 3] 에러 종류별 상세 처리
+            if (error.message === "NO_TOKEN") {
+                // 1. 토큰이 없는 경우 (CORS 설정 문제 등)
+                message = t.errorNoToken || "인증 정보를 받아오지 못했습니다.";
+            } else if (error.response) {
+                // 2. 서버가 응답을 줬지만 에러인 경우 (401 비번틀림, 404, 500 등)
+                // 서버에서 주는 메시지가 있으면 그걸 쓰고, 없으면 기본 실패 메시지
+                message = error.response.data?.message || t.errorLoginFail;
+            } else if (error.request) {
+                // 3. 요청은 보냈는데 응답이 없는 경우 (서버 다운, 인터넷 끊김)
+                message = t.errorNetwork || "서버에 연결할 수 없습니다.";
+            } else {
+                // 4. 기타 알 수 없는 에러
+                message = t.errorUnknown || "알 수 없는 오류가 발생했습니다.";
+            }
+
+            alert(message);
         } finally {
             setIsLoading(false);
         }
