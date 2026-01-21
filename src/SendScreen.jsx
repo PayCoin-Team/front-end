@@ -1,32 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // API 요청을 위해 추가
 import common from './Common.module.css';
 import styles from './SendScreen.module.css';
-import { translations } from './utils/translations'; // 번역 파일
+import { translations } from './utils/translations';
 
-// 이미지 경로 (실제 프로젝트 경로에 맞춤)
+// 이미지 경로
 import navHomeIcon from './assets/nav_home.svg';
 import navPayIcon from './assets/nav_pay.svg';
 import navUserIcon from './assets/nav_user.svg';
 
 const SendScreen = () => {
   const navigate = useNavigate();
-  const [amount, setAmount] = useState('');
+  
+  // API 명세에 맞춘 State 관리
+  const [targetAddress, setTargetAddress] = useState(''); // 받는 사람 주소/ID
+  const [amount, setAmount] = useState('');             // 보낼 금액
+  const [loading, setLoading] = useState(false);        // 로딩 상태 (중복 클릭 방지)
 
-  // ★ [수정됨] Splash에서 저장한 키값('appLanguage')과 똑같이 맞춰줍니다.
+  // 언어 설정
   const [language, setLanguage] = useState(() => {
-    // 1. Splash에서 저장해둔 언어 설정을 가져옵니다.
     const savedLang = localStorage.getItem('appLanguage'); 
-    
-    // 2. 저장된 게 있으면 쓰고, 없으면 기본값 'ko' (혹시 모를 오류 방지)
     return savedLang && translations[savedLang] ? savedLang : 'ko';
   });
 
-  // 현재 언어 텍스트 로드
   const t = translations[language];
 
-  const handleSend = () => {
-    // 1. 금액 유효성 검사
+  // 송금 버튼 핸들러
+  const handleSend = async () => {
+    // 1. 유효성 검사
+    if (!targetAddress) {
+      alert(t.idPlaceholder || '받는 사람 정보를 입력해주세요.');
+      return;
+    }
     if (!amount || Number(amount) <= 0) {
       alert(t.alertValidAmount || '금액을 확인해주세요.');
       return;
@@ -34,19 +40,43 @@ const SendScreen = () => {
 
     // 2. 언어별 어순에 따른 확인 메시지 생성
     let confirmMessage = '';
-    
-    // 한국어(ko), 일본어(ja) -> [이름] [조사] [메시지]
     if (language === 'ko' || language === 'ja') {
-        confirmMessage = `Hong Gil-dong ${t.sendConfirmMsg}\n(${amount} USDT)`;
-    } 
-    // 그 외(영어, 중국어 등) -> [메시지] [이름]
-    else {
-        confirmMessage = `${t.sendConfirmMsg} Hong Gil-dong?\n(${amount} USDT)`;
+        confirmMessage = `${targetAddress} ${t.sendConfirmMsg}\n(${amount} USDT)`;
+    } else {
+        confirmMessage = `${t.sendConfirmMsg} ${targetAddress}?\n(${amount} USDT)`;
     }
 
+    // 3. 사용자 확인 후 API 호출
     if(window.confirm(confirmMessage)) {
-        alert(t.sendDone);
-        navigate('/home');
+      try {
+        setLoading(true); // 로딩 시작
+
+        const requestBody = {
+            targetAddress: targetAddress,
+            amount: Number(amount)
+        };
+
+        // axios 설정이 되어 있다면 axiosInstance.post(...)를 쓰셔도 됩니다.
+        const response = await axios.post('/history/transfer', requestBody);
+
+
+        if (response.status === 200 || response.status === 201) {
+            const { remainBalance } = response.data;
+            
+            // 성공 메시지 + 남은 잔액 표시
+            alert(`${t.sendDone}\n(Balance: ${remainBalance} USDT)`);
+            navigate('/home');
+        }
+
+      } catch (error) {
+        console.error("Transfer Error:", error);
+        
+        // 에러 메시지 처리 (서버에서 주는 메시지 or 기본 메시지)
+        const errorMsg = error.response?.data?.message || 'Transfer failed. Please try again.';
+        alert(errorMsg);
+      } finally {
+        setLoading(false); // 로딩 끝
+      }
     }
   };
 
@@ -62,21 +92,29 @@ const SendScreen = () => {
       {/* 메인 콘텐츠 */}
       <div className={`${styles.mainContent} ${common.fadeIn}`}>
         
-        {/* 받는 사람 정보 */}
+        {/* 1. 받는 사람 정보 입력 (API targetAddress 매핑) */}
         <section className={styles.recipientSection}>
-            <h1 className={styles.recipientTitle}>
-                {/* 접두사 (To, A 등) */}
-                {t.sendToPrefix && <span className={styles.suffix} style={{marginRight:6}}>{t.sendToPrefix}</span>}
-                
-                <span className={styles.name}>Hong Gil-dong</span> 
-                
-                {/* 접미사 (님에게, 様へ 등) */}
-                {t.sendToSuffix && <span className={styles.suffix} style={{marginLeft:2}}>{t.sendToSuffix}</span>}
-            </h1>
-            <p className={styles.subText}>{t.recipientCheck}</p>
+            <h3 className={styles.label} style={{marginBottom: '10px'}}>
+                {/* 수정됨: t.recipient 사용하여 다국어 적용 */}
+                {t.sendToPrefix ? `${t.sendToPrefix}${t.recipient}` : t.recipient}
+            </h3>
+            
+            <div className={styles.inputWrapper}>
+                {/* 기존의 고정 텍스트 대신 input으로 변경하여 targetAddress 입력 받음 */}
+                <input 
+                    type="text"
+                    className={styles.amountInput} // 스타일 재활용 (필요시 recipientInput 클래스 생성 추천)
+                    style={{ textAlign: 'left', fontSize: '18px' }}
+                    // 수정됨: t.idAddress 사용하여 다국어 적용
+                    placeholder={t.idAddress}
+                    value={targetAddress}
+                    onChange={(e) => setTargetAddress(e.target.value)}
+                />
+            </div>
+            <p className={styles.subText} style={{marginTop: '5px'}}>{t.recipientCheck}</p>
         </section>
 
-        {/* 금액 입력 */}
+        {/* 2. 금액 입력 (API amount 매핑) */}
         <section className={styles.amountSection}>
             <h3 className={styles.label}>{t.sendAmountLabel}</h3>
             
@@ -94,8 +132,13 @@ const SendScreen = () => {
 
         {/* 보내기 버튼 */}
         <div className={styles.actionArea}>
-            <button className={styles.sendBtn} onClick={handleSend}>
-                {t.sendBtn}
+            <button 
+                className={styles.sendBtn} 
+                onClick={handleSend}
+                disabled={loading} // 로딩 중 클릭 방지
+                style={{ opacity: loading ? 0.7 : 1 }}
+            >
+                {loading ? 'Processing...' : t.sendBtn}
             </button>
         </div>
 
