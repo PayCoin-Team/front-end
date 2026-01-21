@@ -1,87 +1,96 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import common from './Common.module.css'; 
 import styles from './LoginScreen.module.css';
-// 1. 번역 데이터 가져오기 (경로는 파일 위치에 맞게 수정하세요)
 import { translations } from './utils/translations'; 
 
 const LoginScreen = () => {
     const navigate = useNavigate();
-
-    // 2. 저장된 언어 설정 가져오기 (없으면 한국어 기본)
     const language = localStorage.getItem('appLanguage') || 'ko';
-    // 해당 언어의 텍스트 객체 선택 (예: translations.ko)
     const t = translations[language];
 
-    const [id, setId] = useState('');
+    const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault(); 
 
-        if (!id || !password) {
-            // 알림 메시지도 언어별로 하려면 translations.js에 추가해야 합니다.
-            // 우선은 기존대로 둡니다.
-            alert("이메일과 비밀번호를 입력해주세요.");
+        // 1. 유효성 검사: 아이디/비밀번호 미입력 시
+        if (!userId || !password) {
+            alert(t.alertInputAll); // 신규 추가 필요
             return;
         }
 
-        console.log("로그인 성공 → 홈으로 이동");
-        navigate('/home');
+        try {
+            setIsLoading(true);
+            
+            // 2. 서버 통신 (아이디 로그인 / Access Token: Header / Refresh Token: Cookie)
+            const response = await axios.post('http://localhost:8080/auth/login', {
+                username: userId, 
+                password: password
+            }, { withCredentials: true });
+
+            // 3. 헤더에서 'access' 토큰 추출
+            const accessToken = response.headers['access'] || response.headers['Access'];
+
+            if (accessToken) {
+                localStorage.setItem('accessToken', accessToken);
+                console.log("로그인 성공");
+                navigate('/home');
+            }
+        } catch (error) {
+            console.error("로그인 에러:", error);
+            // 서버 에러 메시지가 있으면 우선 출력, 없으면 다국어 공통 에러 출력
+            const errorMsg = error.response?.data?.message || t.errorLoginFail; // 신규 추가 필요
+            alert(errorMsg);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
         <div className={common.layout}>
             <div className={styles.header}>
-                <button
-                    type="button"
-                    className={styles.backButton}
-                    onClick={() => navigate('/home')}
-                >
+                <button type="button" className={styles.backButton} onClick={() => navigate('/home')}>
                     <span className={styles.arrow} />
                 </button>
             </div>
 
             <div className={`${styles.content} ${common.fadeIn}`}>
-                {/* 3. 텍스트 변환 적용 (t.login 등) */}
                 <h2 className={styles.title}>{t.login}</h2> 
 
                 <form onSubmit={handleLogin} className={styles.inputGroup}>
                     <input 
-                        type="text"
-                        // placeholder도 변수로 변경 (기존: 이메일 입력 -> 변경: 아이디 입력)
+                        type="text" 
                         placeholder={t.idPlaceholder} 
                         className={styles.input}
-                        value={id}
-                        onChange={(e) => setId(e.target.value)}
+                        value={userId}
+                        onChange={(e) => setUserId(e.target.value)}
+                        disabled={isLoading}
                     />
                     <input 
-                        type="password"
-                        // placeholder 변수로 변경
+                        type="password" 
                         placeholder={t.pwPlaceholder} 
                         className={styles.input}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        disabled={isLoading}
                     />
 
-                    <button
-                        type="submit"
-                        className={styles.submitButton}
-                    >
-                        {t.login} {/* 버튼 텍스트 변경 */}
+                    <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                        {isLoading ? "..." : t.login}
                     </button>
                 </form>
 
                 <div className={styles.findMenu}>
-                    <span onClick={() => navigate('/findId')}>
-                        {t.findId} {/* 아이디 찾기 */}
-                    </span>
-                    <span onClick={() => navigate('/resetPw')}>
-                        {t.resetPw} {/* 비밀번호 재설정 */}
-                    </span>
+                    <span onClick={() => navigate('/findId')}>{t.findId}</span>
+                    <span onClick={() => navigate('/resetPw')}>{t.resetPw}</span>
                 </div>
             </div>
         </div>
     );
 };
+
 export default LoginScreen;
