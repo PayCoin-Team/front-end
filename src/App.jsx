@@ -7,7 +7,7 @@ import { translations } from './utils/translations';
 import usdtLogo from './component/UsdtLogo.svg';
 
 // 2. 관리자 페이지 임포트
-import AdminDashboard from './AdminDashboard';
+import AdminDashboard from './Admin/AdminDashboard';
 
 // 3. 사용자 페이지 임포트
 import SplashScreen from './SplashScreen';

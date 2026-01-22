@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import styles from './AdminDashboard.module.css';
-import usdtLogo from './component/UsdtLogo.svg'; 
+// [수정] 경로 에러 방지를 위해 상위 폴더(..)로 나갑니다.
+import usdtLogo from '../component/UsdtLogo.svg'; 
+
 import ExternalMonitoring from './ExternalMonitoring';
 import InternalMonitoring from './InternalMonitoring';
+import UserManagement from './UserManagement'; 
+
 
 // [1] 사이드바 컴포넌트
 const Sidebar = ({ activeMenu, setActiveMenu }) => (
@@ -35,7 +39,7 @@ const Sidebar = ({ activeMenu, setActiveMenu }) => (
             <span>Ⓑ</span> 외부 거래 모니터링
           </li>
 
-          {/* 내부 거래 모니터링 (오류 수정됨) */}
+          {/* 내부 거래 모니터링 */}
           <li 
             onClick={() => setActiveMenu('internal')}
             style={{ 
@@ -50,10 +54,21 @@ const Sidebar = ({ activeMenu, setActiveMenu }) => (
           <li><span>📊</span> 투자 모니터링</li>
         </ul>
       </div>
+      
       <div className={styles.menuGroup}>
         <h3>관리</h3>
         <ul>
-          <li><span>👤</span> 사용자 관리</li>
+          {/* [수정] 사용자 관리 메뉴 클릭 이벤트 추가 */}
+          <li
+            onClick={() => setActiveMenu('user')}
+            style={{ 
+              color: activeMenu === 'user' ? '#28a745' : 'inherit',
+              fontWeight: activeMenu === 'user' ? 'bold' : 'normal',
+              cursor: 'pointer' 
+            }}
+          >
+            <span>👤</span> 사용자 관리
+          </li>
         </ul>
       </div>
     </nav>
@@ -150,6 +165,9 @@ const AdminDashboard = () => {
 
         {/* 3. 내부 거래 모니터링 화면 */}
         {activeMenu === 'internal' && <InternalMonitoring />}
+
+        {/* 4. [추가] 사용자 관리 화면 */}
+        {activeMenu === 'user' && <UserManagement />}
 
       </main>
     </div>
