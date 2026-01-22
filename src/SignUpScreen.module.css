@@ -77,12 +77,11 @@
     margin-left: 2px;
 }
 
-/* 1. absolute 관련 설정 제거 및 간격 조정 */
+/* 2. 개별 입력 래퍼의 여백 제거 (에러 메시지 공간이 여백 역할을 함) */
 .inputWrapper {
     display: flex;
     flex-direction: column;
-    /* position: relative;  <- 제거해도 무방합니다 */
-    margin-bottom: 5px; /* 하단 여백 최적화 */
+    margin-bottom: 0; 
 }
 
 .headerTitle {
@@ -93,11 +92,11 @@
     font-size: 1.2rem;
 }
 
-/* 3. 입력창 사이의 전체 간격 최적화 */
+/* 1. 입력창들 사이의 간격(Gap)을 줄여서 전체 높이 축소 */
 .formGroup {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* 에러 메시지 공간이 확보되었으므로 gap을 줄여도 됩니다 */
+    gap: 5px; /* 기존 15px -> 5px로 대폭 축소 */
 }
 
 .checkboxGroup {
@@ -116,17 +115,31 @@
     cursor: pointer;
 }
 
-/* 2. 에러 메시지가 자리를 미리 차지하게 수정 */
+/* 에러 메시지 스타일 수정 (밀림 방지 핵심) */
 .errorMessage {
     color: #ff4d4f;
-    font-size: 0.75rem;
-    font-weight: bold;
-    text-align: left;
-    margin-top: 4px;
     
-    /* 핵심: 에러가 없어도 15px의 높이를 유지하여 레이아웃 밀림 방지 */
-    min-height: 15px; 
-    line-height: 1.2;
+    /* 글자 크기 축소: 12px(0.75rem) -> 약 11px(0.7rem) */
+    font-size: 0.7rem; 
+    font-weight: normal; /* bold 제거하여 덜 부담스럽게 (선택사항) */
+    text-align: left;
+    
+    /* 입력창과 에러 메시지 사이 간격 축소 */
+    margin-top: 2px; 
+    
+    /* [밀림 방지 핵심] */
+    /* 에러가 없어도 딱 한 줄만큼의 공간(14px)을 항상 차지하게 함 */
+    min-height: 14px; 
+    line-height: 14px;
+    
+    /* 투명하지만 공간은 차지하도록 설정 (visibility: visible 유지) */
+    visibility: visible;
+}
+
+.errorMessage:empty::before {
+    content: " ";
+    white-space: pre;
+    display: inline-block;
 }
 
 /* 에러 발생 시 입력창 밑줄 색상 변경 */
@@ -142,16 +155,16 @@
 
 /* 중복 확인 버튼 디자인 */
 .duplicateCheckButton {
-    white-space: nowrap; /* 글자가 줄바꿈되지 않도록 */
+    white-space: nowrap;
     background-color: #50AF95;
     color: white;
     border: none;
     border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 0.8rem;
+    padding: 4px 12px; /* 버튼 크기도 살짝 줄임 */
+    font-size: 0.75rem; /* 버튼 글자도 작게 */
     font-weight: bold;
     cursor: pointer;
-    margin-bottom: 12px; /* 입력창 밑줄 위치와 시각적 균형 */
+    margin-bottom: 8px; /* 입력창 밑줄과 높이 맞춤 */
     transition: opacity 0.2s;
 }
 
@@ -168,7 +181,7 @@
 .eyeButton {
     position: absolute;
     right: 0;
-    bottom: 12px; /* 입력창 밑줄 위로 띄움 */
+    bottom: 8px; /* 입력창 패딩 변경에 맞춰 조정 */
     background: none;
     border: none;
     cursor: pointer;

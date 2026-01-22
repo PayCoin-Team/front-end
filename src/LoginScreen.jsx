@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+// [수정] 직접 axios를 부르는 대신, 우리가 만든 api 인스턴스를 가져옵니다.
+import api from './utils/api'; 
 import common from './Common.module.css'; 
 import styles from './LoginScreen.module.css';
 import { translations } from './utils/translations'; 
@@ -17,7 +18,6 @@ const LoginScreen = () => {
     const handleLogin = async (e) => {
         e.preventDefault(); 
 
-        // [보완 1] 공백 제거 후 유효성 검사 (스페이스바만 입력하는 경우 방지)
         if (!userId.trim() || !password.trim()) {
             alert(t.alertInputAll); 
             return;
@@ -26,23 +26,22 @@ const LoginScreen = () => {
         try {
             setIsLoading(true);
             
-            // 서버 통신
-            const response = await axios.post('http://localhost:8080/auth/login', {
+            // [수정] api 인스턴스를 사용합니다. 
+            // 1. 전체 URL 대신 상대 경로만 적습니다.
+            // 2. withCredentials는 api.js에 설정되어 있으므로 생략 가능합니다.
+            const response = await api.post('/auth/login', {
                 username: userId, 
                 password: password
-            }, { withCredentials: true });
+            });
 
-            // 헤더에서 토큰 추출
+            // 헤더에서 토큰 추출 (api.js에서 이미 가로채기를 하지만, 로그인 직후 저장 로직은 유지합니다)
             const accessToken = response.headers['access'] || response.headers['Access'];
 
-            // [보완 2] 토큰이 왔는지 확실하게 검사
             if (accessToken) {
                 localStorage.setItem('accessToken', accessToken);
                 console.log("로그인 성공");
                 navigate('/home');
             } else {
-                // 서버 응답은 성공(200)했으나, 헤더에 토큰이 없는 치명적인 상황
-                // 강제로 에러를 발생시켜 catch 블록으로 보냅니다.
                 throw new Error("NO_TOKEN");
             }
 
@@ -51,19 +50,14 @@ const LoginScreen = () => {
             
             let message = "";
 
-            // [보완 3] 에러 종류별 상세 처리
             if (error.message === "NO_TOKEN") {
-                // 1. 토큰이 없는 경우 (CORS 설정 문제 등)
                 message = t.errorNoToken || "인증 정보를 받아오지 못했습니다.";
             } else if (error.response) {
-                // 2. 서버가 응답을 줬지만 에러인 경우 (401 비번틀림, 404, 500 등)
-                // 서버에서 주는 메시지가 있으면 그걸 쓰고, 없으면 기본 실패 메시지
+                // 401 Unauthorized 등의 에러도 여기서 처리됩니다.
                 message = error.response.data?.message || t.errorLoginFail;
             } else if (error.request) {
-                // 3. 요청은 보냈는데 응답이 없는 경우 (서버 다운, 인터넷 끊김)
                 message = t.errorNetwork || "서버에 연결할 수 없습니다.";
             } else {
-                // 4. 기타 알 수 없는 에러
                 message = t.errorUnknown || "알 수 없는 오류가 발생했습니다.";
             }
 

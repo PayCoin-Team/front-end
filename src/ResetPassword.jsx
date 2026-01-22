@@ -5,14 +5,11 @@ import common from './Common.module.css';
 import styles from './ResetPassword.module.css';
 import eyeIcon from './component/eye.svg';
 import UsdtLogo from './component/UsdtLogo.svg';
-// 1. 번역 파일 임포트
 import { translations } from './utils/translations'; 
 
 const ResetPassword = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
-
-    // 2. 언어 설정 및 번역 객체 t 정의
     const language = localStorage.getItem('appLanguage') || 'ko';
     const t = translations[language];
 
@@ -22,11 +19,14 @@ const ResetPassword = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     
-    // 상태 관리 (인증 여부 등)
+    // 에러 및 성공 메시지 상태 추가
+    const [emailError, setEmailError] = useState("");
+    const [emailSuccess, setEmailSuccess] = useState("");
+    const [authCodeError, setAuthCodeError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+
     const [isEmailSent, setIsEmailSent] = useState(false);
     const [isVerified, setIsVerified] = useState(false);
-
-    // 비밀번호 가리기/보이기
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -36,39 +36,50 @@ const ResetPassword = () => {
 
     // [API] 1. 이메일 인증코드 전송
     const handleSendEmail = async () => {
-        if (!email) return alert(t.alertEmailRequired);
+        setEmailError("");
+        setEmailSuccess("");
+        if (!email) {
+            setEmailError(t.alertEmailRequired);
+            return;
+        }
         try {
-            await axios.post('/auth/email/send', { email });
-            alert(t.alertCodeSent);
+            await axios.post('/api/auth/email/send', { email });
+            setEmailSuccess(t.alertCodeSent);
             setIsEmailSent(true);
         } catch (error) {
-            alert(t.errorEmailSendFail + (error.response?.data?.message || "Error"));
+            setEmailError(t.errorEmailSendFail);
         }
     };
 
     // [API] 2. 이메일 인증코드 검증
     const handleVerifyCode = async () => {
-        if (!authCode) return alert(t.alertCodeRequired);
+        setAuthCodeError("");
+        if (!authCode) {
+            setAuthCodeError(t.alertCodeRequired);
+            return;
+        }
         try {
-            const response = await axios.post('/auth/email/verify', { emailCode: authCode });
+            const response = await axios.post('/api/auth/email/verify', { emailCode: authCode });
             if (response.data.isVerified) {
-                alert(t.alertVerifySuccess);
                 setIsVerified(true);
+                setAuthCodeError(""); // 에러 초기화
             } else {
-                alert(t.errorInvalidCode);
+                setAuthCodeError(t.errorInvalidCode);
             }
         } catch (error) {
-            alert(t.errorVerifyFail);
+            setAuthCodeError(t.errorVerifyFail);
         }
     };
 
     // [API] 3. 비밀번호 재설정
     const handleResetPassword = async () => {
+        setPasswordError("");
+        if (!isPasswordValid || !isConfirmValid) return;
         try {
-            await axios.patch('/auth/password-reset', { newPassword: password });
+            await axios.patch('/api/auth/password-reset', { newPassword: password });
             setStep(3);
         } catch (error) {
-            alert(t.errorResetFail + (error.response?.data?.message || "Error"));
+            setPasswordError(t.errorResetFail);
         }
     };
 
@@ -86,43 +97,53 @@ const ResetPassword = () => {
                 {step === 1 && (
                     <>
                         <h2 className={styles.mainTitle}>{t.resetPw}</h2>
-                        <div className={styles.inputBox}>
-                            <input 
-                                type="email" 
-                                placeholder={t.emailPlaceholder} 
-                                className={styles.inputField} 
-                                value={email} 
-                                onChange={(e) => setEmail(e.target.value)} 
-                                disabled={isVerified}
-                            />
-                            <button 
-                                className={`${styles.inlineButton} ${email.length > 0 ? styles.activeInlineBtn : ''}`}
-                                onClick={handleSendEmail}
-                                disabled={isVerified}
-                            >
-                                {isEmailSent ? t.resend : t.sendCode}
-                            </button>
+                        <div className={styles.inputGroup}>
+                            <div className={styles.inputBox}>
+                                <input 
+                                    type="email" 
+                                    placeholder={t.emailPlaceholder} 
+                                    className={styles.inputField} 
+                                    value={email} 
+                                    onChange={(e) => setEmail(e.target.value)} 
+                                    disabled={isVerified}
+                                />
+                                <button 
+                                    className={`${styles.inlineButton} ${email.length > 0 ? styles.activeInlineBtn : ''}`}
+                                    onClick={handleSendEmail}
+                                    disabled={isVerified}
+                                >
+                                    {isEmailSent ? t.resend : t.sendCode}
+                                </button>
+                            </div>
+                            {emailError && <p className={styles.errorMessage}>{emailError}</p>}
+                            {emailSuccess && <p className={styles.successMessage}>{emailSuccess}</p>}
                         </div>
-                        <div className={styles.inputBox}>
-                            <input 
-                                type="text" 
-                                placeholder={t.codePlaceholder} 
-                                className={styles.inputField} 
-                                value={authCode} 
-                                onChange={(e) => setAuthCode(e.target.value)} 
-                                disabled={isVerified}
-                            />
-                            <button 
-                                className={`${styles.inlineButton} ${authCode.length > 0 ? styles.activeInlineBtn : ''}`}
-                                onClick={handleVerifyCode}
-                                disabled={isVerified}
-                            >
-                                {isVerified ? t.confirm : t.confirm}
-                            </button>
+
+                        <div className={styles.inputGroup}>
+                            <div className={styles.inputBox}>
+                                <input 
+                                    type="text" 
+                                    placeholder={t.codePlaceholder} 
+                                    className={styles.inputField} 
+                                    value={authCode} 
+                                    onChange={(e) => setAuthCode(e.target.value)} 
+                                    disabled={isVerified}
+                                />
+                                <button 
+                                    className={`${styles.inlineButton} ${authCode.length > 0 ? styles.activeInlineBtn : ''}`}
+                                    onClick={handleVerifyCode}
+                                    disabled={isVerified}
+                                >
+                                    {t.confirm}
+                                </button>
+                            </div>
+                            {authCodeError && <p className={styles.errorMessage}>{authCodeError}</p>}
                         </div>
+
                         <button 
                             className={`${styles.fullButton} ${isVerified ? styles.activeFullBtn : ''}`} 
                             onClick={() => isVerified && setStep(2)}
+                            disabled={!isVerified}
                         >
                             {t.resetPw}
                         </button>
@@ -160,11 +181,13 @@ const ResetPassword = () => {
                                     <img src={eyeIcon} alt="view" className={`${styles.eyeIconImage} ${showConfirmPassword ? styles.eyeActive : styles.eyeInactive}`} />
                                 </button>
                             </div>
+                            {passwordError && <p className={styles.errorMessage}>{passwordError}</p>}
                         </div>
 
                         <button 
                             className={`${styles.fullButton} ${isPasswordValid && isConfirmValid ? styles.activeGreenBtn : ''}`}
                             onClick={handleResetPassword}
+                            disabled={!isPasswordValid || !isConfirmValid}
                         >
                             {t.confirm}
                         </button>
