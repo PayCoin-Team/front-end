@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './InternalMonitoring.module.css';
-import usdtLogo from './component/UsdtLogo.svg';
+import usdtLogo from '../component/UsdtLogo.svg';
 
 const InternalMonitoring = () => {
   // [1] 날짜 상태 관리 (ExternalMonitoring과 동일)
