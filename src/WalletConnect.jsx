@@ -4,17 +4,7 @@ import { Wallet, Key, ShieldCheck, RefreshCw, Home, Settings, ChevronLeft } from
 
 import common from './Common.module.css';
 import styles from './WalletConnect.module.css';
-
-// ⭐ [실전] 실제 API 통신을 위해 활성화
 import api from './utils/api'; 
-
-// 문자열 -> Hex 변환 유틸리티 (TronLink 서명 필수)
-const stringToHex = (str) => {
-  let val = "";
-  for (let i = 0; i < str.length; i++)
-    val += str.charCodeAt(i).toString(16);
-  return val;
-};
 
 const WalletConnect = () => {
   const navigate = useNavigate();
@@ -28,7 +18,7 @@ const WalletConnect = () => {
   const [walletAddress, setWalletAddress] = useState('');
   const [nonce, setNonce] = useState('');
   
-  // 지갑 정보 상태 (서버에서 받아옴)
+  // 지갑 정보 상태
   const [myWalletInfo, setMyWalletInfo] = useState(null); 
   const [externalWallet, setExternalWallet] = useState(null); 
 
@@ -41,7 +31,7 @@ const WalletConnect = () => {
     try {
       setLoading(true);
       
-      // 1. 내 서비스 계정 정보 조회 (잔액 등)
+      // 1. 내 서비스 계정 정보 조회
       const resUser = await api.get('/wallet/users/me');
       setMyWalletInfo(resUser.data);
 
@@ -62,8 +52,7 @@ const WalletConnect = () => {
 
     } catch (err) {
       console.error("초기 로드 실패:", err);
-      
-      // [보안] 401 Unauthorized 발생 시 로그인 페이지로 이동
+      // 401 Unauthorized 발생 시 로그인 페이지로 이동
       if (err.response && err.response.status === 401) {
         alert("로그인 세션이 만료되었습니다.");
         navigate('/login');
@@ -75,14 +64,15 @@ const WalletConnect = () => {
     }
   };
 
-  // --- 2. TronLink 연결 요청 및 Nonce 발급 (Step 1 -> 2) ---
+  // --- 2. TronLink 연결 및 Nonce 요청 ---
   const handleConnectAndRequestNonce = async () => {
     setError('');
     setLoading(true);
 
     try {
-      // [1단계] TronLink 객체가 로드될 때까지 대기 (타이밍 이슈 해결)
       let tron = window.tronWeb;
+      
+      // [1단계] TronLink 객체 로드 대기
       if (!tron) {
           for (let i = 0; i < 3; i++) {
               await new Promise(resolve => setTimeout(resolve, 500));
@@ -93,28 +83,30 @@ const WalletConnect = () => {
           }
       }
 
-      // [2단계] 연결 팝업 강제로 띄우기 (필수)
+      // [2단계] 연결 팝업 요청
       if (window.tronLink) {
-          console.log("🔗 TronLink 연결 요청...");
-          const res = await window.tronLink.request({ method: 'tron_requestAccounts' });
-          
-          if (res.code === 200) {
-              tron = window.tronWeb; // 객체 갱신
-          } else if (res.code === 4001) {
-             throw new Error("지갑 연결 요청을 거절하셨습니다.");
+          try {
+              const res = await window.tronLink.request({ method: 'tron_requestAccounts' });
+              if (res.code === 200) {
+                  tron = window.tronWeb; 
+              } else if (res.code === 4001) {
+                  throw new Error("지갑 연결 요청을 거절하셨습니다.");
+              }
+          } catch (e) {
+              if (!tron || !tron.defaultAddress) throw new Error("TronLink 팝업을 확인해주세요.");
           }
       }
 
       // [3단계] 최종 지갑 확인
       if (!tron || !tron.defaultAddress || !tron.defaultAddress.base58) {
-        throw new Error("TronLink 지갑이 감지되지 않습니다. 로그인 후 다시 시도해주세요.");
+        throw new Error("TronLink 지갑이 감지되지 않습니다. (로그인 상태를 확인해주세요)");
       }
 
-      const address = tron.defaultAddress.base58;
-      setWalletAddress(address);
+      const base58Address = tron.defaultAddress.base58;
+      setWalletAddress(base58Address);
 
-      // [4단계] ⭐ 실제 서버에 Nonce 요청 (API)
-      const response = await api.post('/wallets/nonce', { address: address });
+      // [4단계] 서버에 Nonce 요청
+      const response = await api.post('/wallets/nonce', { address: base58Address });
       
       if (response.data && response.data.nonce) {
         setNonce(response.data.nonce);
@@ -132,37 +124,57 @@ const WalletConnect = () => {
     }
   };
 
-  // --- 3. 서명 및 서버 검증 (Step 2 -> 3) ---
+  // --- 3. 서명 및 서버 검증 (강제 이동 적용) ---
   const handleSignAndVerify = async () => {
     setError('');
     setLoading(true);
 
     try {
-      if (!window.tronWeb) throw new Error("TronLink 연결이 끊어졌습니다.");
+      const tron = window.tronWeb;
+      if (!tron || !tron.defaultAddress || !tron.defaultAddress.base58) {
+          throw new Error("TronLink 연결이 끊어졌습니다. 다시 연결해주세요.");
+      }
 
-      // 1. TronLink로 서명 요청 (Hex 변환)
-      const hexNonce = stringToHex(nonce);
-      
-      // 팝업이 뜨고 사용자가 [Sign]을 누르면 값이 반환됨
-      const signature = await window.tronWeb.trx.sign(hexNonce);
-      
-      // 2. ⭐ 실제 서버에 검증 요청 (API)
+      const currentAddress = tron.defaultAddress.base58;
+      if (currentAddress !== walletAddress) {
+          throw new Error(`지갑 주소가 변경되었습니다.\n처음부터 다시 시도해주세요.`);
+      }
+
+      // 1. 서명 수행 (signMessageV2 + Raw String)
+      // 백엔드 로직에 맞춰 원본 문자열을 그대로 서명합니다.
+      const signature = await tron.trx.signMessageV2(nonce);
+      console.log("✅ 서명 완료:", signature);
+
+      // 2. 서버 검증 요청
       await api.post('/wallets/verify', {
         address: walletAddress,
-        nonce: nonce,
+        nonce: nonce, 
         signature: signature
       });
 
-      // 3. 검증 성공 시 정보 갱신 (Step 3로 자동 이동됨)
-      await checkConnection(); 
+      console.log("🎉 서버 검증 통과!");
+
+      // ⭐ [수정 핵심] 재조회(checkConnection) 대신 강제로 Step 3로 이동
+      // 백엔드 DB 반영 딜레이로 인한 404 에러(초기화)를 방지합니다.
+      setExternalWallet({ walletAddress: walletAddress }); 
+      setStep(3); 
 
     } catch (err) {
-      console.error(err);
-      // 서버에서 400이나 401을 주면 검증 실패
+      console.error("서명 검증 에러:", err);
+      
       if (err.response) {
-          setError(err.response.data.message || "서명 검증에 실패했습니다.");
+          const status = err.response.status;
+          const msg = err.response.data.message || JSON.stringify(err.response.data);
+          
+          if (status === 409) {
+              setError("이미 다른 계정에 등록된 지갑 주소입니다.");
+          } else if (status === 400) {
+              setError(`서명 검증 실패: ${msg}`);
+          } else {
+              setError(`서버 오류 (${status}): ${msg}`);
+          }
       } else {
-          setError("서명을 취소했거나 오류가 발생했습니다.");
+          setError(err.message || "서명을 취소했거나 오류가 발생했습니다.");
       }
     } finally {
       setLoading(false);
@@ -190,13 +202,13 @@ const WalletConnect = () => {
             </div>
             <h2 className={styles.title}>TronLink 연결</h2>
             <p className={styles.subtitle}>
-              아래 버튼을 눌러 TronLink 지갑을<br/>연결하고 인증을 시작합니다.
+              아래 버튼을 눌러 TronLink 지갑을<br/>연결하고 인증을 시작할 수 있습니다.
             </p>
 
             <button className={styles.button} onClick={handleConnectAndRequestNonce} disabled={loading}>
               {loading ? 'TronLink 확인 중...' : 'TronLink 지갑 연결하기'}
             </button>
-            {error && <p className={styles.errorMsg} style={{color: '#ff4d4f', marginTop: '10px'}}>{error}</p>}
+            {error && <p className={styles.errorMsg} style={{color: '#ff4d4f', marginTop: '10px', whiteSpace: 'pre-line'}}>{error}</p>}
           </div>
         )}
 
@@ -224,7 +236,21 @@ const WalletConnect = () => {
             <button className={styles.button} onClick={handleSignAndVerify} disabled={loading}>
               {loading ? '서명 검증 중...' : '서명 팝업 띄우기 & 검증'}
             </button>
-            {error && <p className={styles.errorMsg} style={{color: '#fffae5', marginTop: '10px'}}>{error}</p>}
+            
+            {/* 에러 메시지 표시 */}
+            {error && (
+                <div style={{
+                    backgroundColor: 'rgba(0,0,0,0.2)', 
+                    padding: '10px', 
+                    borderRadius: '8px', 
+                    marginTop: '15px',
+                    color: '#fffae5',
+                    fontSize: '0.9rem',
+                    whiteSpace: 'pre-wrap'
+                }}>
+                    {error}
+                </div>
+            )}
           </div>
         )}
 

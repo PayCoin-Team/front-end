@@ -26,22 +26,33 @@ const LoginScreen = () => {
         try {
             setIsLoading(true);
             
-            // [수정] api 인스턴스를 사용합니다. 
-            // 1. 전체 URL 대신 상대 경로만 적습니다.
-            // 2. withCredentials는 api.js에 설정되어 있으므로 생략 가능합니다.
+            // [API 호출]
             const response = await api.post('/auth/login', {
                 username: userId, 
                 password: password
             });
 
-            // 헤더에서 토큰 추출 (api.js에서 이미 가로채기를 하지만, 로그인 직후 저장 로직은 유지합니다)
-            const accessToken = response.headers['access'] || response.headers['Access'];
+            // ⭐ [수정 핵심] API 명세서에 따라 'Authorization' 헤더 확인
+            // 대소문자 구분을 피하기 위해 둘 다 확인
+            const authHeader = response.headers['authorization'] || response.headers['Authorization'];
+            let accessToken = null;
 
+            if (authHeader) {
+                // 보통 "Bearer [토큰]" 형식이므로 앞의 "Bearer "를 제거하고 토큰값만 추출
+                if (authHeader.startsWith('Bearer ')) {
+                    accessToken = authHeader.split(' ')[1];
+                } else {
+                    accessToken = authHeader;
+                }
+            }
+
+            // 토큰이 있으면 저장하고 이동
             if (accessToken) {
                 localStorage.setItem('accessToken', accessToken);
-                console.log("로그인 성공");
+                console.log("로그인 성공:", accessToken); // 개발 확인용 로그
                 navigate('/home');
             } else {
+                // 응답은 200인데 헤더에 토큰이 없는 경우
                 throw new Error("NO_TOKEN");
             }
 
@@ -51,10 +62,10 @@ const LoginScreen = () => {
             let message = "";
 
             if (error.message === "NO_TOKEN") {
-                message = t.errorNoToken || "인증 정보를 받아오지 못했습니다.";
+                message = t.errorNoToken || "인증 정보를 받아오지 못했습니다. (토큰 누락)";
             } else if (error.response) {
-                // 401 Unauthorized 등의 에러도 여기서 처리됩니다.
-                message = error.response.data?.message || t.errorLoginFail;
+                // 401 Unauthorized 등 서버 에러
+                message = error.response.data?.message || t.errorLoginFail || "로그인 정보를 확인해주세요.";
             } else if (error.request) {
                 message = t.errorNetwork || "서버에 연결할 수 없습니다.";
             } else {

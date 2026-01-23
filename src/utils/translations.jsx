@@ -40,7 +40,7 @@ export const translations = {
         newPwConfirmLabel: '새 비밀번호 확인 *',
         pwResetComplete: '비밀번호 재설정이 완료되었습니다.',
         resend: '재전송',
-        loginGo: '로그인 하러가기',
+        loginGo: '로그인',
         alertVerifySuccess: "인증에 성공하였습니다.",
         alertEmailRequired: "이메일을 입력해주세요.",
         alertCodeRequired: "인증번호를 입력해주세요.",
