@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import common from './Common.module.css';
 import styles from './ResetPassword.module.css';
 import eyeIcon from './component/eye.svg';
 import UsdtLogo from './component/UsdtLogo.svg';
+
+// ⭐ [수정 1] api 인스턴스 import
+import api from './utils/api';
 import { translations } from './utils/translations'; 
 
 const ResetPassword = () => {
@@ -19,7 +21,7 @@ const ResetPassword = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     
-    // 에러 및 성공 메시지 상태 추가
+    // 에러 및 성공 메시지 상태
     const [emailError, setEmailError] = useState("");
     const [emailSuccess, setEmailSuccess] = useState("");
     const [authCodeError, setAuthCodeError] = useState("");
@@ -34,57 +36,84 @@ const ResetPassword = () => {
     const isPasswordValid = passwordRegex.test(password);
     const isConfirmValid = password === confirmPassword && confirmPassword.length > 0;
 
-    // [API] 1. 이메일 인증코드 전송
+    // [API 1] 이메일 인증번호 발송 (POST /auth/password/send-code)
+    // 명세서: email은 (query) 파라미터
     const handleSendEmail = async () => {
         setEmailError("");
         setEmailSuccess("");
+        
         if (!email) {
             setEmailError(t.alertEmailRequired);
             return;
         }
         try {
-            await axios.post('/api/auth/email/send', { email });
+            // ⭐ [수정] query parameter 사용
+            await api.post('/auth/password/send-code', null, {
+                params: { email: email }
+            });
+            
             setEmailSuccess(t.alertCodeSent);
             setIsEmailSent(true);
         } catch (error) {
-            setEmailError(t.errorEmailSendFail);
+            console.error(error);
+            setEmailError(t.errorEmailSendFail || "이메일 발송에 실패했습니다.");
         }
     };
 
-    // [API] 2. 이메일 인증코드 검증
+    // [API 2] 인증번호 확인 (POST /auth/password/verify-code)
+    // 명세서: email, code 모두 (query) 파라미터
     const handleVerifyCode = async () => {
         setAuthCodeError("");
+        
         if (!authCode) {
             setAuthCodeError(t.alertCodeRequired);
             return;
         }
         try {
-            const response = await axios.post('/api/auth/email/verify', { emailCode: authCode });
-            if (response.data.isVerified) {
-                setIsVerified(true);
-                setAuthCodeError(""); // 에러 초기화
-            } else {
-                setAuthCodeError(t.errorInvalidCode);
-            }
+            // ⭐ [수정] query parameter 사용
+            await api.post('/auth/password/verify-code', null, {
+                params: { 
+                    email: email, // 명세서에 email도 필요하다고 되어 있음
+                    code: authCode 
+                }
+            });
+            
+            // 200 OK면 성공
+            setIsVerified(true);
+            setAuthCodeError(""); 
         } catch (error) {
-            setAuthCodeError(t.errorVerifyFail);
+            console.error(error);
+            setAuthCodeError(t.errorVerifyFail || "인증번호가 일치하지 않습니다.");
         }
     };
 
-    // [API] 3. 비밀번호 재설정
+    // [API 3] 비밀번호 재설정 (PATCH /auth/password/reset)
+    // 명세서: email, newPassword 모두 (query) 파라미터
     const handleResetPassword = async () => {
         setPasswordError("");
+        
         if (!isPasswordValid || !isConfirmValid) return;
+        
         try {
-            await axios.patch('/api/auth/password-reset', { newPassword: password });
-            setStep(3);
+            // ⭐ [수정] PATCH 메서드 & query parameter 사용
+            await api.patch('/auth/password/reset', null, {
+                params: { 
+                    email: email,        // 이메일로 식별
+                    newPassword: password 
+                }
+            });
+            
+            // 성공 시 완료 화면(Step 3)으로
+            setStep(3); 
         } catch (error) {
-            setPasswordError(t.errorResetFail);
+            console.error(error);
+            setPasswordError(t.errorResetFail || "비밀번호 변경에 실패했습니다.");
         }
     };
 
     return (
         <div className={common.layout}>
+            {/* 헤더 */}
             <div className={styles.header}>
                 {step !== 3 && (
                     <button className={styles.backButton} onClick={() => step === 1 ? navigate(-1) : setStep(1)}>
@@ -94,9 +123,13 @@ const ResetPassword = () => {
             </div>
 
             <div className={`${styles.contentSection} ${common.fadeIn}`}>
+                
+                {/* STEP 1: 이메일 인증 */}
                 {step === 1 && (
                     <>
                         <h2 className={styles.mainTitle}>{t.resetPw}</h2>
+                        
+                        {/* 이메일 입력 */}
                         <div className={styles.inputGroup}>
                             <div className={styles.inputBox}>
                                 <input 
@@ -119,6 +152,7 @@ const ResetPassword = () => {
                             {emailSuccess && <p className={styles.successMessage}>{emailSuccess}</p>}
                         </div>
 
+                        {/* 인증코드 입력 */}
                         <div className={styles.inputGroup}>
                             <div className={styles.inputBox}>
                                 <input 
@@ -140,8 +174,9 @@ const ResetPassword = () => {
                             {authCodeError && <p className={styles.errorMessage}>{authCodeError}</p>}
                         </div>
 
+                        {/* 다음 단계 버튼 */}
                         <button 
-                            className={`${styles.fullButton} ${isVerified ? styles.activeFullBtn : ''}`} 
+                            className={`${styles.fullButton1} ${isVerified ? styles.activeFullBtn : ''}`} 
                             onClick={() => isVerified && setStep(2)}
                             disabled={!isVerified}
                         >
@@ -150,9 +185,12 @@ const ResetPassword = () => {
                     </>
                 )}
 
+                {/* STEP 2: 새 비밀번호 입력 */}
                 {step === 2 && (
                     <>
                         <h2 className={styles.mainTitle}>{t.resetPw}</h2>
+                        
+                        {/* 비밀번호 */}
                         <div className={styles.inputGroup}>
                             <div className={styles.inputLabel}>{t.newPwLabel}</div>
                             <div className={styles.underlineInput}>
@@ -168,6 +206,7 @@ const ResetPassword = () => {
                             </div>
                         </div>
 
+                        {/* 비밀번호 확인 */}
                         <div className={styles.inputGroup}>
                             <div className={styles.inputLabel}>{t.newPwConfirmLabel}</div>
                             <div className={styles.underlineInput}>
@@ -185,7 +224,7 @@ const ResetPassword = () => {
                         </div>
 
                         <button 
-                            className={`${styles.fullButton} ${isPasswordValid && isConfirmValid ? styles.activeGreenBtn : ''}`}
+                            className={`${styles.fullButton2} ${isPasswordValid && isConfirmValid ? styles.activeGreenBtn : ''}`}
                             onClick={handleResetPassword}
                             disabled={!isPasswordValid || !isConfirmValid}
                         >
@@ -194,6 +233,7 @@ const ResetPassword = () => {
                     </>
                 )}
 
+                {/* STEP 3: 완료 */}
                 {step === 3 && (
                     <div className={styles.completeContainer}>
                         <div className={styles.brandLogoRow}>
