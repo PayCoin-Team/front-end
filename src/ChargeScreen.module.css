@@ -1,29 +1,12 @@
-/* =========================================
-   1. 전체 레이아웃 & 공통
-   ========================================= */
-.container {
-  flex: 1;
-  padding: 40px 20px;
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
-  /* 애니메이션 효과 */
-  transition: all 0.3s ease-in-out;
-}
-
-.centerMode {
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 80px; 
-}
-
-
+/* 1. 헤더 영역 */
 .header {
-  height: 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 5px; 
+  padding: 20px;
+  background-color: white;
+  /* 스크롤 시 헤더가 고정되길 원하면 아래 주석 해제 */
+  /* position: sticky; top: 0; z-index: 5; */
 }
 
 .backBtn {
@@ -31,196 +14,180 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #169279; 
-  font-weight: bold;
-  padding: 10px; 
+  padding: 0;
+  color: #333;
 }
 
 .title {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
-  color: #169279;
+  color: #333;
+  margin: 0;
 }
 
+/* 2. 메인 컨테이너 */
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  
+  /* [중요] 하단 네비게이션(75px)에 가려지지 않도록 여백 추가 */
+  padding-bottom: 90px;
+  overflow-y: auto; /* 내용이 길어지면 스크롤 */
+}
 
+/* 중앙 정렬 모드 (로딩, 완료 화면용) */
+.centerMode {
+  justify-content: center;
+  align-items: center;
+}
+
+/* 3. 입력 폼 스타일 */
 .mainLabel {
-  font-size: 1.8rem;
+  font-size: 1.3rem;
   font-weight: bold;
-  color: #169279;
+  margin-top: 20px;
   margin-bottom: 30px;
-  letter-spacing: -0.5px;
+  color: #333;
 }
-
 
 .inputWrapper {
-  position: relative;
   display: flex;
   align-items: center;
-  border: 2px solid #169279;
-  border-radius: 12px;
-  padding: 15px 20px;
-  margin-bottom: 20px;
+  /* Common.css의 테마 색상(#169279) 적용 */
+  border-bottom: 2px solid #169279;
+  padding-bottom: 10px;
+  margin-bottom: 30px;
 }
 
 .chargeInput {
   flex: 1;
   border: none;
-  font-size: 1.2rem;
+  font-size: 2rem;
   font-weight: bold;
+  color: #169279; /* 테마 색상 */
   outline: none;
-  color: #333;
   background: transparent;
 }
 
 .chargeInput::placeholder {
-  color: #a0a0a0;
-  font-weight: normal;
+  color: #ddd;
 }
 
-/* USDT 단위 텍스트 */
 .unit {
-  font-size: 1.0rem;
-  font-weight: 500;
-  color: #169279;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #169279; /* 테마 색상 */
   margin-left: 10px;
 }
 
-/* 버튼 영역 */
-.btnWrapper {
-  margin-top: 10px;
+/* 4. [신규] 송금 정보 박스 (From -> To) */
+.transferInfoBox {
+  background-color: #f5f7f6;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+}
+
+.transferRow {
   display: flex;
-  justify-content: flex-end; 
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transferLabel {
+  font-size: 0.85rem;
+  color: #888;
+  font-weight: 500;
+}
+
+.transferValue {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 600;
+  font-family: monospace; /* 주소 가독성을 위해 고정폭 글꼴 추천 */
+}
+
+.arrowArea {
+  text-align: center;
+  color: #169279;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin: 10px 0;
+  opacity: 0.8;
+}
+
+/* 5. 버튼 영역 */
+.btnWrapper {
+  margin-top: auto; /* 화면 하단으로 밀기 */
+  margin-bottom: 10px;
 }
 
 .submitBtn {
-  background-color: #169279;
+  width: 100%;
+  background-color: #169279; /* Common.css와 동일한 녹색 */
   color: white;
+  padding: 16px;
   border: none;
-  border-radius: 10px;
-  padding: 10px 30px;
+  border-radius: 12px;
   font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: opacity 0.2s;
+  box-shadow: 0 4px 10px rgba(22, 146, 121, 0.2);
 }
 
 .submitBtn:active {
-  background-color: #127a63;
-  transform: scale(0.98);
+  opacity: 0.9;
 }
 
-
+/* 6. 상태 화면 (로딩/성공) */
 .statusContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   text-align: center;
   width: 100%;
-  animation: fadeIn 0.5s ease-out; 
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .logoArea {
   margin-bottom: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .logoImg {
-  width: 80px;  
+  width: 80px;
   height: 80px;
-  object-fit: contain;
+  /* 필요 시 애니메이션 추가 가능 */
 }
 
-/* 상태 메시지 ("충전이 진행중입니다") */
 .statusText {
   font-size: 1.4rem;
-  font-weight: 700;
-  color: #169279;
-  margin-bottom: 20px;
-  line-height: 1.4; 
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
 }
-
 
 .amountText {
   font-size: 2rem;
-  font-weight: 800;
-  color: #333; 
+  font-weight: bold;
+  color: #169279;
+  margin-bottom: 20px;
+}
+
+.descText {
+  font-size: 0.9rem;
+  color: #888;
   margin-bottom: 40px;
+  line-height: 1.5;
 }
 
 .confirmBtn {
-  width: 80%;
-  max-width: 300px;
+  width: 100%;
   background-color: #169279;
   color: white;
+  padding: 16px;
   border: none;
   border-radius: 12px;
-  padding: 16px 0;
   font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(22, 146, 121, 0.2);
-  transition: opacity 0.2s;
-}
-
-.confirmBtn:active {
-  opacity: 0.9;
-  transform: scale(0.98);
-}
-
-/* =========================================
-   5. 하단 네비게이션 (녹색 배경)
-   ========================================= */
-.bottomNav {
-  height: 80px; 
-  background-color: #169279; 
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding-bottom: 15px; 
-  position: sticky;
-  bottom: 0;
-  z-index: 50;
-}
-
-.navItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.6); 
-  cursor: pointer;
-  gap: 6px;
-  flex: 1; 
-}
-
-.navImg {
-  width: 24px;
-  height: 24px;
-  filter: brightness(0) invert(1); 
-  opacity: 0.6; 
-  transition: opacity 0.2s;
-}
-
-.navText {
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.navItem.active {
-  color: #ffffff; 
-}
-
-.navItem.active .navImg {
-  opacity: 1; 
-}
-
-.navItem.active .navText {
-  font-weight: 800;
 }

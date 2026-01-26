@@ -20,39 +20,35 @@ const WalletConnect = () => {
   
   // 지갑 정보 상태
   const [myWalletInfo, setMyWalletInfo] = useState(null); 
-  const [externalWallet, setExternalWallet] = useState(null); 
+  const [connectedAddress, setConnectedAddress] = useState(''); 
 
-  // --- 1. 초기 로드: 서버에서 현재 상태 조회 ---
+  // --- 1. 초기 로드 ---
   useEffect(() => {
-    checkConnection();
+    checkUserStatus();
   }, []);
 
-  const checkConnection = async () => {
+  const checkUserStatus = async () => {
     try {
       setLoading(true);
       
-      // 1. 내 서비스 계정 정보 조회
-      const resUser = await api.get('/wallet/users/me');
-      setMyWalletInfo(resUser.data);
+      // ✅ [수정] 이제 이 API가 externalAddress를 줍니다!
+      const res = await api.get('/wallets/users/me', {
+          params: { _t: new Date().getTime() } // 캐시 방지
+      });
+      setMyWalletInfo(res.data);
 
-      try {
-        // 2. 이미 연동된 외부 지갑이 있는지 확인
-        const resExt = await api.get('/wallet/external/me');
-        
-        if (resExt.data && resExt.data.walletAddress) {
-           setExternalWallet(resExt.data);
-           setStep(3); // 이미 연동됨 -> 완료 화면
-        } else {
-           setStep(1); // 연동 안됨 -> 시작 화면
-        }
-      } catch (extErr) {
-        // 404 등 정보가 없으면 연동 시작 화면으로
-        setStep(1);
+      if (res.data && res.data.externalAddress) {
+          // ⭐ 이미 연동된 상태라면 -> 바로 완료 화면(Step 3)으로
+          console.log("이미 연동된 지갑 발견:", res.data.externalAddress);
+          setConnectedAddress(res.data.externalAddress);
+          setStep(3);
+      } else {
+          // 미연동 상태라면 -> 연동 시작 화면(Step 1)으로
+          setStep(1);
       }
 
     } catch (err) {
       console.error("초기 로드 실패:", err);
-      // 401 Unauthorized 발생 시 로그인 페이지로 이동
       if (err.response && err.response.status === 401) {
         alert("로그인 세션이 만료되었습니다.");
         navigate('/login');
@@ -72,7 +68,7 @@ const WalletConnect = () => {
     try {
       let tron = window.tronWeb;
       
-      // [1단계] TronLink 객체 로드 대기
+      // TronLink 로드 대기
       if (!tron) {
           for (let i = 0; i < 3; i++) {
               await new Promise(resolve => setTimeout(resolve, 500));
@@ -83,34 +79,29 @@ const WalletConnect = () => {
           }
       }
 
-      // [2단계] 연결 팝업 요청
       if (window.tronLink) {
           try {
               const res = await window.tronLink.request({ method: 'tron_requestAccounts' });
-              if (res.code === 200) {
-                  tron = window.tronWeb; 
-              } else if (res.code === 4001) {
-                  throw new Error("지갑 연결 요청을 거절하셨습니다.");
-              }
+              if (res.code === 200) tron = window.tronWeb; 
+              else if (res.code === 4001) throw new Error("지갑 연결 요청을 거절하셨습니다.");
           } catch (e) {
               if (!tron || !tron.defaultAddress) throw new Error("TronLink 팝업을 확인해주세요.");
           }
       }
 
-      // [3단계] 최종 지갑 확인
       if (!tron || !tron.defaultAddress || !tron.defaultAddress.base58) {
-        throw new Error("TronLink 지갑이 감지되지 않습니다. (로그인 상태를 확인해주세요)");
+        throw new Error("TronLink 지갑이 감지되지 않습니다.");
       }
 
       const base58Address = tron.defaultAddress.base58;
       setWalletAddress(base58Address);
 
-      // [4단계] 서버에 Nonce 요청
+      // Nonce 요청
       const response = await api.post('/wallets/nonce', { address: base58Address });
       
       if (response.data && response.data.nonce) {
         setNonce(response.data.nonce);
-        setStep(2); // 서명 단계로 이동
+        setStep(2); 
       } else {
         throw new Error("보안 문자열(Nonce) 발급에 실패했습니다.");
       }
@@ -124,55 +115,44 @@ const WalletConnect = () => {
     }
   };
 
-  // --- 3. 서명 및 서버 검증 (강제 이동 적용) ---
+  // --- 3. 서명 및 서버 검증 ---
   const handleSignAndVerify = async () => {
     setError('');
     setLoading(true);
 
     try {
       const tron = window.tronWeb;
-      if (!tron || !tron.defaultAddress || !tron.defaultAddress.base58) {
-          throw new Error("TronLink 연결이 끊어졌습니다. 다시 연결해주세요.");
-      }
+      if (!tron || !tron.defaultAddress) throw new Error("TronLink 연결이 끊어졌습니다.");
 
       const currentAddress = tron.defaultAddress.base58;
       if (currentAddress !== walletAddress) {
-          throw new Error(`지갑 주소가 변경되었습니다.\n처음부터 다시 시도해주세요.`);
+          throw new Error("지갑 주소가 변경되었습니다. 처음부터 다시 시도해주세요.");
       }
 
-      // 1. 서명 수행 (signMessageV2 + Raw String)
-      // 백엔드 로직에 맞춰 원본 문자열을 그대로 서명합니다.
+      // 서명 수행
       const signature = await tron.trx.signMessageV2(nonce);
       console.log("✅ 서명 완료:", signature);
 
-      // 2. 서버 검증 요청
+      // 검증 요청
       await api.post('/wallets/verify', {
-        address: walletAddress,
+        address: walletAddress, 
         nonce: nonce, 
         signature: signature
       });
 
       console.log("🎉 서버 검증 통과!");
 
-      // ⭐ [수정 핵심] 재조회(checkConnection) 대신 강제로 Step 3로 이동
-      // 백엔드 DB 반영 딜레이로 인한 404 에러(초기화)를 방지합니다.
-      setExternalWallet({ walletAddress: walletAddress }); 
+      // 완료 처리
+      setConnectedAddress(walletAddress);
       setStep(3); 
 
     } catch (err) {
       console.error("서명 검증 에러:", err);
-      
       if (err.response) {
           const status = err.response.status;
           const msg = err.response.data.message || JSON.stringify(err.response.data);
-          
-          if (status === 409) {
-              setError("이미 다른 계정에 등록된 지갑 주소입니다.");
-          } else if (status === 400) {
-              setError(`서명 검증 실패: ${msg}`);
-          } else {
-              setError(`서버 오류 (${status}): ${msg}`);
-          }
+          if (status === 409) setError("이미 다른 계정에 등록된 지갑입니다.");
+          else setError(`[서버 에러 ${status}] ${msg}`);
       } else {
           setError(err.message || "서명을 취소했거나 오류가 발생했습니다.");
       }
@@ -194,34 +174,23 @@ const WalletConnect = () => {
 
       <div className={styles.content}>
         
-        {/* STEP 1: 지갑 주소 자동 감지 */}
         {step === 1 && (
           <div className={`${styles.whiteCard} ${common.fadeIn}`}>
-            <div className={styles.iconCircle}>
-              <Wallet size={28} />
-            </div>
+            <div className={styles.iconCircle}><Wallet size={28} /></div>
             <h2 className={styles.title}>TronLink 연결</h2>
-            <p className={styles.subtitle}>
-              아래 버튼을 눌러 TronLink 지갑을<br/>연결하고 인증을 시작할 수 있습니다.
-            </p>
-
+            <p className={styles.subtitle}>버튼을 눌러 연결을 시작하세요.</p>
             <button className={styles.button} onClick={handleConnectAndRequestNonce} disabled={loading}>
-              {loading ? 'TronLink 확인 중...' : 'TronLink 지갑 연결하기'}
+              {loading ? '확인 중...' : 'TronLink 지갑 연결하기'}
             </button>
-            {error && <p className={styles.errorMsg} style={{color: '#ff4d4f', marginTop: '10px', whiteSpace: 'pre-line'}}>{error}</p>}
+            {error && <p className={styles.errorMsg} style={{color: '#ff4d4f', marginTop: '10px'}}>{error}</p>}
           </div>
         )}
 
-        {/* STEP 2: 서명 요청 */}
         {step === 2 && (
           <div className={`${styles.greenCard} ${common.fadeIn}`}>
-            <div className={styles.iconCircle}>
-              <Key size={28} />
-            </div>
+            <div className={styles.iconCircle}><Key size={28} /></div>
             <h2 className={styles.title}>전자 서명 요청</h2>
-            <p className={styles.subtitle}>
-              TronLink 팝업창에서<br/>[서명] 버튼을 눌러주세요.
-            </p>
+            <p className={styles.subtitle}>팝업창에서 [서명] 해주세요.</p>
 
             <div className={styles.formGroup}>
               <label className={styles.label}>지갑 주소</label>
@@ -229,81 +198,53 @@ const WalletConnect = () => {
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.label}>보안 문자열 (Nonce)</label>
+              <label className={styles.label}>Nonce</label>
               <div className={styles.nonceBox}>{nonce}</div>
             </div>
 
             <button className={styles.button} onClick={handleSignAndVerify} disabled={loading}>
-              {loading ? '서명 검증 중...' : '서명 팝업 띄우기 & 검증'}
+              {loading ? '검증 중...' : '서명 팝업 띄우기'}
             </button>
             
-            {/* 에러 메시지 표시 */}
-            {error && (
-                <div style={{
-                    backgroundColor: 'rgba(0,0,0,0.2)', 
-                    padding: '10px', 
-                    borderRadius: '8px', 
-                    marginTop: '15px',
-                    color: '#fffae5',
-                    fontSize: '0.9rem',
-                    whiteSpace: 'pre-wrap'
-                }}>
-                    {error}
-                </div>
-            )}
+            {error && <div className={styles.errorBox}>{error}</div>}
           </div>
         )}
 
-        {/* STEP 3: 연동 완료 */}
         {step === 3 && (
           <div className={`${styles.greenCard} ${common.fadeIn}`}>
-            <div className={styles.iconCircle}>
-              <ShieldCheck size={32} />
-            </div>
+            <div className={styles.iconCircle}><ShieldCheck size={32} /></div>
             <h2 className={styles.title}>연동 완료</h2>
-            <p className={styles.subtitle}>지갑이 성공적으로 연결되었습니다.</p>
-
+            <p className={styles.subtitle}>성공적으로 연결되었습니다.</p>
+            
             <div className={styles.infoList}>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>서비스 잔고</span>
-                <span className={styles.infoValue}>
-                  {myWalletInfo?.totalBalance || myWalletInfo?.balance || '0'} USDT
-                </span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>연동된 지갑</span>
-                <span className={styles.infoValue}>
-                  {externalWallet?.walletAddress 
-                    ? externalWallet.walletAddress.substring(0, 6) + '...' + externalWallet.walletAddress.slice(-4)
-                    : '정보 없음'}
-                </span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>상태</span>
-                <span className={styles.infoValue} style={{color: '#81E6D9'}}>Active</span>
-              </div>
+                <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>서비스 잔고</span>
+                    <span className={styles.infoValue}>
+                         {myWalletInfo?.totalBalance || myWalletInfo?.balance || '0'} USDT
+                    </span>
+                </div>
+                <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>연동된 지갑</span>
+                    <span className={styles.infoValue}>
+                        {connectedAddress ? connectedAddress.slice(0,6) + '...' + connectedAddress.slice(-4) : ''}
+                    </span>
+                </div>
+                <div className={styles.infoRow}>
+                  <span className={styles.infoLabel}>상태</span>
+                  <span className={styles.infoValue} style={{color: '#81E6D9'}}>Active</span>
+                </div>
             </div>
 
-            <button 
-              className={styles.button} 
-              onClick={() => { 
-                setStep(1); 
-                setWalletAddress(''); 
-                setNonce(''); 
-              }}
-              style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: 'white' }}
-            >
-              <RefreshCw size={16} style={{marginRight:8, verticalAlign:'text-bottom'}}/>
-              지갑 재연동
+            <button className={styles.button} onClick={() => { setStep(1); setWalletAddress(''); setNonce(''); }}
+              style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: 'white' }}>
+              <RefreshCw size={16} style={{marginRight:8}}/> 재연동
             </button>
           </div>
         )}
-
       </div>
       
-      {/* 하단 네비게이션 */}
       <nav className={common.bottomNav}>
-        <div className={common.navItem} onClick={() => navigate('/home')} style={{ cursor: 'pointer' }}>
+         <div className={common.navItem} onClick={() => navigate('/home')} style={{ cursor: 'pointer' }}>
           <Home className={common.navImg} />
           <span className={common.navText}>홈</span>
         </div>
