@@ -81,7 +81,7 @@ const LoginScreen = () => {
     return (
         <div className={common.layout}>
             <div className={styles.header}>
-                <button type="button" className={styles.backButton} onClick={() => navigate('/home')}>
+                <button type="button" className={styles.backButton} onClick={() => navigate('/')}>
                     <span className={styles.arrow} />
                 </button>
             </div>

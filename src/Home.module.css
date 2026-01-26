@@ -140,7 +140,7 @@
   padding: 6px 12px;
   border-radius: 8px;
   font-size: 0.85rem;
-  margin-top: 15px;
+  margin-top: 5px;
   display: flex; align-items: center; gap: 6px;
   cursor: pointer;
 }
@@ -148,7 +148,7 @@
 .copyHint { font-size: 0.7rem; opacity: 0.8; font-weight: normal; }
 
 .cardBottom {
-  margin-top:0px;
+  margin-top:5px;
   display: flex; justify-content: space-between; align-items: center;
   font-weight: bold;
   border-top: 1px solid rgba(255,255,255,0.2);

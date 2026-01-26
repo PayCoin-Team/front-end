@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import common from './Common.module.css';
 import styles from './MyPageScreen.module.css';
 
-// 하단 네비게이션 아이콘 (Home.jsx와 동일한 경로)
+// [수정 1] API 인스턴스 import
+import api from './utils/api'; 
+
+// 하단 네비게이션 아이콘
 import navHomeIcon from './assets/nav_home.svg';
 import navPayIcon from './assets/nav_pay.svg';
 import navUserIcon from './assets/nav_user.svg';
@@ -13,19 +16,15 @@ import walletAddressIcon from './assets/wallet.svg';
 const MyPageScreen = () => {
   const navigate = useNavigate();
 
-
-
-
-  // 사용자 정보 (예시)
+  // 사용자 정보 (추후 API 연동 시 set 필요)
   const user = {
     name: "홍길동",
     email: "user@example.com",
-    avatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png" // 임시 프로필 이미지 주소
+    avatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png" 
   };
   
   const myWalletAddress = "A1B2-C3D4"; 
 
-  // ⭐ [추가] 주소 복사 함수
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(myWalletAddress);
     alert(`지갑 주소가 복사되었습니다!\n📋 ${myWalletAddress}`);
@@ -34,15 +33,29 @@ const MyPageScreen = () => {
   const menuItems = [
     { title: "내 정보 수정", icon: "👤" },
     { title: "보안 센터 (비밀번호 변경)", icon: "🔒" },
-    { title: "지갑 주소 관리", icon: "💼" },
-    { title: "고객센터 / 도움말", icon: "🎧" },
-    { title: "약관 및 정책", icon: "📄" },
   ];
 
-  const handleLogout = () => {
-    // 로그아웃 로직 (토큰 삭제 등)
-    if(window.confirm("로그아웃 하시겠습니까?")) {
-        navigate('/', { replace: true });
+const handleLogout = async () => {
+    if (!window.confirm("로그아웃 하시겠습니까?")) return;
+
+    try {
+        // 1. 서버 로그아웃 요청
+        await api.post('/auth/logout');
+    } catch (error) {
+        console.error("로그아웃 요청 에러:", error);
+    } finally {
+        // 2. 로컬 스토리지 토큰 삭제
+        localStorage.removeItem('accessToken');
+
+        // 3. ⭐ [핵심 추가] 쿠키(JSESSIONID 등) 강제 삭제
+        // 브라우저에 저장된 모든 쿠키를 만료시켜 삭제합니다.
+        document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+
+        // 4. 페이지 강제 새로고침 및 이동
+        alert("로그아웃 되었습니다.");
+        window.location.href = '/login'; 
     }
   };
 
@@ -51,13 +64,11 @@ const MyPageScreen = () => {
       
       {/* 1. 상단 헤더 */}
       <header className={styles.header}>
-
         <div className={`${styles.content} ${common.fadeIn}`}>
-                        {/* 2. 브랜드 로고 영역 (UsdtLogo + CrossPay) */}
-                        <div className={styles.brandLogo}>
-                            <img src={UsdtLogo} alt="USDT Logo" className={styles.usdtIcon} />
-                            <h1 className={styles.logoText}>CrossPay</h1>
-         </div>
+            <div className={styles.brandLogo}>
+                <img src={UsdtLogo} alt="USDT Logo" className={styles.usdtIcon} />
+                <h1 className={styles.logoText}>CrossPay</h1>
+            </div>
         </div>
       </header>
 
@@ -76,7 +87,7 @@ const MyPageScreen = () => {
                     <div className={styles.walletIcon}>
                         <img src={walletAddressIcon} alt="wallet" />
                     </div>
-                   
+                    
                     <span className={styles.walletText}>{myWalletAddress}</span>
                     <span className={styles.copyBtn}>복사</span>
                 </div>
@@ -101,7 +112,7 @@ const MyPageScreen = () => {
 
       </div>
 
-      {/* 3. 하단 네비게이션 (마이페이지 Active 상태) */}
+      {/* 3. 하단 네비게이션 */}
       <nav className={styles.bottomNav}>
         <div className={styles.navItem} onClick={() => navigate('/home')}>
             <img src={navHomeIcon} className={styles.navImg} alt="홈" />
