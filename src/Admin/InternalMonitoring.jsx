@@ -21,9 +21,10 @@ const InternalMonitoring = () => {
 
   // 데이터 상태
   const [transactions, setTransactions] = useState([]); 
-  // [수정] 유저 지갑 잔고 상태 추가
+  // 유저 지갑 잔고 상태
   const [userWalletBalance, setUserWalletBalance] = useState(0); 
   
+  // [수정] 통계 상태 (거래 횟수, 거래 금액)
   const [stats, setStats] = useState({ count: 0, volume: 0 });
 
   // [2] API 호출
@@ -35,8 +36,8 @@ const InternalMonitoring = () => {
 
         console.log(`Internal 조회 요청: ${yearParam}-${monthParam}`);
 
-        // [수정] Promise.all로 거래 내역과 잔고 정보(rates)를 동시에 호출
-        const [txResponse, ratesResponse] = await Promise.all([
+        // [수정] 3개의 API를 병렬로 호출 (거래내역, 잔고, 금일 통계)
+        const [txResponse, ratesResponse, todayHistoryResponse] = await Promise.all([
             // 1. 거래 내역 조회
             api.get('/admin/histories', {
                 params: { 
@@ -46,8 +47,10 @@ const InternalMonitoring = () => {
                     month: monthParam
                 }
             }),
-            // 2. [추가] 유저 지갑 잔고 조회 (/admin/rates)
-            api.get('/admin/rates') 
+            // 2. 유저 지갑 잔고 조회
+            api.get('/admin/rates'),
+            // 3. [추가] 금일 거래 통계 조회
+            api.get('/admin/today/history') 
         ]);
 
         // --- 거래 내역 처리 ---
@@ -59,22 +62,25 @@ const InternalMonitoring = () => {
         }
         setTransactions(txList);
 
-        // --- [추가] 잔고 데이터 처리 ---
+        // --- 잔고 데이터 처리 ---
         if (ratesResponse.data) {
-            // 응답에서 userBalance 추출
             setUserWalletBalance(ratesResponse.data.userBalance || 0);
         }
 
-        // --- 통계 설정 ---
+        // --- [수정] 금일 통계 데이터 처리 ---
+        const todayData = todayHistoryResponse.data || {};
         setStats({
-            count: txResponse.data.totalElements || 11111111,
-            volume: '2,294,284' // (임시 값 유지, 필요시 API 연결)
+            // todayTransferCounts -> 금일 서비스 거래 횟수
+            count: todayData.todayTransferCounts || 0,
+            // todayTransferAmount -> 금일 거래 금액
+            volume: todayData.todayTransferAmount || 0
         });
 
       } catch (error) {
         console.error("API Error:", error);
         setTransactions([]);
         setUserWalletBalance(0);
+        setStats({ count: 0, volume: 0 });
       }
     };
     fetchData();
@@ -110,18 +116,23 @@ const InternalMonitoring = () => {
         <div className={styles.card} style={{ position: 'relative' }}>
           <h3>유저 지갑 잔고 총합</h3>
           <p>
-            {/* [수정] userWalletBalance 상태값 표시 */}
             {Number(userWalletBalance).toLocaleString()} <span>USDT</span>
           </p>
         </div>
 
         <div className={styles.card}>
           <h3>금일 서비스 거래 횟수</h3>
-          <p>{stats.count} <span>건</span></p>
+          <p>
+            {/* [수정] stats.count 표시 */}
+            {Number(stats.count).toLocaleString()} <span>건</span>
+          </p>
         </div>
         <div className={styles.card}>
           <h3>금일 거래 금액</h3>
-          <p>{stats.volume} <span>USDT</span></p>
+          <p>
+            {/* [수정] stats.volume 표시 */}
+            {Number(stats.volume).toLocaleString()} <span>USDT</span>
+          </p>
         </div>
       </div>
 
