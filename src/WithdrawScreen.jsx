@@ -1,153 +1,206 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import common from './Common.module.css';
-import styles from './Withdraw.module.css'; // 이 파일의 내용을 아래 2번 내용으로 교체하세요
+import styles from './ChargeScreen.module.css'; // 스타일 공유
 
+// 아이콘
 import navHomeIcon from './assets/nav_home.svg';
 import navPayIcon from './assets/nav_pay.svg';
 import navUserIcon from './assets/nav_user.svg';
 import usdtLogo from './component/UsdtLogo.svg';
 
+// 유틸 및 API
+import api from './utils/api';
+import { translations } from './utils/translations';
+
 const WithdrawScreen = () => {
   const navigate = useNavigate();
+  const language = localStorage.getItem('appLanguage') || 'ko';
+  const t = translations[language] || translations['ko'];
 
-  // 상태 관리
   const [step, setStep] = useState('input');
   const [amount, setAmount] = useState('');
-  const [wallet, setWallet] = useState({ balance: 0, userName: '홍길동' }); // 지갑 정보
   
-  const pollingRef = useRef(null);
-
-  // 컴포넌트 진입 시 지갑 잔액 조회
+  // 지갑 정보 상태
+  const [myWallet, setMyWallet] = useState({ 
+    balance: 0, 
+    externalAddress: null 
+  });
+  
+  // [초기 로드] 지갑 정보(잔액, 외부주소) 조회
   useEffect(() => {
-    fetchWalletInfo();
-    return () => {
-      if (pollingRef.current) clearTimeout(pollingRef.current);
-    };
-  }, []);
+    const fetchWalletInfo = async () => {
+      try {
+        const res = await api.get('/wallets/users/me');
+        console.log("💰 내 지갑 정보 응답:", res.data); // 데이터 확인용
 
-  // [API] 내 지갑 정보 조회
-  const fetchWalletInfo = async () => {
-    try {
-      const token = localStorage.getItem('accessToken');
-      const response = await axios.get('https://api.yourdomain.com/wallet/users/me', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      // ResponseUserWalletDto 구조 반영
-      setWallet({
-        balance: response.data.balance,
-        userName: response.data.userName || '홍길동' 
-      });
-    } catch (error) {
-      console.error("지갑 정보 조회 실패:", error);
-    }
-  };
+        if (res.data) {
+           let addr = "";
+           const ext = res.data.externalAddress;
+           if (Array.isArray(ext) && ext.length > 0) addr = ext[0];
+           else if (typeof ext === 'string') addr = ext;
 
-  // [API] 출금 상태 확인 (폴링)
-  const pollWithdrawStatus = async (txId) => {
-    try {
-      const token = localStorage.getItem('accessToken');
-      const response = await axios.get(`https://api.yourdomain.com/transaction/withdraw/${txId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+           // 서버에서 주는 이름이 amount 일수도, balance 일수도 있어서 둘 다 체크
+           const serverBalance = res.data.amount ?? res.data.balance ?? 0;
 
-      const { status } = response.data; // ResponseTransactionDto
+           setMyWallet({
+             balance: Number(serverBalance), 
+             externalAddress: addr
+           });
 
-      if (status === 'COMPLETED' || status === 'SUCCESS') {
-        setStep('success');
-      } else if (status === 'PENDING' || status === 'PROCESSING') {
-        pollingRef.current = setTimeout(() => pollWithdrawStatus(txId), 2000);
-      } else if (status === 'FAILED') {
-        alert('출금 처리에 실패했습니다.');
-        setStep('input');
+           if (!addr) {
+             alert("연동된 외부 지갑이 없습니다.");
+             navigate('/home');
+           }
+        }
+      } catch (err) {
+        console.error("지갑 정보 로드 실패:", err);
+        navigate('/home');
       }
-    } catch (error) {
-      console.error("상태 확인 오류:", error);
-      setStep('input');
-    }
-  };
+    };
+    fetchWalletInfo();
+  }, [navigate]);
 
-  // [API] 출금 신청
+  // [API] 출금 신청 (Polling 없이 즉시 완료 처리)
   const handleWithdraw = async () => {
-    // 유효성 검사: 잔액 부족 체크
-    if (!amount || Number(amount) <= 0) return alert("금액을 입력해주세요.");
-    if (Number(amount) > wallet.balance) return alert("잔액이 부족합니다.");
+    // 1. 유효성 검사
+    if (!amount || Number(amount) <= 0) {
+      alert("올바른 금액을 입력해주세요.");
+      return;
+    }
 
+    if (Number(amount) > myWallet.balance) {
+      alert("잔액이 부족합니다.");
+      return;
+    }
+    
     try {
-      const token = localStorage.getItem('accessToken');
       setStep('loading');
 
-      const response = await axios.post('https://api.yourdomain.com/transaction/withdraw', 
-        { amount: Number(amount) }, 
-        { headers: { 'Authorization': `Bearer ${token}` } }
-      );
+      // 2. 출금 요청 (POST)
+      const response = await api.post('/transaction/withdraw', {
+        amount: Number(amount),
+        walletAddress: myWallet.externalAddress
+      });
 
+      // 3. 응답 처리 (Polling 제거됨)
+      // 서버가 200(OK)이나 201(Created)을 주면 무조건 성공으로 간주
       if (response.status === 201 || response.status === 200) {
-        pollWithdrawStatus(response.data.transactionId);
-      }
+        console.log("✅ 출금 요청 성공:", response.data);
+        
+        // 기다리지 않고 바로 성공 화면으로 전환!
+        setStep('success');
+      } 
+
     } catch (error) {
-      alert('출금 요청 중 오류가 발생했습니다.');
+      console.error("에러 발생:", error);
+      let msg = "오류가 발생했습니다.";
+      
+      if (error.response && error.response.data) {
+          msg = JSON.stringify(error.response.data);
+          // 에러 메시지 파싱
+          if (typeof error.response.data === 'string') msg = error.response.data;
+          if (error.response.data.message) msg = error.response.data.message;
+      }
+
+      alert(`오류: ${msg}`);
       setStep('input');
     }
   };
 
   return (
     <div className={common.layout}>
-      {/* 1. 컨텐츠 영역 */}
+      {step === 'input' && (
+        <header className={styles.header}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>←</button>
+          <h2 className={styles.title}>출금하기</h2>
+          <div style={{ width: 24 }}></div>
+        </header>
+      )}
+
       <div className={`${styles.container} ${common.fadeIn} ${step !== 'input' ? styles.centerMode : ''}`}>
         {step === 'input' && (
           <>
-            <header className={styles.header}>
-              <button className={styles.backBtn} onClick={() => navigate(-1)}>←</button>
-              <h2 className={styles.title}>출금</h2>
-              <div style={{ width: 44 }}></div>
-            </header>
-
-            <div className={styles.mainLabel}>
-              <p>현재 <strong>{wallet.userName}</strong>님의 잔고는</p>
-              <span>{wallet.balance.toLocaleString()} USDT</span>
+            <div className={styles.mainLabel} style={{marginBottom:'10px'}}>
+                출금할 금액 <span style={{fontSize:'0.9rem', color:'#888', fontWeight:'normal'}}>(잔액: {myWallet.balance.toLocaleString()} USDT)</span>
             </div>
-
+            
             <div className={styles.inputWrapper}>
               <input 
                 type="number" 
+                min="0"
+                placeholder="0"
                 className={styles.chargeInput}
-                placeholder="금액 입력"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || Number(val) >= 0) {
+                        setAmount(val);
+                    }
+                }}
               />
               <span className={styles.unit}>USDT</span>
             </div>
 
+            <div className={styles.transferInfoBox}>
+                <div className={styles.transferRow}>
+                    <span className={styles.transferLabel}>From</span>
+                    <span className={styles.transferValue}>My CrossPay</span>
+                </div>
+                <div className={styles.arrowArea}>↓</div>
+                <div className={styles.transferRow}>
+                    <span className={styles.transferLabel}>To</span>
+                    <span className={styles.transferValue}>
+                        {myWallet.externalAddress ? `${myWallet.externalAddress.substring(0,6)}...` : 'Loading...'}
+                    </span>
+                </div>
+            </div>
+
             <div className={styles.btnWrapper}>
-              <button 
-                className={styles.submitBtn}
-                onClick={handleWithdraw}
-                disabled={!amount || Number(amount) > wallet.balance}
-              >
-                출금
+              <button className={styles.submitBtn} onClick={handleWithdraw}>
+                출금하기
               </button>
             </div>
           </>
         )}
 
-        {/* 로딩 및 성공 화면 생략 (styles.statusContent 등 사용) */}
+        {step === 'loading' && (
+          <div className={styles.statusContent}>
+            <div className={styles.logoArea}>
+              <img src={usdtLogo} alt="USDT" className={styles.logoImg} />
+            </div>
+            <p className={styles.statusText}>출금 요청 중입니다...<br/><span style={{fontSize:'14px', color:'#999'}}>잠시만 기다려주세요.</span></p>
+          </div>
+        )}
+
+        {step === 'success' && (
+          <div className={styles.statusContent}>
+            <div className={styles.logoArea}>
+              <img src={usdtLogo} alt="USDT" className={styles.logoImg} />
+            </div>
+            <p className={styles.statusText}>출금 신청 완료!</p>
+            <p className={styles.amountText}>- {Number(amount).toLocaleString()} USDT</p>
+            <p className={styles.descText}>
+                외부 지갑으로 전송이 시작되었습니다.<br/>
+                잠시 후 지갑을 확인해주세요.
+            </p>
+            <button className={styles.confirmBtn} onClick={() => navigate('/home')}>확인</button>
+          </div>
+        )}
       </div>
 
-      {/* 2. 하단 네비게이션 - common 클래스 사용으로 통일 */}
       <nav className={common.bottomNav}>
         <div className={common.navItem} onClick={() => navigate('/home')}>
-          <img src={navHomeIcon} className={common.navImg} alt="홈" />
-          <span className={common.navText}>홈</span>
+            <img src={navHomeIcon} className={common.navImg} alt="Home" />
+            <span className={common.navText}>{t.home}</span>
         </div>
         <div className={common.navItem} onClick={() => navigate('/pay')}>
-          <img src={navPayIcon} className={common.navImg} alt="결제" />
-          <span className={common.navText}>결제</span>
+            <img src={navPayIcon} className={common.navImg} alt="Pay" />
+            <span className={common.navText}>{t.payNav}</span>
         </div>
-        <div className={`${common.navItem} ${common.active}`}>
-          <img src={navUserIcon} className={common.navImg} alt="마이페이지" />
-          <span className={common.navText}>마이페이지</span>
+        <div className={common.navItem} onClick={() => navigate('/mypage')}>
+            <img src={navUserIcon} className={common.navImg} alt="MyPage" />
+            <span className={common.navText}>{t.myPage}</span>
         </div>
       </nav>
     </div>
