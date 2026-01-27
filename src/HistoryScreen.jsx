@@ -4,7 +4,7 @@ import axios from 'axios';
 import common from './Common.module.css';
 import styles from './HistoryScreen.module.css';
 
-// 아이콘 임포트 (경로는 본인 프로젝트에 맞게 유지)
+// 아이콘 및 로고 임포트
 import navHomeIcon from './assets/nav_home.svg';
 import navPayIcon from './assets/nav_pay.svg';
 import navUserIcon from './assets/nav_user.svg';
@@ -13,115 +13,180 @@ import UsdtLogo from './component/UsdtLogo.svg';
 const HistoryScreen = () => {
   const navigate = useNavigate();
 
+  // 1. 필터 정의 (전체, 충전, 출금, 결제)
+  const filters = ['전체', '충전', '출금', '결제'];
   const [activeFilter, setActiveFilter] = useState('전체');
+
+  // 2. 날짜 및 드롭다운 상태
   const today = new Date();
   const [currentDate, setCurrentDate] = useState({ year: today.getFullYear(), month: today.getMonth() + 1 });
-
-  // 드롭다운 상태
+  
   const [isYearOpen, setIsYearOpen] = useState(false);
   const [isMonthOpen, setIsMonthOpen] = useState(false);
-
-  // 연도/월 데이터
+  
   const years = [2024, 2025, 2026, 2027];
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
-  const filters = ['전체', '충전', '결제', '받은 돈'];
 
+  // 3. 거래 내역 리스트 상태
   const [transactionList, setTransactionList] = useState([]);
 
-  // 날짜 포맷 함수
-  const formatDate = (isoString) => {
-      if (!isoString) return '';
-      const date = new Date(isoString);
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const weekDay = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
+  // =========================================================================
+  // [Helper] 날짜 포맷 (예: 01.27 (화))
+  // =========================================================================
+  const formatDate = (dateObj) => {
+      if (!dateObj) return '';
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const weekDay = ['일', '월', '화', '수', '목', '금', '토'][dateObj.getDay()];
       return `${month}.${day} (${weekDay})`;
   };
 
-  // API 호출
-  useEffect(() => {
-    const fetchHistory = async () => {
-        try {
-            const token = localStorage.getItem('accessToken');
-            
-            const params = {
-                year: currentDate.year,
-                month: String(currentDate.month).padStart(2, '0'),
-                type: 'ALL', 
-                page: 0,
-                pageSize: 50
-            };
-
-            const response = await axios.get('https://api.yourdomain.com/transaction', {
-                params: params,
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.status === 200) {
-                const mappedData = response.data.content.map((item) => { 
-                    
-                    let uiType = 'pay';
-                    let isPlus = false;
-                    let iconType = 'user';
-                    let title = '거래 내역';
-
-                    const typeStr = item.type || '';
-
-                    if (typeStr === 'CHARGE') { 
-                        uiType = 'charge'; isPlus = true; iconType = 'usdt';
-                        title = 'USDT 충전';
-                    } else if (typeStr === 'RECEIVE') {
-                        uiType = 'receive'; isPlus = true; iconType = 'user';
-                        title = `받은 돈 (From: ${item.sendUser})`; 
-                    } else if (typeStr === 'WITHDRAW') {
-                        uiType = 'withdraw'; isPlus = false; iconType = 'usdt';
-                        title = 'USDT 출금';
-                    } else { 
-                        uiType = 'pay'; isPlus = false; iconType = 'user';
-                        title = `결제 (${item.sendUser})`; 
-                    }
-
-                    return {
-                        id: item.historyId,
-                        date: formatDate(item.createdAt),
-                        type: uiType,
-                        title: title,
-                        amount: `${isPlus ? '+' : '-'} ${item.amount.toLocaleString()} USDT`,
-                        isPlus: isPlus,
-                        iconType: iconType,
-                        rawType: item.type 
-                    };
-                });
-                setTransactionList(mappedData);
-            }
-        } catch (error) {
-            console.error("내역 조회 실패:", error);
-            // 테스트용 더미 데이터 (API 실패시 확인용)
-            /*
-            setTransactionList([
-                { id: 1, date: '01.13 (화)', type: 'charge', title: 'USDT 충전', amount: '+ 1,000 USDT', isPlus: true, iconType: 'usdt' },
-                { id: 2, date: '01.13 (화)', type: 'pay', title: '친구 송금', amount: '- 50 USDT', isPlus: false, iconType: 'user' },
-            ]);
-            */
-        }
-    };
-
-    fetchHistory();
-  }, [currentDate]);
-
-  // 필터링 로직
-  const getFilteredData = () => {
-    if (activeFilter === '전체') return transactionList;
-    if (activeFilter === '충전') return transactionList.filter(item => item.type === 'charge');
-    if (activeFilter === '결제') return transactionList.filter(item => item.type === 'pay' || item.type === 'withdraw');
-    if (activeFilter === '받은 돈') return transactionList.filter(item => item.type === 'receive');
-    return transactionList;
+  // =========================================================================
+  // [Helper] 사용자 이름/주소 포맷팅 (예: 홍길동(B2D4...))
+  // =========================================================================
+  const formatUserStr = (firstName, lastName, address) => {
+      const name = `${lastName}${firstName}`; 
+      // 주소가 있으면 앞 9자리만 자르거나, 필요에 따라 조정
+      const shortAddr = address ? address.substring(0, 9) : '????'; 
+      return `${name}(${shortAddr})`;
   };
 
-  const filteredData = getFilteredData();
-  let lastDate = '';
+  // =========================================================================
+  // [API 1] 입출금 내역 조회 (/transaction)
+  // =========================================================================
+  const fetchTransactions = async (typeFilter) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const params = {
+        year: currentDate.year,
+        month: currentDate.month,
+        page: 0,
+        size: 50,
+      };
+      if (typeFilter) params.type = typeFilter;
 
-  // 월 이동 핸들러
+      const response = await axios.get('http://localhost:8080/transaction', {
+        params,
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      const rawData = response.data.content || response.data || [];
+      
+      return rawData.map(item => {
+        const isDeposit = item.type === 'DEPOSIT';
+        const dateObj = new Date(item.createdAt); 
+
+        return {
+          id: `tx-${item.transactionId}`,
+          sortDate: dateObj,          // 정렬용 Date 객체
+          date: formatDate(dateObj),  // 화면 표시용 문자열
+          
+          title: isDeposit ? 'USDT 충전' : 'USDT 출금',
+          amount: `${isDeposit ? '+' : '-'} ${Number(item.amount).toLocaleString()} USDT`,
+          isPlus: isDeposit, 
+          
+          // 출금도 충전과 같은 USDT 로고 사용
+          iconType: 'usdt', 
+          rawType: item.type
+        };
+      });
+    } catch (e) {
+      console.error("Transaction API Error", e);
+      return [];
+    }
+  };
+
+  // =========================================================================
+  // [API 2] 결제(내부 거래) 내역 조회 (/history)
+  // =========================================================================
+  const fetchHistory = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const params = {
+        year: currentDate.year,
+        month: currentDate.month,
+        page: 0,
+        size: 50,
+        type: 'ALL'
+      };
+
+      const response = await axios.get('http://localhost:8080/history', {
+        params,
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      const rawData = response.data.content || response.data || [];
+
+      return rawData.map(item => {
+        const senderStr = formatUserStr(item.senderFirstName, item.senderLastName, item.senderAddress);
+        const receiverStr = formatUserStr(item.receiverFirstName, item.receiverLastName, item.receiverAddress);
+        
+        // [수정 핵심] 실제 API 응답인 'createdAt' 필드 사용
+        const rawDate = item.createdAt; 
+        const dateObj = rawDate ? new Date(rawDate) : new Date();
+
+        // [수정 핵심] 'type'이 'receiveMoney'면 받은 돈(+)
+        const isPlus = item.type === 'receiveMoney'; 
+
+        return {
+          id: `hist-${item.historyId}`,
+          sortDate: dateObj,         
+          date: formatDate(dateObj), 
+          
+          title: `${senderStr} → ${receiverStr}`,
+          amount: `${isPlus ? '+' : '-'} ${Number(item.amount).toLocaleString()} USDT`,
+          isPlus: isPlus,
+          iconType: 'user', // 결제는 사람 아이콘
+          rawType: 'PAYMENT'
+        };
+      });
+
+    } catch (e) {
+      console.error("History API Error", e);
+      return [];
+    }
+  };
+
+  // =========================================================================
+  // [Main Effect] 데이터 로드 및 병합 (날짜순 정렬)
+  // =========================================================================
+  useEffect(() => {
+    const loadData = async () => {
+      let finalData = [];
+
+      if (activeFilter === '전체') {
+        // 두 API 동시 호출 후 병합
+        const [txData, histData] = await Promise.all([
+           fetchTransactions(null), 
+           fetchHistory()           
+        ]);
+        finalData = [...txData, ...histData];
+
+      } else if (activeFilter === '충전') {
+        finalData = await fetchTransactions('DEPOSIT');
+
+      } else if (activeFilter === '출금') {
+        finalData = await fetchTransactions('WITHDRAW');
+
+      } else if (activeFilter === '결제') {
+        finalData = await fetchHistory();
+      }
+
+      // [정렬] 최신순 (내림차순)
+      finalData.sort((a, b) => b.sortDate - a.sortDate);
+
+      setTransactionList(finalData);
+    };
+
+    loadData();
+  }, [currentDate, activeFilter]);
+
+
+  // =========================================================================
+  // UI 핸들러
+  // =========================================================================
+  let lastDate = ''; // 날짜 헤더 중복 방지용
+
   const handlePrevMonth = () => {
       setCurrentDate(prev => {
           if(prev.month === 1) return { year: prev.year - 1, month: 12 };
@@ -138,25 +203,21 @@ const HistoryScreen = () => {
 
   return (
     <div className={common.layout}>
-      {/* 헤더 */}
+      {/* 1. 헤더 */}
       <header className={styles.header}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>←</button>
         <h2 className={styles.headerTitle}>내역</h2>
         <div style={{width: 24}}></div>
       </header>
 
-      {/* 메인 콘텐츠 */}
+      {/* 2. 메인 콘텐츠 */}
       <div className={`${styles.mainContent} ${common.fadeIn}`}>
         
-        {/* --- [수정된 부분] 날짜 네비게이션 --- */}
+        {/* 날짜 선택 네비게이션 */}
         <div className={styles.dateNav}>
-            {/* 왼쪽 화살표 */}
             <button className={styles.dateArrow} onClick={handlePrevMonth}>‹</button>
-            
-            {/* 연도와 월을 가로로 묶어주는 래퍼 */}
             <div className={styles.dateDisplay}>
-                
-                {/* 연도 선택 */}
+                {/* 연도 */}
                 <div className={styles.selectWrapper}>
                     <span className={styles.dateText} onClick={() => { setIsYearOpen(!isYearOpen); setIsMonthOpen(false); }}>
                         {currentDate.year} <span className={styles.downArrow}>▼</span>
@@ -169,11 +230,8 @@ const HistoryScreen = () => {
                         </ul>
                     )}
                 </div>
-
-                {/* 중간 점 (장식용) */}
                 <span style={{color: '#169279', fontWeight: 'bold', margin: '0 2px'}}>.</span>
-
-                {/* 월 선택 */}
+                {/* 월 */}
                 <div className={styles.selectWrapper}>
                     <span className={styles.dateText} onClick={() => { setIsMonthOpen(!isMonthOpen); setIsYearOpen(false); }}>
                         {String(currentDate.month).padStart(2, '0')} <span className={styles.downArrow}>▼</span>
@@ -187,8 +245,6 @@ const HistoryScreen = () => {
                     )}
                 </div>
             </div>
-
-            {/* 오른쪽 화살표 */}
             <button className={styles.dateArrow} onClick={handleNextMonth}>›</button>
         </div>
 
@@ -201,20 +257,23 @@ const HistoryScreen = () => {
             ))}
         </div>
 
-        {/* 리스트 출력 */}
+        {/* 리스트 출력 영역 */}
         <div className={styles.transactionList}>
-            {filteredData.length === 0 ? (
+            {transactionList.length === 0 ? (
                 <div style={{textAlign: 'center', marginTop: '60px', color: '#bbb', fontSize: '14px'}}>
                     거래 내역이 없습니다.
                 </div>
             ) : (
-                filteredData.map((item) => {
+                transactionList.map((item) => {
+                    // 날짜가 바뀌면 헤더 출력
                     const showDateHeader = item.date !== lastDate;
                     lastDate = item.date;
+                    
                     return (
                         <React.Fragment key={item.id}>
                             {showDateHeader && <div className={styles.dateHeader}>{item.date}</div>}
                             <div className={styles.transactionItem}>
+                                {/* 아이콘: USDT면 초록배경+로고, 결제면 회색배경+사람 */}
                                 <div className={`${styles.iconWrapper} ${item.iconType === 'usdt' ? styles.greenBg : styles.grayBg}`}>
                                     {item.iconType === 'usdt' ? 
                                         <img src={UsdtLogo} alt="USDT" className={styles.tokenIcon} /> 
@@ -222,8 +281,12 @@ const HistoryScreen = () => {
                                     }
                                 </div>
                                 <div className={styles.infoWrapper}>
-                                    <div className={styles.title}>{item.title}</div>
-                                    <div className={`${styles.amount} ${item.isPlus ? styles.plus : styles.minus}`}>{item.amount}</div>
+                                    <div className={styles.title} style={item.rawType === 'PAYMENT' ? { fontSize: '0.9rem', color: '#555'} : {}}>
+                                        {item.title}
+                                    </div>
+                                    <div className={`${styles.amount} ${item.isPlus ? styles.plus : styles.minus}`}>
+                                        {item.amount}
+                                    </div>
                                 </div>
                             </div>
                         </React.Fragment>
@@ -233,13 +296,13 @@ const HistoryScreen = () => {
         </div>
       </div>
 
-      {/* 하단 네비게이션 */}
+      {/* 3. 하단 네비게이션 */}
       <nav className={styles.bottomNav}>
         <div className={styles.navItem} onClick={() => navigate('/home')}>
             <img src={navHomeIcon} className={styles.navImg} alt="홈" />
             <span className={styles.navText}>홈</span>
         </div>
-        <div className={styles.navItem} onClick={() => navigate('/pay')}>
+        <div className={`${styles.navItem} ${common.active}`}>
             <img src={navPayIcon} className={styles.navImg} alt="결제" />
             <span className={styles.navText}>결제</span>
         </div>
