@@ -6,9 +6,10 @@ import usdtLogo from '../component/UsdtLogo.svg';
 
 import ExternalMonitoring from './ExternalMonitoring';
 import InternalMonitoring from './InternalMonitoring';
+import ServiceRevenueMonitoring from './ServiceRevenueMonitoring'; // [추가] 1. 컴포넌트 import
 import UserManagement from './UserManagement'; 
 
-// [1] 사이드바 컴포넌트 (변경 없음)
+// [1] 사이드바 컴포넌트
 const Sidebar = ({ activeMenu, setActiveMenu }) => (
   <aside className={styles.sidebar}>
     <div className={styles.logo}>
@@ -26,20 +27,51 @@ const Sidebar = ({ activeMenu, setActiveMenu }) => (
       <div className={styles.menuGroup}>
         <h3>모니터링</h3>
         <ul>
-          <li onClick={() => setActiveMenu('external')} style={{ cursor: 'pointer', color: activeMenu === 'external' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'external' ? 'bold' : 'normal' }}>
+          <li 
+            onClick={() => setActiveMenu('external')} 
+            style={{ 
+              cursor: 'pointer', 
+              color: activeMenu === 'external' ? '#28a745' : 'inherit', 
+              fontWeight: activeMenu === 'external' ? 'bold' : 'normal' 
+            }}
+          >
             <span>Ⓑ</span> 외부 거래 모니터링
           </li>
-          <li onClick={() => setActiveMenu('internal')} style={{ cursor: 'pointer', color: activeMenu === 'internal' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'internal' ? 'bold' : 'normal' }}>
+          <li 
+            onClick={() => setActiveMenu('internal')} 
+            style={{ 
+              cursor: 'pointer', 
+              color: activeMenu === 'internal' ? '#28a745' : 'inherit', 
+              fontWeight: activeMenu === 'internal' ? 'bold' : 'normal' 
+            }}
+          >
             <span>Ⓢ</span> 내부 거래 모니터링
           </li>
-          <li><span>📊</span> 서비스 수익 모니터링</li>
+          {/* [추가] 2. 메뉴 클릭 이벤트 및 스타일 추가 */}
+          <li 
+            onClick={() => setActiveMenu('revenue')} 
+            style={{ 
+              cursor: 'pointer', 
+              color: activeMenu === 'revenue' ? '#28a745' : 'inherit', 
+              fontWeight: activeMenu === 'revenue' ? 'bold' : 'normal' 
+            }}
+          >
+            <span>📊</span> 서비스 수익 모니터링
+          </li>
         </ul>
       </div>
       
       <div className={styles.menuGroup}>
         <h3>관리</h3>
         <ul>
-          <li onClick={() => setActiveMenu('user')} style={{ cursor: 'pointer', color: activeMenu === 'user' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'user' ? 'bold' : 'normal' }}>
+          <li 
+            onClick={() => setActiveMenu('user')} 
+            style={{ 
+              cursor: 'pointer', 
+              color: activeMenu === 'user' ? '#28a745' : 'inherit', 
+              fontWeight: activeMenu === 'user' ? 'bold' : 'normal' 
+            }}
+          >
             <span>👤</span> 사용자 관리
           </li>
         </ul>
@@ -48,73 +80,74 @@ const Sidebar = ({ activeMenu, setActiveMenu }) => (
   </aside>
 );
 
-// [2] 상단 카드 컴포넌트 (변경 없음)
+// [2] 상단 카드 컴포넌트
 const TopCards = ({ serviceBalance, externalBalance, userCount }) => {
   const formatNumber = (num) => Number(num || 0).toLocaleString();
+  
   const cards = [
-    { title: '서비스 지갑 잔고(수수료 반영)', value: `${formatNumber(serviceBalance)} USDT`, icon: '→' },
-    { title: '외부 지갑 잔고', value: `${formatNumber(externalBalance)} USDT`, icon: '→' },
-    { title: '사용자 수(관리자 제외)', value: `${formatNumber(userCount)} 명`, icon: '→' },
+    { 
+      title: '서비스 지갑 잔고(수수료 반영)', 
+      value: `${formatNumber(serviceBalance)} USDT` 
+      
+    },
+    { 
+      title: '외부 지갑 잔고', 
+      value: `${formatNumber(externalBalance)} USDT` 
+      
+    },
+    { 
+      title: '사용자 수(관리자 제외)', 
+      value: `${formatNumber(userCount)} 명` 
+      
+    },
   ];
+
   return (
     <div className={styles.cardsContainer}>
       {cards.map((c, i) => (
         <div key={i} className={styles.card}>
           <div className={styles.cardTitle}>{c.title}</div>
           <div className={styles.cardValue}>{c.value}</div>
-          <div className={styles.cardIcon}>{c.icon}</div>
+          {/* 화살표 아이콘 렌더링 부분 삭제 */}
         </div>
       ))}
     </div>
   );
 };
 
-// [3] AI 비서 컴포넌트 (대폭 수정됨)
+// [3] AI 비서 컴포넌트
 const AiAssistant = () => {
-  // 채팅 메시지 목록 (기본 환영 메시지 포함)
   const [messages, setMessages] = useState([
     { type: 'ai', text: '안녕하세요! CrossPay AI 비서입니다. 무엇을 도와드릴까요?' }
   ]);
-  // 입력창 상태
   const [input, setInput] = useState('');
-  // 로딩 상태 (답변 기다리는 중)
   const [isLoading, setIsLoading] = useState(false);
   
-  // 스크롤 자동 이동을 위한 ref
   const chatWindowRef = useRef(null);
 
-  // 메시지가 추가될 때마다 스크롤을 맨 아래로 이동
   useEffect(() => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // 메시지 전송 함수
   const handleSendMessage = async () => {
-    if (!input.trim()) return; // 빈 입력 방지
+    if (!input.trim()) return;
 
-    // 1. 사용자 메시지 화면에 즉시 추가
     const userMessage = input;
     setMessages(prev => [...prev, { type: 'user', text: userMessage }]);
-    setInput(''); // 입력창 초기화
-    setIsLoading(true); // 로딩 시작
+    setInput('');
+    setIsLoading(true);
 
     try {
       const token = localStorage.getItem('accessToken');
-      
-      // 2. API 호출 (POST /admin/chat)
-      // Request Body를 단순 String으로 보냅니다.
       const response = await axios.post('/admin/chat', userMessage, {
         headers: { 
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'text/plain' // [중요] String으로 보낼 때 설정
-          // 만약 백엔드가 JSON({ "prompt": "..." })을 원하면 'application/json'으로 변경하고 body를 객체로 보내야 함
+          'Content-Type': 'text/plain'
         }
       });
 
-      // 3. AI 응답 화면에 추가
-      // 백엔드가 String으로 답을 준다고 가정 (response.data)
       const aiResponse = response.data; 
       setMessages(prev => [...prev, { type: 'ai', text: aiResponse }]);
 
@@ -122,23 +155,18 @@ const AiAssistant = () => {
       console.error("AI Chat Error:", error);
       setMessages(prev => [...prev, { type: 'ai', text: '죄송합니다. 오류가 발생하여 답변할 수 없습니다.' }]);
     } finally {
-      setIsLoading(false); // 로딩 종료
+      setIsLoading(false);
     }
   };
 
-  // 엔터키 입력 처리
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !isLoading) {
       handleSendMessage();
     }
   };
 
-  // 추천 질문 클릭 처리
   const handleSuggestionClick = (text) => {
     setInput(text);
-    // 상태 업데이트가 비동기라 input이 바로 안 바뀌는 걸 대비해 텍스트를 직접 넘김
-    // 하지만 여기선 input 상태만 바꾸고 사용자가 전송 누르게 하거나, 
-    // 아래처럼 바로 전송 로직을 태울 수도 있습니다. (여기선 입력창에만 넣음)
   };
 
   return (
@@ -147,11 +175,9 @@ const AiAssistant = () => {
         <span>🤖</span> CrossPay AI 비서
       </div>
       
-      {/* 채팅 내역 표시 영역 */}
       <div className={styles.chatWindow} ref={chatWindowRef}>
         {messages.map((msg, index) => (
           <div key={index} className={`${styles.message} ${msg.type === 'user' ? styles.user : styles.ai}`}>
-            {/* 줄바꿈 문자(\n) 처리 */}
             {msg.text.split('\n').map((line, i) => (
               <React.Fragment key={i}>
                 {line}
@@ -198,10 +224,8 @@ const AiAssistant = () => {
 const AdminDashboard = () => {
   const [activeMenu, setActiveMenu] = useState('dashboard');
   
-  // 관리자 이름 상태
   const [adminName, setAdminName] = useState('관리자');
 
-  // 대시보드 데이터 상태 관리
   const [dashboardData, setDashboardData] = useState({
     serviceWalletBalance: 0, 
     externalWalletBalance: 0, 
@@ -253,6 +277,7 @@ const AdminDashboard = () => {
           <h1>환영합니다 {adminName} 님!</h1>
         </header>
 
+        {/* 1. 대시보드 화면 */}
         {activeMenu === 'dashboard' && (
           <>
             <TopCards 
@@ -270,15 +295,22 @@ const AdminDashboard = () => {
               </div>
 
               <div className={styles.aiColumn}>
-                {/* AI 비서 컴포넌트 사용 */}
                 <AiAssistant />
               </div>
             </div>
           </>
         )}
 
+        {/* 2. 외부 거래 모니터링 */}
         {activeMenu === 'external' && <ExternalMonitoring />}
+
+        {/* 3. 내부 거래 모니터링 */}
         {activeMenu === 'internal' && <InternalMonitoring />}
+        
+        {/* [추가] 4. 서비스 수익 모니터링 */}
+        {activeMenu === 'revenue' && <ServiceRevenueMonitoring />}
+
+        {/* 5. 사용자 관리 */}
         {activeMenu === 'user' && <UserManagement />}
 
       </main>
