@@ -1,5 +1,8 @@
 /* src/AppLayout.module.css */
 
+/* =========================================
+   🖥️ 데스크탑 (기본 스타일)
+   ========================================= */
 .container {
   display: flex;
   flex-direction: column;
@@ -9,18 +12,17 @@
   overflow: hidden; 
 }
 
-.overSection{
+.overSection {
   display: flex;
   flex-direction: row;
   width: 100vw;
-  height: 98vh;
+  height: 98vh; /* 상단 영역 높이 */
   background-color: #f3f4f6; 
   overflow: hidden; 
-
 }
 
-.underSection{
-  height: 2vh;
+.underSection {
+  height: 2vh; /* 하단 초록색 바 */
   background-color: #50AF95;
 }
 
@@ -34,9 +36,9 @@
 }
 
 .logoImage {
-    width: 60px;
-    height: auto;
-    margin-bottom: 10px;
+  width: 60px;
+  height: auto;
+  margin-bottom: 10px;
 }
 
 .logoArea {
@@ -45,6 +47,7 @@
   gap: 15px;
   margin-bottom: 40px;
 }
+
 .logoText {
   font-size: 5rem;
   font-weight: 700;
@@ -72,7 +75,7 @@
   word-break: keep-all;
 }
 
-.sloganArea h2 span{
+.sloganArea h2 span {
   color: #333;
 }
 
@@ -90,15 +93,15 @@
   justify-content: center;
   background-color: #f3f4f6;
 }
+
 .mobileFrame {
-  width: 390px; /* 아이폰 너비 */
+  width: 390px; /* 데스크탑에서 보일 아이폰 너비 */
   height: 100%; /* 높이 */
   background-color: white;
   box-shadow: 0 30px 60px rgba(0,0,0,0.15); /* 입체감 그림자 */
   overflow: hidden; /* 내부 스크롤이 밖으로 안 튀어나오게 */
   position: relative;
 }
-
 
 .appContent {
   width: 100%;
@@ -108,3 +111,43 @@
   scrollbar-width: none; 
 }
 .appContent::-webkit-scrollbar { display: none; }
+
+
+/* =========================================
+   📱 모바일 반응형 (핵심 추가 부분)
+   화면 너비가 768px 이하일 때 적용됩니다.
+   ========================================= */
+@media screen and (max-width: 768px) {
+  /* 1. 불필요한 섹션 숨기기 */
+  .leftSection, 
+  .underSection {
+    display: none; 
+  }
+
+  /* 2. 레이아웃 초기화 (전체 화면 사용) */
+  .container {
+    background-color: white; /* 배경 흰색으로 변경 */
+    height: 100vh; /* 높이 고정 */
+  }
+
+  .overSection {
+    width: 100%;
+    height: 100%; /* 98vh -> 100%로 변경 */
+    display: block; /* Flex 해제 */
+  }
+
+  .rightSection {
+    width: 100%;
+    height: 100%;
+    display: block; /* Flex 해제 */
+    background-color: white;
+  }
+
+  /* 3. 모바일 프레임 꽉 채우기 */
+  .mobileFrame {
+    width: 100%; /* 고정 너비(390px) 해제 -> 100% */
+    height: 100%;
+    border-radius: 0; /* 둥근 모서리 제거 */
+    box-shadow: none; /* 그림자 제거 */
+  }
+}

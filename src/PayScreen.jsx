@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import common from './Common.module.css';
 import styles from './PayScreen.module.css';
+import api from './utils/api'; // [필수] API 유틸 import
 
 // 아이콘
 import navHomeIcon from './assets/nav_home.svg';
@@ -18,38 +19,111 @@ const PayScreen = () => {
   const [step, setStep] = useState(1);
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState('');
-  const [receiverName, setReceiverName] = useState('홍길동');
+  
+  // 수신자 정보 및 검증 상태
+  const [receiverName, setReceiverName] = useState('');
+  const [isVerified, setIsVerified] = useState(false); // 주소 검증 여부
 
-  // [Step 1] 주소 확인 핸들러
-  const handleAddressCheck = () => {
+  // [API] 1. 주소 확인 핸들러
+  const checkAddress = async () => {
     if (address.length < 8) {
       alert("올바른 지갑 주소를 입력해주세요.");
       return;
     }
+
+    try {
+      // API 호출: GET /wallets/verify?address=...
+      const response = await api.get(`/wallets/verify`, {
+        params: { address: address }
+      });
+
+      // 성공 시 (200 OK)
+      // 명세서에 따르면 응답 자체가 문자열(이름)입니다.
+      const name = response.data; 
+      
+      setReceiverName(name);
+      setIsVerified(true); // 검증 완료 플래그 세팅
+      
+      alert(`'${name}' 님이 확인되었습니다.`);
+      
+    } catch (error) {
+      console.error("주소 확인 실패:", error);
+      setIsVerified(false);
+      setReceiverName('');
+      
+      if (error.response && error.response.status === 404) {
+        alert("존재하지 않는 주소입니다.");
+      } else {
+        alert("주소 확인 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
+  // [UI] 다음 단계로 이동 (화살표 버튼)
+  const goNextStep = () => {
+    if (!isVerified || !receiverName) {
+      // 검증되지 않았다면 검증 먼저 시도하거나 경고
+      alert("먼저 '주소 확인'을 완료해주세요.");
+      return;
+    }
+    // 검증된 상태라면 Step 2로 이동
     setStep(2);
   };
 
-  // [Step 2] 송금 버튼 클릭 핸들러
-  const handleSend = () => {
+  // [API] 2. 송금 실행 핸들러
+  const handleSend = async () => {
     if (!amount || Number(amount) <= 0) {
       alert("금액을 입력해주세요.");
       return;
     }
 
-    // Step 3 (로딩)으로 이동
+    // 1. 먼저 로딩 화면(Step 3)을 보여줌
     setStep(3);
 
-    // 2초 뒤 Step 4 (완료)로 자동 이동
-    setTimeout(() => {
-        setStep(4);
-    }, 2000);
+    try {
+      // 2. API 호출: POST /history/transfer
+      // Body: { targetAddress, amount }
+      const response = await api.post('/history/transfer', {
+        targetAddress: address,
+        amount: Number(amount)
+      });
+
+      if (response.status === 201 || response.status === 200) {
+        console.log("송금 성공:", response.data);
+
+        // 3. 성공 시 시각적 효과를 위해 잠시 대기 후 완료 화면(Step 4) 이동
+        setTimeout(() => {
+            setStep(4);
+        }, 2000); // 2초 딜레이
+      }
+
+    } catch (error) {
+      console.error("송금 실패:", error);
+      
+      // 에러 발생 시 로딩 풀고 다시 Step 2로 복귀
+      setStep(2);
+
+      let msg = "송금 중 오류가 발생했습니다.";
+      if (error.response) {
+          if (error.response.status === 400) msg = "잔액이 부족하거나 자신에게 보낼 수 없습니다.";
+          else if (error.response.status === 404) msg = "해당 지갑 주소를 찾을 수 없습니다.";
+          else if (error.response.data && error.response.data.message) msg = error.response.data.message;
+      }
+      alert(msg);
+    }
+  };
+
+  // 주소가 바뀌면 검증 상태 초기화
+  const handleInputChange = (e) => {
+      setAddress(e.target.value);
+      setIsVerified(false); // 수정하면 다시 검증해야 함
   };
 
   return (
     <div className={common.layout}>
       
       {/* =========================================================
-          [STEP 1] 주소 입력 화면 (기존 유지)
+          [STEP 1] 주소 입력 화면
          ========================================================= */}
       {step === 1 && (
         <div className={styles.container}>
@@ -76,10 +150,10 @@ const PayScreen = () => {
                   placeholder="지갑 주소 입력" 
                   className={styles.inputField}
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  onChange={handleInputChange}
                 />
-                <button className={styles.miniCheckBtn} onClick={handleAddressCheck}>주소 확인</button>
-                <button className={styles.circleNextBtn} onClick={handleAddressCheck}>›</button>
+                <button className={styles.miniCheckBtn} onClick={checkAddress}>주소 확인</button>
+                <button className={styles.circleNextBtn} onClick={goNextStep}>›</button>
             </div>
 
             <p className={styles.guideText}>
@@ -93,7 +167,7 @@ const PayScreen = () => {
       )}
 
       {/* =========================================================
-          [STEP 2] 금액 입력 화면 (기존 유지)
+          [STEP 2] 금액 입력 화면
          ========================================================= */}
       {step === 2 && (
         <div className={styles.container}>
@@ -136,28 +210,28 @@ const PayScreen = () => {
       )}
 
       {/* =========================================================
-          [STEP 3 & 4 통합] 로딩 및 완료 화면 (통합됨)
+          [STEP 3 & 4 통합] 로딩 및 완료 화면
          ========================================================= */}
       {(step === 3 || step === 4) && (
         <div className={styles.container}>
           <div className={styles.centerContent}>
             
-            {/* 로고 영역 (항상 표시, 위치 고정) */}
+            {/* 로고 영역 */}
             <div className={styles.logoArea}>
                <img src={usdtLogo} alt="USDT" className={styles.logoImg} />
                <span className={styles.brandName}>CrossPay</span>
             </div>
 
-            {/* 상태 텍스트 (단계에 따라 텍스트만 변경) */}
+            {/* 상태 텍스트 */}
             <h2 className={styles.statusMessage}>
                 {step === 3 ? "결제가 진행 중이에요." : "결제가 완료되었습니다."}
             </h2>
 
-            {/* 확인 버튼 (Step 3에서는 투명하게 숨김, 공간은 차지함) */}
+            {/* 확인 버튼 (Step 3에서는 숨김) */}
             <button 
                 className={`${styles.confirmBtn} ${step === 3 ? styles.hiddenBtn : ''}`} 
                 onClick={() => navigate('/home')}
-                disabled={step === 3} // 숨겨진 상태에선 클릭 방지
+                disabled={step === 3} 
             >
               확인
             </button>
