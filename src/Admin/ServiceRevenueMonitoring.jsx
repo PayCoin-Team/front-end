@@ -1,92 +1,97 @@
 import React, { useState, useEffect } from 'react';
-import api from '../utils/api';
-import styles from './InternalMonitoring.module.css';
+import api from '../utils/api'; 
+import styles from './ServiceRevenueMonitoring.module.css';
 import usdtLogo from '../component/UsdtLogo.svg';
 
-const InternalMonitoring = () => {
-  // [1] 날짜 상태 관리
+const ServiceRevenueMonitoring = () => {
+  // [1] 날짜 및 드롭다운 상태 관리
   const today = new Date();
   const [currentDate, setCurrentDate] = useState({ 
     year: today.getFullYear(), 
     month: today.getMonth() + 1 
   });
 
-  // 드롭다운 열림/닫힘 상태
   const [isYearOpen, setIsYearOpen] = useState(false);
   const [isMonthOpen, setIsMonthOpen] = useState(false);
 
-  // 연도/월 데이터
   const years = [2024, 2025, 2026, 2027];
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
-  // 데이터 상태
-  const [transactions, setTransactions] = useState([]); 
-  // 유저 지갑 잔고 상태
-  const [userWalletBalance, setUserWalletBalance] = useState(0); 
-  
-  // [수정] 통계 상태 (거래 횟수, 거래 금액)
-  const [stats, setStats] = useState({ count: 0, volume: 0 });
+  // [2] 데이터 상태
+  const [revenueList, setRevenueList] = useState([]); 
+  const [stats, setStats] = useState({
+    accumulatedRevenue: 0, // 누적 수수료
+    todayRevenue: 0,       // 금일 수수료
+    totalCount: 0          // 전체 건수 (이번 달)
+  });
 
-  // [2] API 호출
+  // [3] 데이터 로딩 (useEffect)
   useEffect(() => {
     const fetchData = async () => {
       try {
         const yearParam = currentDate.year;
         const monthParam = String(currentDate.month).padStart(2, '0');
 
-        console.log(`Internal 조회 요청: ${yearParam}-${monthParam}`);
+        console.log(`수익 내역 조회 요청: ${yearParam}-${monthParam}`);
 
-        // [수정] 3개의 API를 병렬로 호출 (거래내역, 잔고, 금일 통계)
-        const [txResponse, ratesResponse, todayHistoryResponse] = await Promise.all([
-            // 1. 거래 내역 조회
-            api.get('/admin/histories', {
+        // API 동시 호출
+        const [ratesResponse, feeResponse] = await Promise.all([
+            // 1. 통계 데이터 (/admin/rates)
+            api.get('/admin/rates'),
+            
+            // 2. 수수료 거래 내역 리스트 (/admin/find/fee)
+            api.get('/admin/find/fee', {
                 params: { 
                     page: 0, 
-                    pageSize: 20,
-                    year: yearParam,
-                    month: monthParam
+                    pageSize: 20, 
+                    year: yearParam, 
+                    month: monthParam 
                 }
-            }),
-            // 2. 유저 지갑 잔고 조회
-            api.get('/admin/rates'),
-            // 3. [추가] 금일 거래 통계 조회
-            api.get('/admin/today/history') 
+            })
         ]);
-
-        // --- 거래 내역 처리 ---
-        let txList = [];
-        if (txResponse.data && Array.isArray(txResponse.data.content)) {
-            txList = txResponse.data.content;
-        } else if (Array.isArray(txResponse.data)) {
-            txList = txResponse.data;
-        }
-        setTransactions(txList);
-
-        // --- 잔고 데이터 처리 ---
-        if (ratesResponse.data) {
-            setUserWalletBalance(ratesResponse.data.userBalance || 0);
+        
+        // --- 1. 상단 카드 데이터 처리 (금액) ---
+        const { totalFees, yesterdayFees } = ratesResponse.data || {};
+        
+        // --- 2. 리스트 데이터 처리 ---
+        let fetchedList = [];
+        if (feeResponse.data && Array.isArray(feeResponse.data.content)) {
+            fetchedList = feeResponse.data.content;
+        } else if (Array.isArray(feeResponse.data)) {
+            fetchedList = feeResponse.data;
         }
 
-        // --- [수정] 금일 통계 데이터 처리 ---
-        const todayData = todayHistoryResponse.data || {};
+        // [핵심 수정] totalCount를 API의 totalElements로 설정
+        // totalElements: 조건(연/월)에 맞는 '전체' 데이터 개수 (페이지 상관없음)
+        const totalElements = feeResponse.data?.totalElements || fetchedList.length;
+
         setStats({
-            // todayTransferCounts -> 금일 서비스 거래 횟수
-            count: todayData.todayTransferCounts || 0,
-            // todayTransferAmount -> 금일 거래 금액
-            volume: todayData.todayTransferAmount || 0
+            accumulatedRevenue: totalFees || 0,
+            todayRevenue: yesterdayFees || 0, // '금일' 금액은 rates에서 가져옴
+            totalCount: totalElements         // '전체' 건수는 리스트 API에서 가져옴
         });
 
+        // 화면 표시에 맞게 리스트 매핑
+        const mappedList = fetchedList.map((item, index) => ({
+            id: item.historyId || item.id || `fee-${index}`,
+            title: 'USDT 수수료 수익', 
+            txId: item.transactionId || item.txHash || `TX-${item.id}`, 
+            amount: item.amount,
+            createdAt: item.createdAt
+        }));
+        
+        setRevenueList(mappedList);
+
       } catch (error) {
-        console.error("API Error:", error);
-        setTransactions([]);
-        setUserWalletBalance(0);
-        setStats({ count: 0, volume: 0 });
+        console.error("데이터 로딩 실패:", error);
+        setRevenueList([]);
       }
     };
+
     fetchData();
   }, [currentDate]);
 
-  // [3] 날짜 이동 함수들
+  // [4] 날짜 이동 핸들러
   const handlePrevMonth = () => {
     setCurrentDate(prev => {
         if(prev.month === 1) return { year: prev.year - 1, month: 12 };
@@ -101,49 +106,44 @@ const InternalMonitoring = () => {
     });
   };
 
-  const formatTime = (dateString) => {
-    if (!dateString) return '-';
-    try {
-        const date = new Date(dateString);
-        return `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
-    } catch (e) { return '-'; }
-  };
+  // [5] 숫자 포맷팅
+  const formatNumber = (num) => Number(num || 0).toLocaleString();
 
   return (
     <div className={styles.container}>
-      {/* 상단 카드 영역 */}
+      
+      {/* 1. 상단 카드 영역 */}
       <div className={styles.topCards}>
-        <div className={styles.card} style={{ position: 'relative' }}>
-          <h3>유저 지갑 잔고 총합</h3>
+        <div className={styles.card}>
+          <h3>누적 수수료 수익</h3>
           <p>
-            {Number(userWalletBalance).toLocaleString()} <span>USDT</span>
+            {formatNumber(stats.accumulatedRevenue)} <span>USDT</span>
           </p>
         </div>
 
         <div className={styles.card}>
-          <h3>금일 서비스 거래 횟수</h3>
+          <h3>금일 발생 수수료</h3>
           <p>
-            {/* [수정] stats.count 표시 */}
-            {Number(stats.count).toLocaleString()} <span>건</span>
+             {formatNumber(stats.todayRevenue)} <span>USDT</span>
           </p>
         </div>
+
         <div className={styles.card}>
-          <h3>금일 거래 금액</h3>
+          <h3>수수료 발생 건수</h3>
           <p>
-            {/* [수정] stats.volume 표시 */}
-            {Number(stats.volume).toLocaleString()} <span>USDT</span>
+             {/* API에서 받아온 전체 건수 표시 */}
+             {formatNumber(stats.totalCount)} <span>건</span>
           </p>
         </div>
       </div>
 
-      {/* 메인 컨텐츠 영역 */}
+      {/* 2. 메인 컨텐츠 영역 */}
       <div className={styles.contentRow}>
         <div className={styles.historySection}>
           
           {/* 날짜 네비게이션 */}
           <div className={styles.dateNav}>
             <button className={styles.dateArrow} onClick={handlePrevMonth}>‹</button>
-            
             <div className={styles.dateDisplay}>
                 <div className={styles.selectWrapper}>
                     <span 
@@ -163,9 +163,7 @@ const InternalMonitoring = () => {
                         </ul>
                     )}
                 </div>
-
                 <span style={{margin: '0 2px', color: '#169279', fontWeight:'bold'}}>.</span>
-
                 <div className={styles.selectWrapper}>
                     <span 
                         className={styles.dateText} 
@@ -185,51 +183,41 @@ const InternalMonitoring = () => {
                     )}
                 </div>
             </div>
-
             <button className={styles.dateArrow} onClick={handleNextMonth}>›</button>
           </div>
 
-          <h3 className={styles.sectionTitle}>내부 거래 내역</h3>
           <div className={styles.dateLabel}>
             {String(currentDate.month).padStart(2, '0')}월 상세 내역
           </div>
 
           <div className={styles.listContainer}>
-             {!transactions || !Array.isArray(transactions) || transactions.length === 0 ? (
-              <div style={{textAlign:'center', padding:'40px', color: '#999'}}>
-                  거래 내역이 없습니다.
+             {revenueList.length === 0 ? (
+              <div className={styles.emptyState}>
+                  수수료 내역이 없습니다.
               </div>
             ) : (
-              transactions.map((tx, index) => {
-                const isDeposit = tx.type === 'DEPOSIT';
-                return (
-                  <div key={tx.transactionId || index} className={styles.listItem}>
+                revenueList.map((item, index) => (
+                  <div key={item.id || index} className={styles.listItem}>
                     <div className={styles.iconWrapper}>
                       <img src={usdtLogo} alt="USDT" />
                     </div>
                     <div className={styles.txInfo}>
                       <div className={styles.txTitle}>
-                        {tx.username} (ID:{tx.userId}) 님의 {isDeposit ? '충전' : '출금'}
-                      </div>
-                      <div className={styles.txTime}>
-                        {currentDate.month}.{new Date(tx.createdAt).getDate()} • {formatTime(tx.createdAt)}
+                        {item.title} <span className={styles.txHash}>| {item.txId}</span>
                       </div>
                     </div>
-                    <div className={`${styles.txAmount} ${isDeposit ? styles.red : styles.blue}`}>
-                          {isDeposit ? '+ ' : '- '}
-                          {Number(tx.amount || 0).toLocaleString()} USDT
+                    <div className={styles.feeAmount}>
+                          + {formatNumber(item.amount)} USDT
                     </div>
                   </div>
-                );
-              })
+                ))
             )}
           </div>
         </div>
-        
         <div className={styles.emptySpace}></div>
       </div>
     </div>
   );
 };
 
-export default InternalMonitoring;
+export default ServiceRevenueMonitoring;

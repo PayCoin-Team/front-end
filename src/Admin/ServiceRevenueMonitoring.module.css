@@ -1,0 +1,231 @@
+/* =========================================
+   1. 전체 레이아웃 & 공통
+   ========================================= */
+.container {
+  padding: 30px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: 'Pretendard', sans-serif;
+}
+
+/* =========================================
+   2. 상단 카드 영역
+   ========================================= */
+.topCards {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.card {
+  flex: 1;
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card h3 {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.card p {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.card p span {
+  font-size: 16px;
+  color: #333; /* 단위는 검정색(이미지 참고) */
+  margin-left: 5px;
+  font-weight: 500;
+}
+
+/* =========================================
+   3. 메인 컨텐츠 영역
+   ========================================= */
+.contentRow {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.historySection {
+  flex: 2;
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  min-height: 800px; /* 높이 적절히 조절 */
+}
+
+.emptySpace {
+  flex: 1;
+}
+
+/* =========================================
+   4. 날짜 네비게이션 (기존 동일)
+   ========================================= */
+.dateNav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0 40px 0; /* 아래 여백 늘림 */
+  gap: 20px;
+  position: relative;
+  z-index: 50; 
+}
+
+.dateArrow {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #555; /* 화살표 색상 진하게 */
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+.dateDisplay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selectWrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.dateText {
+  font-size: 20px;
+  font-weight: 600; /* 폰트 굵기 조정 */
+  color: #333;      /* 날짜 색상 검정 */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.downArrow {
+  font-size: 10px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* 드롭다운 리스트 */
+.dropdownList {
+  position: absolute;
+  top: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 5px;
+  width: 90px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.monthList { width: 70px; }
+
+.dropdownList li {
+  padding: 10px 0;
+  text-align: center;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.dropdownList li:hover {
+  background-color: #f1f3f5;
+  color: #169279;
+  font-weight: bold;
+}
+
+/* =========================================
+   5. 리스트 아이템
+   ========================================= */
+.dateLabel {
+  font-size: 13px;
+  color: #999;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.listContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.iconWrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* 둥근 아이콘 배경 */
+  background-color: #169279; /* 로고 배경색 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iconWrapper img {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1); /* 흰색 로고로 변경 (필요시) */
+}
+
+.txInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.txTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.txHash {
+  font-size: 13px;
+  color: #aaa;
+  font-weight: 400;
+}
+
+/* 수수료 금액 (이미지의 빨간색 스타일 반영) */
+.feeAmount {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e03b3b; /* 붉은색 포인트 */
+  text-align: right;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 50px;
+  color: #bbb;
+}

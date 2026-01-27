@@ -121,7 +121,7 @@ const UserManagement = () => {
 
     try {
       const id = selectedUser.userId || selectedUser.username;
-      await api.post(`/admin/users/${id}/status`);
+      await api.patch(`/admin/users/${id}/status`);
       
       alert(`상태가 변경되었습니다.`);
       fetchUserList(); // 목록 갱신
