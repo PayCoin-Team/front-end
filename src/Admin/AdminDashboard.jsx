@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import styles from './AdminDashboard.module.css';
 // [수정] 경로 에러 방지를 위해 상위 폴더(..)로 나갑니다.
@@ -8,7 +8,7 @@ import ExternalMonitoring from './ExternalMonitoring';
 import InternalMonitoring from './InternalMonitoring';
 import UserManagement from './UserManagement'; 
 
-// [1] 사이드바 컴포넌트
+// [1] 사이드바 컴포넌트 (변경 없음)
 const Sidebar = ({ activeMenu, setActiveMenu }) => (
   <aside className={styles.sidebar}>
     <div className={styles.logo}>
@@ -26,24 +26,10 @@ const Sidebar = ({ activeMenu, setActiveMenu }) => (
       <div className={styles.menuGroup}>
         <h3>모니터링</h3>
         <ul>
-          <li 
-            onClick={() => setActiveMenu('external')}
-            style={{ 
-              color: activeMenu === 'external' ? '#28a745' : 'inherit',
-              fontWeight: activeMenu === 'external' ? 'bold' : 'normal',
-              cursor: 'pointer' 
-            }}
-          >
+          <li onClick={() => setActiveMenu('external')} style={{ cursor: 'pointer', color: activeMenu === 'external' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'external' ? 'bold' : 'normal' }}>
             <span>Ⓑ</span> 외부 거래 모니터링
           </li>
-          <li 
-            onClick={() => setActiveMenu('internal')}
-            style={{ 
-              color: activeMenu === 'internal' ? '#28a745' : 'inherit',
-              fontWeight: activeMenu === 'internal' ? 'bold' : 'normal',
-              cursor: 'pointer' 
-            }}
-          >
+          <li onClick={() => setActiveMenu('internal')} style={{ cursor: 'pointer', color: activeMenu === 'internal' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'internal' ? 'bold' : 'normal' }}>
             <span>Ⓢ</span> 내부 거래 모니터링
           </li>
           <li><span>📊</span> 서비스 수익 모니터링</li>
@@ -53,14 +39,7 @@ const Sidebar = ({ activeMenu, setActiveMenu }) => (
       <div className={styles.menuGroup}>
         <h3>관리</h3>
         <ul>
-          <li
-            onClick={() => setActiveMenu('user')}
-            style={{ 
-              color: activeMenu === 'user' ? '#28a745' : 'inherit',
-              fontWeight: activeMenu === 'user' ? 'bold' : 'normal',
-              cursor: 'pointer' 
-            }}
-          >
+          <li onClick={() => setActiveMenu('user')} style={{ cursor: 'pointer', color: activeMenu === 'user' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'user' ? 'bold' : 'normal' }}>
             <span>👤</span> 사용자 관리
           </li>
         </ul>
@@ -69,30 +48,14 @@ const Sidebar = ({ activeMenu, setActiveMenu }) => (
   </aside>
 );
 
-// [2] 상단 카드 컴포넌트
+// [2] 상단 카드 컴포넌트 (변경 없음)
 const TopCards = ({ serviceBalance, externalBalance, userCount }) => {
-  const formatNumber = (num) => {
-    return Number(num || 0).toLocaleString();
-  };
-
+  const formatNumber = (num) => Number(num || 0).toLocaleString();
   const cards = [
-    { 
-      title: '서비스 지갑 잔고(수수료 반영)', 
-      value: `${formatNumber(serviceBalance)} USDT`, 
-      icon: '→' 
-    },
-    { 
-      title: '외부 지갑 잔고', 
-      value: `${formatNumber(externalBalance)} USDT`, 
-      icon: '→' 
-    },
-    { 
-      title: '사용자 수', 
-      value: `${formatNumber(userCount)} 명`, 
-      icon: '→' 
-    },
+    { title: '서비스 지갑 잔고(수수료 반영)', value: `${formatNumber(serviceBalance)} USDT`, icon: '→' },
+    { title: '외부 지갑 잔고', value: `${formatNumber(externalBalance)} USDT`, icon: '→' },
+    { title: '사용자 수(관리자 제외)', value: `${formatNumber(userCount)} 명`, icon: '→' },
   ];
-
   return (
     <div className={styles.cardsContainer}>
       {cards.map((c, i) => (
@@ -106,32 +69,130 @@ const TopCards = ({ serviceBalance, externalBalance, userCount }) => {
   );
 };
 
-// [3] AI 비서 컴포넌트
-const AiAssistant = () => (
-  <div className={styles.aiContainer}>
-    <div className={styles.aiHeader}>
-      <span>🤖</span> CrossPay AI 비서
-    </div>
-    <div className={styles.chatWindow}>
-      <div className={`${styles.message} ${styles.user}`}>
-        어제 비해 USDT 가격은 얼마나 올랐어?
+// [3] AI 비서 컴포넌트 (대폭 수정됨)
+const AiAssistant = () => {
+  // 채팅 메시지 목록 (기본 환영 메시지 포함)
+  const [messages, setMessages] = useState([
+    { type: 'ai', text: '안녕하세요! CrossPay AI 비서입니다. 무엇을 도와드릴까요?' }
+  ]);
+  // 입력창 상태
+  const [input, setInput] = useState('');
+  // 로딩 상태 (답변 기다리는 중)
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // 스크롤 자동 이동을 위한 ref
+  const chatWindowRef = useRef(null);
+
+  // 메시지가 추가될 때마다 스크롤을 맨 아래로 이동
+  useEffect(() => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  // 메시지 전송 함수
+  const handleSendMessage = async () => {
+    if (!input.trim()) return; // 빈 입력 방지
+
+    // 1. 사용자 메시지 화면에 즉시 추가
+    const userMessage = input;
+    setMessages(prev => [...prev, { type: 'user', text: userMessage }]);
+    setInput(''); // 입력창 초기화
+    setIsLoading(true); // 로딩 시작
+
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      // 2. API 호출 (POST /admin/chat)
+      // Request Body를 단순 String으로 보냅니다.
+      const response = await axios.post('/admin/chat', userMessage, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'text/plain' // [중요] String으로 보낼 때 설정
+          // 만약 백엔드가 JSON({ "prompt": "..." })을 원하면 'application/json'으로 변경하고 body를 객체로 보내야 함
+        }
+      });
+
+      // 3. AI 응답 화면에 추가
+      // 백엔드가 String으로 답을 준다고 가정 (response.data)
+      const aiResponse = response.data; 
+      setMessages(prev => [...prev, { type: 'ai', text: aiResponse }]);
+
+    } catch (error) {
+      console.error("AI Chat Error:", error);
+      setMessages(prev => [...prev, { type: 'ai', text: '죄송합니다. 오류가 발생하여 답변할 수 없습니다.' }]);
+    } finally {
+      setIsLoading(false); // 로딩 종료
+    }
+  };
+
+  // 엔터키 입력 처리
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !isLoading) {
+      handleSendMessage();
+    }
+  };
+
+  // 추천 질문 클릭 처리
+  const handleSuggestionClick = (text) => {
+    setInput(text);
+    // 상태 업데이트가 비동기라 input이 바로 안 바뀌는 걸 대비해 텍스트를 직접 넘김
+    // 하지만 여기선 input 상태만 바꾸고 사용자가 전송 누르게 하거나, 
+    // 아래처럼 바로 전송 로직을 태울 수도 있습니다. (여기선 입력창에만 넣음)
+  };
+
+  return (
+    <div className={styles.aiContainer}>
+      <div className={styles.aiHeader}>
+        <span>🤖</span> CrossPay AI 비서
       </div>
-      <div className={`${styles.message} ${styles.ai}`}>
-        현재 USDT/KRW 가격은 1,483.50원입니다.<br />
-        어제 같은 시간(1,481.20원)과 비교했을 때 약 0.16%(+2.3원) 상승했습니다.
+      
+      {/* 채팅 내역 표시 영역 */}
+      <div className={styles.chatWindow} ref={chatWindowRef}>
+        {messages.map((msg, index) => (
+          <div key={index} className={`${styles.message} ${msg.type === 'user' ? styles.user : styles.ai}`}>
+            {/* 줄바꿈 문자(\n) 처리 */}
+            {msg.text.split('\n').map((line, i) => (
+              <React.Fragment key={i}>
+                {line}
+                {i !== msg.text.split('\n').length - 1 && <br />}
+              </React.Fragment>
+            ))}
+          </div>
+        ))}
+        {isLoading && (
+          <div className={`${styles.message} ${styles.ai}`}>
+            ... 답변을 생성 중입니다 ...
+          </div>
+        )}
+      </div>
+
+      <div className={styles.suggestions}>
+        <button onClick={() => handleSuggestionClick('100 USDT는 얼마야?')}>100 USDT는 얼마야?</button>
+        <button onClick={() => handleSuggestionClick('가입된 사용자 수는 몇 명이야?')}>가입된 사용자 수는 몇 명이야?</button>
+        <button onClick={() => handleSuggestionClick('총 거래 횟수는 얼마야?')}>총 거래 횟수는 얼마야?</button>
+      </div>
+      
+      <div className={styles.inputArea}>
+        <input 
+          type="text" 
+          placeholder="궁금한 내용을 입력해주세요" 
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={isLoading}
+        />
+        <button 
+          className={styles.sendBtn} 
+          onClick={handleSendMessage}
+          disabled={isLoading}
+        >
+          {isLoading ? '...' : '✓'}
+        </button>
       </div>
     </div>
-    <div className={styles.suggestions}>
-      <button>100 USDT 은 얼마야?</button>
-      <button>가입된 사용자 수 총 명 몇이야</button>
-      <button>총 거래 횟수는 얼마야?</button>
-    </div>
-    <div className={styles.inputArea}>
-      <input type="text" placeholder="궁금한 내용을 입력해주세요" />
-      <button className={styles.sendBtn}>✓</button>
-    </div>
-  </div>
-);
+  );
+};
 
 // [메인] 관리자 대시보드
 const AdminDashboard = () => {
@@ -144,42 +205,34 @@ const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
     serviceWalletBalance: 0, 
     externalWalletBalance: 0, 
-    totalUserCount: 0 // [수정] 초기값 0으로 설정
+    totalUserCount: 0 
   });
 
   useEffect(() => {
     const fetchData = async () => {
-      
       try {
         const token = localStorage.getItem('accessToken');
         const config = {
           headers: { Authorization: `Bearer ${token}` }
         };
 
-        // [수정] 3개의 API를 병렬로 호출 (내 정보, 잔고 정보, 사용자 수)
         const [userRes, ratesRes, countRes] = await Promise.all([
-            axios.get('/users/me', config),       // 내 정보
-            axios.get('/admin/rates', config),    // 잔고 및 수수료 정보
-            axios.get('/admin/users/count', config) // [추가] 사용자 수 정보
+            axios.get('/users/me', config),       
+            axios.get('/admin/rates', config),    
+            axios.get('/admin/users/count', config) 
         ]);
 
-        // 1. 관리자 이름 설정
         if (userRes.data) {
            const { firstName, lastName } = userRes.data;
            setAdminName(`${lastName || ''}${firstName || ''}`.trim());
         }
 
-        // 2. 데이터 통합 업데이트
-        // ratesRes와 countRes 데이터가 있을 때만 처리
         const ratesData = ratesRes.data || {};
         const countData = countRes.data || {};
 
         setDashboardData({
-            // 서비스 지갑 잔고 = 유저 잔고 + 총 수수료
             serviceWalletBalance: (ratesData.userBalance || 0) + (ratesData.totalFees || 0),
-            // 외부 지갑 잔고 = 서버 잔고
             externalWalletBalance: ratesData.serverBalance || 0,
-            // [추가] 사용자 수 업데이트 (응답에 userCount 필드가 있다고 가정)
             totalUserCount: countData.userCount || 0
         });
 
@@ -200,7 +253,6 @@ const AdminDashboard = () => {
           <h1>환영합니다 {adminName} 님!</h1>
         </header>
 
-        {/* 1. 대시보드 화면 */}
         {activeMenu === 'dashboard' && (
           <>
             <TopCards 
@@ -218,19 +270,15 @@ const AdminDashboard = () => {
               </div>
 
               <div className={styles.aiColumn}>
+                {/* AI 비서 컴포넌트 사용 */}
                 <AiAssistant />
               </div>
             </div>
           </>
         )}
 
-        {/* 2. 외부 거래 모니터링 화면 */}
         {activeMenu === 'external' && <ExternalMonitoring />}
-
-        {/* 3. 내부 거래 모니터링 화면 */}
         {activeMenu === 'internal' && <InternalMonitoring />}
-
-        {/* 4. 사용자 관리 화면 */}
         {activeMenu === 'user' && <UserManagement />}
 
       </main>
