@@ -52,23 +52,31 @@
   color: #333;
 }
 
+/* 3. 입력 폼 스타일 수정 */
 .inputWrapper {
   display: flex;
   align-items: center;
-  /* Common.css의 테마 색상(#169279) 적용 */
-  border-bottom: 2px solid #169279;
+  border-bottom: 2px solid #169279; /* 테마 색상 */
   padding-bottom: 10px;
   margin-bottom: 30px;
+  width: 100%; /* 부모 컨테이너 폭에 맞춤 */
+  box-sizing: border-box; /* 패딩 포함 크기 계산 */
 }
 
 .chargeInput {
-  flex: 1;
+  /* flex: 1; 이 설정 때문에 공간을 다 차지하려고 했습니다. */
+  flex: 1; 
+  width: 0; /* [핵심 수정] flex 아이템이 남은 공간만 차지하도록 강제 */
+  min-width: 0; /* [핵심 수정] 내용물이 넘쳐도 레이아웃 깨짐 방지 */
+  
   border: none;
   font-size: 2rem;
   font-weight: bold;
-  color: #169279; /* 테마 색상 */
+  color: #169279;
   outline: none;
   background: transparent;
+  text-align: right; /* 숫자를 오른쪽 정렬하면 단위와 더 자연스럽습니다 (선택사항) */
+  padding-right: 10px; /* 단위와의 간격 */
 }
 
 .chargeInput::placeholder {
@@ -78,8 +86,9 @@
 .unit {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #169279; /* 테마 색상 */
-  margin-left: 10px;
+  color: #333; /* 단위는 검은색이 더 잘 보일 수 있습니다 (선택사항) */
+  white-space: nowrap; /* [중요] 단위 텍스트가 줄바꿈되지 않도록 고정 */
+  margin-left: 5px;
 }
 
 /* 4. [신규] 송금 정보 박스 (From -> To) */
