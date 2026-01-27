@@ -10,7 +10,7 @@
 
 .headerTitle {
   font-size: 1.3rem;
-  font-weight: middle;
+  font-weight: 500;
   color: #333;
 }
 
@@ -162,10 +162,10 @@
   font-size: 1rem;
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  margin-top: 100px;
+  margin-top: 50px; /* 여백 조정 */
 }
 
-/* 하단 네비게이션 (Home.module.css와 동일 스타일) */
+/* 하단 네비게이션 */
 .bottomNav {
   height: 70px;
   background-color: #169279; 
@@ -198,7 +198,6 @@
   height: 24px;
   object-fit: contain;
   margin-bottom: 2px;
-  /* 활성화된 탭은 조금 더 밝게 보이도록 필터 적용 가능 */
 }
 
 .navItem.active .navImg {
@@ -210,15 +209,13 @@
   font-weight: 500;
 }
 
-
-
 /* 지갑 주소 전체 박스 (버튼 역할) */
 .walletBox {
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: rgba(22, 146, 121, 0.1); 
-  padding: 6px 12px 6px 6px; /* 왼쪽 패딩을 줄여서 아이콘을 끝에 붙임 */
+  padding: 6px 12px 6px 6px;
   border-radius: 18px;
   margin-top: 12px;
   cursor: pointer;
@@ -237,31 +234,28 @@
 .walletIcon {
   width: 32px;  
   height: 32px;
-  background: rgba(255, 255, 255, 1); /* 완전 흰색 배경 */
+  background: rgba(255, 255, 255, 1);
   border-radius: 50px;
   display: flex;
   align-items: center; 
   justify-content: center;
-  margin-right: 8px; /* 텍스트와 간격 */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* 살짝 그림자 */
+  margin-right: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* 동그라미 안의 이미지 */
 .walletIcon img {
-    width: 18px; /* 이미지 크기 */
-    height: 18px;
-    object-fit: contain;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 
-/* 지갑 주소 텍스트 */
 .walletText {
   font-size: 14px;
-  color: #169279; /* 글자색 초록 */
+  color: #169279;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
 
-/* '복사' 버튼 텍스트 */
 .copyBtn {
   font-size: 11px;
   color: #fff;
@@ -270,4 +264,154 @@
   border-radius: 10px;
   margin-left: 10px;
   font-weight: bold;
+}
+
+/* =========================================
+   [수정됨] 웹앱 스타일 모달 (Bottom Sheet)
+   ========================================= */
+
+/* 1. 배경 (Overlay) */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* 배경을 좀 더 진하게 */
+  display: flex;
+  
+  /* 모바일 기본: 아래 정렬 (Bottom Sheet) */
+  align-items: flex-end; 
+  justify-content: center;
+  
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* 2. 모달 본체 (Content) */
+.modalContent {
+  background: white;
+  width: 100%;
+  max-width: 100%; /* 모바일에서는 꽉 차게 */
+  
+  /* 위쪽 모서리만 둥글게 (카드 느낌) */
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  
+  padding: 30px 24px 40px 24px; /* 하단 여백 넉넉히 (아이폰 홈바 고려) */
+  
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  
+  /* 애니메이션: 아래에서 위로 */
+  transform: translateY(100%);
+  animation: slideUpBottom 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  
+  /* 그림자 위쪽으로 */
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+}
+
+.modalContent h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.3rem;
+  color: #333;
+  font-weight: 700;
+  text-align: left; /* 제목 왼쪽 정렬이 앱 느낌 남 */
+}
+
+/* 3. 입력창 스타일 (터치하기 좋게 큼직하게) */
+.modalInput {
+  width: 100%;
+  height: 50px; /* 높이 키움 */
+  padding: 0 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.modalInput:focus {
+  border-color: #169279;
+  background-color: white;
+  box-shadow: 0 0 0 2px rgba(22, 146, 121, 0.1);
+}
+
+/* 4. 버튼 영역 */
+.modalActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.cancelBtn {
+  flex: 1;
+  height: 50px;
+  background-color: #f1f3f5;
+  border: none;
+  border-radius: 12px;
+  color: #555;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.confirmBtn {
+  flex: 2; /* 확인 버튼을 더 넓게 */
+  height: 50px;
+  background-color: #169279;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(22, 146, 121, 0.2);
+}
+
+.cancelBtn:active, .confirmBtn:active {
+  transform: scale(0.98); /* 누르는 느낌 */
+}
+
+/* --- [애니메이션] --- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUpBottom {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* --- [반응형] PC/태블릿 화면에서는 중앙 팝업으로 변경 --- */
+@media (min-width: 768px) {
+  .modalOverlay {
+    align-items: center; /* 중앙 정렬 */
+  }
+
+  .modalContent {
+    width: 400px; /* 너비 고정 */
+    max-width: 90%;
+    border-radius: 24px; /* 전체 둥글게 */
+    padding: 30px;
+    text-align: center; /* PC는 중앙 정렬이 예쁨 */
+    
+    transform: translateY(20px);
+    animation: slideUpCenter 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  
+  .modalContent h3 {
+    text-align: center;
+  }
+
+  @keyframes slideUpCenter {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
 }
