@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import styles from './AdminDashboard.module.css';
 import usdtLogo from '../component/UsdtLogo.svg'; 
+// [추가] useNavigate import (Sidebar에서 사용하기 위해)
+import { useNavigate } from 'react-router-dom';
 
 import ExternalMonitoring from './ExternalMonitoring';
 import InternalMonitoring from './InternalMonitoring';
@@ -12,47 +14,57 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from 'recharts';
 
-// [1] 사이드바
-const Sidebar = ({ activeMenu, setActiveMenu }) => (
-  <aside className={styles.sidebar}>
-    <div className={styles.logo}>
-      <img src={usdtLogo} alt="TsPay" />
-      <span>TsPay</span>
-    </div>
-    <nav className={styles.menu}>
-      <div 
-        className={`${styles.menuItem} ${activeMenu === 'dashboard' ? styles.active : ''}`}
-        onClick={() => setActiveMenu('dashboard')}
-      >
-        <span className={styles.icon}>⊞</span> 대시보드
-      </div>
-      <div className={styles.menuGroup}>
-        <h3>모니터링</h3>
-        <ul>
-          <li onClick={() => setActiveMenu('external')} style={{ cursor: 'pointer', color: activeMenu === 'external' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'external' ? 'bold' : 'normal' }}>
-            <span>Ⓑ</span> 외부 거래 모니터링
-          </li>
-          <li onClick={() => setActiveMenu('internal')} style={{ cursor: 'pointer', color: activeMenu === 'internal' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'internal' ? 'bold' : 'normal' }}>
-            <span>Ⓢ</span> 내부 거래 모니터링
-          </li>
-          <li onClick={() => setActiveMenu('revenue')} style={{ cursor: 'pointer', color: activeMenu === 'revenue' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'revenue' ? 'bold' : 'normal' }}>
-            <span>📊</span> 서비스 수익 모니터링
-          </li>
-        </ul>
-      </div>
-      <div className={styles.menuGroup}>
-        <h3>관리</h3>
-        <ul>
-          <li onClick={() => setActiveMenu('user')} style={{ cursor: 'pointer', color: activeMenu === 'user' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'user' ? 'bold' : 'normal' }}>
-            <span>👤</span> 사용자 관리
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </aside>
-);
+// [1] 사이드바 (수정됨)
+const Sidebar = ({ activeMenu, setActiveMenu }) => {
+  // [추가] 로고 클릭 시 홈으로 이동하기 위한 훅
+  const navigate = useNavigate();
 
-// [2] 상단 카드
+  return (
+    <aside className={styles.sidebar}>
+      {/* [수정] 클릭 이벤트 및 커서 스타일 추가 */}
+      <div 
+        className={styles.logo} 
+        onClick={() => navigate('/home')} 
+        style={{ cursor: 'pointer' }}
+      >
+        <img src={usdtLogo} alt="TsPay" />
+        <span>TsPay</span>
+      </div>
+      <nav className={styles.menu}>
+        <div 
+          className={`${styles.menuItem} ${activeMenu === 'dashboard' ? styles.active : ''}`}
+          onClick={() => setActiveMenu('dashboard')}
+        >
+          <span className={styles.icon}>⊞</span> 대시보드
+        </div>
+        <div className={styles.menuGroup}>
+          <h3>모니터링</h3>
+          <ul>
+            <li onClick={() => setActiveMenu('external')} style={{ cursor: 'pointer', color: activeMenu === 'external' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'external' ? 'bold' : 'normal' }}>
+              <span>Ⓑ</span> 외부 거래 모니터링
+            </li>
+            <li onClick={() => setActiveMenu('internal')} style={{ cursor: 'pointer', color: activeMenu === 'internal' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'internal' ? 'bold' : 'normal' }}>
+              <span>Ⓢ</span> 내부 거래 모니터링
+            </li>
+            <li onClick={() => setActiveMenu('revenue')} style={{ cursor: 'pointer', color: activeMenu === 'revenue' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'revenue' ? 'bold' : 'normal' }}>
+              <span>📊</span> 서비스 수익 모니터링
+            </li>
+          </ul>
+        </div>
+        <div className={styles.menuGroup}>
+          <h3>관리</h3>
+          <ul>
+            <li onClick={() => setActiveMenu('user')} style={{ cursor: 'pointer', color: activeMenu === 'user' ? '#28a745' : 'inherit', fontWeight: activeMenu === 'user' ? 'bold' : 'normal' }}>
+              <span>👤</span> 사용자 관리
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+  );
+};
+
+// [2] 상단 카드 (기존 유지)
 const TopCards = ({ serviceBalance, externalBalance, userCount }) => {
   const formatNumber = (num) => Number(num || 0).toLocaleString();
   const cards = [
@@ -72,7 +84,7 @@ const TopCards = ({ serviceBalance, externalBalance, userCount }) => {
   );
 };
 
-// [3] AI 비서
+// [3] AI 비서 (기존 유지)
 const AiAssistant = () => {
   const [messages, setMessages] = useState([{ type: 'ai', text: '안녕하세요! TsPay AI 비서입니다. 무엇을 도와드릴까요?' }]);
   const [input, setInput] = useState('');
