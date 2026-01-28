@@ -8,6 +8,14 @@
   font-family: 'Pretendard', sans-serif;
 }
 
+/* [추가] Internal과 동일한 섹션 타이틀 스타일 */
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+}
+
 /* =========================================
    2. 상단 카드 영역
    ========================================= */
@@ -21,7 +29,7 @@
   flex: 1;
   background: white;
   padding: 25px;
-  border-radius: 16px;
+  border-radius: 16px; /* 둥근 모서리 (16px) */
   box-shadow: 0 4px 20px rgba(0,0,0,0.03);
   display: flex;
   flex-direction: column;
@@ -44,7 +52,7 @@
 
 .card p span {
   font-size: 16px;
-  color: #333; /* 단위는 검정색(이미지 참고) */
+  color: #169279; /* 민트 포인트 컬러 */
   margin-left: 5px;
   font-weight: 500;
 }
@@ -64,7 +72,7 @@
   padding: 30px;
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-  min-height: 800px; /* 높이 적절히 조절 */
+  min-height: 1300px;
 }
 
 .emptySpace {
@@ -72,25 +80,32 @@
 }
 
 /* =========================================
-   4. 날짜 네비게이션 (기존 동일)
+   4. 날짜 네비게이션 (Internal 색상 적용)
    ========================================= */
 .dateNav {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 10px 0 40px 0; /* 아래 여백 늘림 */
+  margin: 10px 0 30px 0;
   gap: 20px;
   position: relative;
   z-index: 50; 
 }
 
+/* [수정] 화살표 색상을 Internal과 동일한 민트색으로 변경 */
 .dateArrow {
   background: none;
   border: none;
-  font-size: 20px;
-  color: #555; /* 화살표 색상 진하게 */
+  font-size: 28px;
+  color: #8ce9d3; /* 연한 민트 */
   cursor: pointer;
   padding: 0 10px;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.dateArrow:hover {
+  color: #169279;
 }
 
 .dateDisplay {
@@ -104,10 +119,11 @@
   cursor: pointer;
 }
 
+/* [수정] 날짜 텍스트 색상 및 굵기 통일 */
 .dateText {
   font-size: 20px;
-  font-weight: 600; /* 폰트 굵기 조정 */
-  color: #333;      /* 날짜 색상 검정 */
+  font-weight: 800; /* Internal처럼 굵게 */
+  color: #169279;   /* Internal처럼 진한 초록 */
   display: flex;
   align-items: center;
   gap: 4px;
@@ -115,11 +131,11 @@
 
 .downArrow {
   font-size: 10px;
-  color: #888;
+  color: #169279;
   margin-top: 2px;
 }
 
-/* 드롭다운 리스트 */
+/* 드롭다운 */
 .dropdownList {
   position: absolute;
   top: 130%;
@@ -154,34 +170,42 @@
   font-weight: bold;
 }
 
+.dropdownList::-webkit-scrollbar { width: 4px; }
+.dropdownList::-webkit-scrollbar-thumb { background-color: #ddd; border-radius: 4px; }
+
 /* =========================================
-   5. 리스트 아이템
+   5. 리스트 스타일
    ========================================= */
 .dateLabel {
   font-size: 13px;
   color: #999;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .listContainer {
   display: flex;
   flex-direction: column;
+  gap: 20px;
 }
 
 .listItem {
   display: flex;
   align-items: center;
   gap: 15px;
-  padding: 20px 0;
+  padding: 15px 0;
   border-bottom: 1px solid #f0f0f0;
 }
 
+.listItem:last-child {
+  border-bottom: none;
+}
+
 .iconWrapper {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%; /* 둥근 아이콘 배경 */
-  background-color: #169279; /* 로고 배경색 */
+  width: 46px; 
+  height: 46px;
+  border-radius: 16px;
+  background-color: #eef7f5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -189,25 +213,21 @@
 }
 
 .iconWrapper img {
-  width: 20px;
-  height: 20px;
-  filter: brightness(0) invert(1); /* 흰색 로고로 변경 (필요시) */
+  width: 24px;
+  height: 24px;
 }
 
 .txInfo {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 4px;
 }
 
 .txTitle {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: #333;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .txHash {
@@ -216,16 +236,24 @@
   font-weight: 400;
 }
 
-/* 수수료 금액 (이미지의 빨간색 스타일 반영) */
 .feeAmount {
   font-size: 16px;
   font-weight: 700;
-  color: #e03b3b; /* 붉은색 포인트 */
+  color: #ff4d4f;
   text-align: right;
+  min-width: 100px;
 }
 
 .emptyState {
   text-align: center;
   padding: 50px;
   color: #bbb;
+}
+
+.amountPlus {
+  color: #ff4d4f;
+}
+
+.amountMinus {
+  color: #1e88e5;
 }

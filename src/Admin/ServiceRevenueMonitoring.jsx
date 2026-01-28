@@ -76,7 +76,7 @@ const ServiceRevenueMonitoring = () => {
             id: item.historyId || item.id || `fee-${index}`,
             title: 'USDT 수수료 수익', 
             txId: item.transactionId || item.txHash || `TX-${item.id}`, 
-            amount: item.amount,
+            fee: item.fee,
             createdAt: item.createdAt
         }));
         
@@ -186,9 +186,7 @@ const ServiceRevenueMonitoring = () => {
             <button className={styles.dateArrow} onClick={handleNextMonth}>›</button>
           </div>
 
-          <div className={styles.dateLabel}>
-            {String(currentDate.month).padStart(2, '0')}월 상세 내역
-          </div>
+          <h3 className={styles.sectionTitle}>수수료 내역</h3>
 
           <div className={styles.listContainer}>
              {revenueList.length === 0 ? (
@@ -203,11 +201,11 @@ const ServiceRevenueMonitoring = () => {
                     </div>
                     <div className={styles.txInfo}>
                       <div className={styles.txTitle}>
-                        {item.title} <span className={styles.txHash}>| {item.txId}</span>
+                        {item.title}
                       </div>
                     </div>
                     <div className={styles.feeAmount}>
-                          + {formatNumber(item.amount)} USDT
+                          + {formatNumber(item.fee)} USDT
                     </div>
                   </div>
                 ))

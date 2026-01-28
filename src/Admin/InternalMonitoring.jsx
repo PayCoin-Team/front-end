@@ -21,10 +21,7 @@ const InternalMonitoring = () => {
 
   // 데이터 상태
   const [transactions, setTransactions] = useState([]); 
-  // 유저 지갑 잔고 상태
   const [userWalletBalance, setUserWalletBalance] = useState(0); 
-  
-  // [수정] 통계 상태 (거래 횟수, 거래 금액)
   const [stats, setStats] = useState({ count: 0, volume: 0 });
 
   // [2] API 호출
@@ -36,7 +33,7 @@ const InternalMonitoring = () => {
 
         console.log(`Internal 조회 요청: ${yearParam}-${monthParam}`);
 
-        // [수정] 3개의 API를 병렬로 호출 (거래내역, 잔고, 금일 통계)
+        // 3개의 API 병렬 호출
         const [txResponse, ratesResponse, todayHistoryResponse] = await Promise.all([
             // 1. 거래 내역 조회
             api.get('/admin/histories', {
@@ -49,7 +46,7 @@ const InternalMonitoring = () => {
             }),
             // 2. 유저 지갑 잔고 조회
             api.get('/admin/rates'),
-            // 3. [추가] 금일 거래 통계 조회
+            // 3. 금일 거래 통계 조회
             api.get('/admin/today/history') 
         ]);
 
@@ -67,12 +64,10 @@ const InternalMonitoring = () => {
             setUserWalletBalance(ratesResponse.data.userBalance || 0);
         }
 
-        // --- [수정] 금일 통계 데이터 처리 ---
+        // --- 금일 통계 데이터 처리 ---
         const todayData = todayHistoryResponse.data || {};
         setStats({
-            // todayTransferCounts -> 금일 서비스 거래 횟수
             count: todayData.todayTransferCounts || 0,
-            // todayTransferAmount -> 금일 거래 금액
             volume: todayData.todayTransferAmount || 0
         });
 
@@ -101,11 +96,19 @@ const InternalMonitoring = () => {
     });
   };
 
+  // [수정] 날짜 포맷 함수 (초 단위 추가)
   const formatTime = (dateString) => {
     if (!dateString) return '-';
     try {
         const date = new Date(dateString);
-        return `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0'); // 초 추가
+        
+        // 예: 01.28 • 14:30:45
+        return `${month}.${day} • ${hours}:${minutes}:${seconds}`;
     } catch (e) { return '-'; }
   };
 
@@ -123,14 +126,12 @@ const InternalMonitoring = () => {
         <div className={styles.card}>
           <h3>금일 서비스 거래 횟수</h3>
           <p>
-            {/* [수정] stats.count 표시 */}
             {Number(stats.count).toLocaleString()} <span>건</span>
           </p>
         </div>
         <div className={styles.card}>
           <h3>금일 거래 금액</h3>
           <p>
-            {/* [수정] stats.volume 표시 */}
             {Number(stats.volume).toLocaleString()} <span>USDT</span>
           </p>
         </div>
@@ -190,9 +191,7 @@ const InternalMonitoring = () => {
           </div>
 
           <h3 className={styles.sectionTitle}>내부 거래 내역</h3>
-          <div className={styles.dateLabel}>
-            {String(currentDate.month).padStart(2, '0')}월 상세 내역
-          </div>
+        
 
           <div className={styles.listContainer}>
              {!transactions || !Array.isArray(transactions) || transactions.length === 0 ? (
@@ -201,22 +200,29 @@ const InternalMonitoring = () => {
               </div>
             ) : (
               transactions.map((tx, index) => {
-                const isDeposit = tx.type === 'DEPOSIT';
+                // [수정] 보낸사람, 받는사람 이름 조합
+                const senderName = `${tx.senderLastName || ''}${tx.senderFirstName || ''}`;
+                const receiverName = `${tx.receiverLastName || ''}${tx.receiverFirstName || ''}`;
+
                 return (
-                  <div key={tx.transactionId || index} className={styles.listItem}>
+                  <div key={tx.historyId || index} className={styles.listItem}>
                     <div className={styles.iconWrapper}>
                       <img src={usdtLogo} alt="USDT" />
                     </div>
                     <div className={styles.txInfo}>
                       <div className={styles.txTitle}>
-                        {tx.username} (ID:{tx.userId}) 님의 {isDeposit ? '충전' : '출금'}
+                        {/* [수정] 보낸사람 -> 받는사람 형식 */}
+                        {senderName} 
+                        <span style={{color: '#aaa', margin: '0 6px'}}>→</span> 
+                        {receiverName}
                       </div>
                       <div className={styles.txTime}>
-                        {currentDate.month}.{new Date(tx.createdAt).getDate()} • {formatTime(tx.createdAt)}
+                        {/* [수정] transactionTime 사용 및 초단위 포맷 */}
+                        {formatTime(tx.transactionTime)}
                       </div>
                     </div>
-                    <div className={`${styles.txAmount} ${isDeposit ? styles.red : styles.blue}`}>
-                          {isDeposit ? '+ ' : '- '}
+                    {/* [수정] 금액은 단순 표시 (색상은 blue 유지 or 필요시 변경) */}
+                    <div className={`${styles.txAmount} ${styles.blue}`}>
                           {Number(tx.amount || 0).toLocaleString()} USDT
                     </div>
                   </div>

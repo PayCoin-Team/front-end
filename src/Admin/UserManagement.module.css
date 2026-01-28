@@ -16,37 +16,47 @@
   gap: 20px;
 }
 
+/* --- 상단 통계 카드 --- */
+.statsRow {
+  display: flex;
+  gap: 20px;
+}
+
 .statCard {
   flex: 1;
   background: white;
   border-radius: 12px;
-  padding: 24px;
+  /* 패딩을 좌우 20px로 조정하여 왼쪽 여백 확보 */
+  padding: 24px 20px; 
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  justify-content: center; /* 수직 중앙 정렬은 유지 */
+  
+  /* [핵심 수정] 가로축 정렬을 왼쪽(flex-start)으로 변경 */
+  align-items: flex-start; 
+  text-align: left; 
 }
 
 .statLabel {
   color: #666;
   font-size: 14px;
-  margin-bottom: 12px;
-  width: 100%;
-  text-align: left;
+  margin-bottom: 8px; /* 간격 살짝 줄임 */
+  font-weight: 500;
+  /* width: 100%; text-align: left; 제거 (이미 부모가 정렬함) */
 }
 
 .statValue {
   font-size: 32px;
-  font-weight: 600;
+  font-weight: 700;
   color: #333;
+  margin: 0;
 }
 
 .statValue span {
   font-size: 16px;
-  font-weight: 400;
-  color: #888;
+  font-weight: 500; /* 굵기 조정 */
+  color: #169279;
   margin-left: 4px;
 }
 
@@ -234,29 +244,94 @@
 }
 
 /* 날짜 선택 */
-.dateSelector {
+.dateNav {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 10px 0 30px 0;
   gap: 20px;
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 30px;
+  position: relative;
+  z-index: 50; 
 }
 
-.dateSelector button {
+.dateArrow {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 28px;
+  color: #8ce9d3; /* 연한 민트 */
   cursor: pointer;
-  color: #888;
+  padding: 0 10px;
+  transition: color 0.2s;
+  line-height: 1;
 }
 
-.dateSelector small {
-  font-size: 14px;
-  font-weight: normal;
-  color: #888;
+.dateArrow:hover {
+  color: #169279;
 }
+
+.dateDisplay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selectWrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.dateText {
+  font-size: 20px;
+  font-weight: 800; /* 굵게 */
+  color: #169279;   /* 진한 민트 */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.downArrow {
+  font-size: 10px;
+  color: #169279;
+  margin-top: 2px;
+}
+
+/* 드롭다운 리스트 스타일 */
+.dropdownList {
+  position: absolute;
+  top: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 5px;
+  width: 90px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.monthList { width: 70px; }
+
+.dropdownList li {
+  padding: 10px 0;
+  text-align: center;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.dropdownList li:hover {
+  background-color: #f1f3f5;
+  color: #169279; /* 호버 시 민트색 */
+  font-weight: bold;
+}
+
+.dropdownList::-webkit-scrollbar { width: 4px; }
+.dropdownList::-webkit-scrollbar-thumb { background-color: #ddd; border-radius: 4px; }
 
 /* 거래 내역 리스트 */
 .historyList {
@@ -325,9 +400,9 @@
 }
 
 .amountPlus {
-  color: #e53935; /* 빨간색 (입금) */
+  color: #ff4d4f;
 }
 
 .amountMinus {
-  color: #1e88e5; /* 파란색 (출금) */
+  color: #1e88e5;
 }
