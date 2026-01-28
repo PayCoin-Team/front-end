@@ -1,9 +1,9 @@
-/* 전체 레이아웃 */
+/* 1. 전체 레이아웃 */
 .dashboardContainer {
   display: flex;
   height: 100vh;
   background-color: #f5f7fa;
-  font-family: 'Pretendard', sans-serif; /* 폰트가 있다면 적용 */
+  font-family: 'Pretendard', sans-serif;
 }
 
 .mainContent {
@@ -22,7 +22,7 @@
   margin: 0;
 }
 
-/* 사이드바 스타일 */
+/* 2. 사이드바 스타일 */
 .sidebar {
   width: 260px;
   background: white;
@@ -80,7 +80,7 @@
 .menuGroup li:hover { color: #2e7d32; }
 .icon { font-size: 16px; width: 20px; text-align: center;}
 
-/* 상단 카드 스타일 */
+/* 3. 상단 카드 스타일 */
 .cardsContainer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -93,6 +93,9 @@
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.03);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .cardTitle { font-size: 14px; color: #888; margin-bottom: 12px; font-weight: 500;}
 .cardValue { font-size: 24px; font-weight: 700; color: #333; }
@@ -111,12 +114,12 @@
   font-size: 14px;
 }
 
-/* 그리드 레이아웃 (차트 vs AI) */
+/* 4. 그리드 레이아웃 (차트 vs AI) */
 .contentGrid {
   display: grid;
-  grid-template-columns: 2fr 1.2fr; /* 왼쪽 2 : 오른쪽 1.2 비율 */
+  grid-template-columns: 2fr 1.2fr;
   gap: 20px;
-  height: calc(100vh - 250px); /* 화면 높이에 맞춤 */
+  min-height: 500px; /* 최소 높이 확보 */
 }
 .chartsColumn {
   display: flex;
@@ -124,33 +127,95 @@
   gap: 20px;
 }
 
-/* 차트 컨테이너 */
+/* 5. [수정됨] 차트 컨테이너 및 내부 요소 스타일 */
 .chartContainer {
   background: white;
-  padding: 20px;
+  padding: 25px;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-  flex: 1; /* 남은 공간 채우기 */
-  position: relative;
-  min-height: 250px;
-}
-.chartContainer h2 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: #333;
-}
-.placeholderText {
-  height: 100%;
+  flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #ccc;
-  font-size: 24px;
-  font-weight: 800;
+  flex-direction: column;
+  min-height: 400px;
 }
 
-/* AI 비서 스타일 */
+/* 차트 헤더 (가격 정보) */
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.priceWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.currentPrice {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1A9276;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.currentPrice span {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #888;
+}
+
+.priceChange {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plus { color: #d32f2f; }
+.minus { color: #1976d2; }
+
+.periodText {
+  font-size: 0.85rem;
+  color: #adb5bd;
+  font-weight: normal;
+}
+
+/* 차트 탭 (1D, 1W...) */
+.timeTab {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #f1f3f5;
+  padding-bottom: 10px;
+}
+
+.tabItem {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #adb5bd;
+  cursor: pointer;
+  padding-bottom: 5px;
+}
+
+.tabItem.active {
+  color: #333;
+  border-bottom: 2px solid #333;
+}
+
+/* 실제 차트 영역 */
+.chartWrapper {
+  flex: 1;
+  width: 100%;
+  min-height: 300px;
+}
+
+/* 6. AI 비서 스타일 */
 .aiColumn { height: 100%; }
 .aiContainer {
   background: white;
@@ -163,7 +228,7 @@
   border: 1px solid #f0f0f0;
 }
 .aiHeader {
-  background-color: #4caf50; /* 조금 더 부드러운 초록 */
+  background-color: #4caf50;
   color: white;
   padding: 16px 20px;
   font-weight: 700;
@@ -187,6 +252,7 @@
   border-radius: 12px;
   font-size: 13px;
   line-height: 1.5;
+  word-break: break-word;
 }
 .message.user {
   align-self: flex-end;
@@ -218,7 +284,10 @@
   font-size: 11px;
   cursor: pointer;
   font-weight: 600;
+  transition: background-color 0.2s;
 }
+.suggestions button:hover { background-color: #c8e6c9; }
+
 .inputArea {
   padding: 15px;
   display: flex;
@@ -247,4 +316,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.sendBtn:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
 }
