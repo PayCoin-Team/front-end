@@ -41,6 +41,8 @@ const Home = () => {
   const [selectedCurrency, setSelectedCurrency] = useState('KRW'); 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // 관리자 여부 및 지갑 연동 여부 확인
+  const isAdmin = walletInfo?.role === 'ROLE_ADMIN';
   const isConnected = !!walletInfo?.externalAddress;
 
   const currencyMetadata = {
@@ -109,17 +111,33 @@ const Home = () => {
       <header className={styles.header}>
         <div className={styles.logoRow}>
           <img src={LogoIcon} alt="Logo" className={styles.logoImg} />
-          <h1 className={styles.logo}>TsPay</h1>
+          <h1 className={styles.logo}>CrossPay</h1>
         </div>
+        
         <div className={styles.headerButtons}>
-            <button className={`${styles.topBtn} ${styles.greenBtn}`} onClick={() => navigate('/wallet')}>
-              <img src={topWalletIcon} alt="Wallet" className={styles.topBtnIcon} />
-              {isConnected ? t.walletConnected : t.walletConnect}
-            </button>
-            <button className={`${styles.topBtn} ${isConnected ? styles.greenBtn : styles.grayBtn}`} onClick={() => isConnected ? navigate('/chart') : alert(t.alertNeedConnectChart)}> 
+          {/* 지갑 연동 버튼 */}
+          <button className={`${styles.topBtn} ${styles.greenBtn}`} onClick={() => navigate('/wallet')}>
+            <img src={topWalletIcon} alt="Wallet" className={styles.topBtnIcon} />
+            {isConnected ? t.walletConnected : t.walletConnect}
+          </button>
+          
+          {/* 차트 및 관리자 버튼 스택 */}
+          <div className={styles.buttonStack}>
+            <button 
+              className={`${styles.topBtn} ${isConnected ? styles.greenBtn : styles.grayBtn}`} 
+              onClick={() => isConnected ? navigate('/chart') : alert(t.alertNeedConnectHome)}
+            > 
               <img src={chartIcon} alt="Chart" className={styles.topBtnIcon} />
               {t.usdtChart}
-           </button>
+            </button>
+
+            {/* 관리자일 때만 노출 */}
+            {isAdmin && (
+              <button className={`${styles.topBtn} ${styles.greenBtn}`} onClick={() => navigate('/admin')}>
+                {t.adminDashboard}
+              </button>
+            )}
+          </div>
         </div>
       </header>
 

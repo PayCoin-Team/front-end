@@ -111,7 +111,9 @@ export const translations = {
         errorLoginFailDefault: "로그인 정보를 확인해주세요.",
         errorNetworkDefault: "서버에 연결할 수 없습니다.",
         errorUnknownDefault: "알 수 없는 오류가 발생했습니다.",
+
         //홈화면
+        adminDashboard: "관리자 대시보드",
         walletConnect: '지갑 연동',
         usdtChart: 'USDT 차트',
         wallet: '내 지갑',
@@ -126,6 +128,7 @@ export const translations = {
         alertNeedConnectChart: "지갑 연동 후 이용 가능합니다.",
         connectAlertTitle: "❗ 지갑 연동을 해주십시오",
         connectAlertSub: "서비스 이용을 위해 지갑 연동이 필요합니다",
+        alertNeedConnectHome: "지갑 연동 후 이용 가능합니다.",
 
         payBtn: '결제하기',
         createQr: 'QR 생성',
@@ -389,6 +392,7 @@ export const translations = {
         errorUnknownDefault: "An unknown error has occurred.",
 
         //홈화면
+        adminDashboard: "Admin Dashboard",
         walletConnect: 'Connect Wallet',
         usdtChart: 'USDT Chart',
         wallet: 'My Wallet',
@@ -403,6 +407,7 @@ export const translations = {
         alertNeedConnectChart: "Available after linking your wallet.",
         connectAlertTitle: "❗ Please link your wallet",
         connectAlertSub: "Wallet linking is required to use the service",
+        alertNeedConnectHome: "Available after linking your wallet.",
 
         payBtn: 'Pay',
         createQr: 'Create QR',
@@ -669,6 +674,7 @@ export const translations = {
         errorUnknownDefault: "不明なエラーが発生しました。",
 
         //홈화면
+        adminDashboard: "管理者ダッシュボード",
         walletConnect: 'ウォレット\n連携',
         usdtChart: 'USDT\nチャート',
         wallet: 'ウォレット',
@@ -682,7 +688,8 @@ export const translations = {
         alertNeedConnect: "サービス利用のためにウォレット連携が必要です。",
         alertNeedConnectChart: "ウォレット連携後に利用可能です。",
         connectAlertTitle: "❗ ウォレット連携をしてください",
-        connectAlertSub: "サービス利用のためにウォ렛連携が必要です",
+        connectAlertSub: "サービス利用のためにウォレット連携が必要です",
+        alertNeedConnectHome: "ウォレット連携後に利用可能です。",
 
         payBtn: '決済',
         createQr: 'QR作成',
@@ -728,7 +735,7 @@ export const translations = {
         connectStartDesc: "ボタンを押して連携を開始してください。",
         btnConnectTronLink: "TronLinkウォレットを連携する",
         checking: "確認中...",
-        signRequest: "電子署명リクエスト",
+        signRequest: "電子署名リクエスト",
         signDesc: "ポップアップで [署名] をクリックしてください。",
         walletAddressLabel: "ウォレットアドレス",
         btnShowSignPopup: "署名ポップアップを表示",
@@ -806,7 +813,7 @@ export const translations = {
         filterCharge: "チャージ",
         filterWithdraw: "出金",
         filterPay: "決済",
-        monthUnit: "월",
+        monthUnit: "月",
         noHistory: "取引履歴がありません。",
         usdtChargeTitle: "USDTチャージ",
         usdtWithdrawTitle: "USDT出金",
@@ -951,6 +958,7 @@ export const translations = {
         errorUnknownDefault: "Đã xảy ra lỗi không xác định.",
 
         //홈화면
+        adminDashboard: "Bảng điều khiển",
         walletConnect: 'Liên kết ví',
         usdtChart: 'Biểu đồ USDT',
         wallet: 'Ví của tôi',
@@ -965,6 +973,7 @@ export const translations = {
         alertNeedConnectChart: "Có thể sử dụng sau khi liên kết ví.",
         connectAlertTitle: "❗ Vui lòng liên kết ví",
         connectAlertSub: "Cần liên kết ví để sử dụng dịch vụ",
+        alertNeedConnectHome: "Có thể sử dụng sau khi liên kết ví.",
 
         payBtn: 'Thanh toán',
         createQr: 'Tạo QR',

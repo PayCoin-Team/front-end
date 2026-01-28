@@ -35,12 +35,14 @@
   font-size: 28px;
   font-weight: 700;
   color: #333;
+  margin: 0;
 }
 
 .card p span {
   font-size: 16px;
-  color: #169279; /* 포인트 컬러 적용 */
+  color: #169279; /* 민트 포인트 컬러 */
   margin-left: 5px;
+  font-weight: 500;
 }
 
 /* 메인 컨텐츠 (좌: 내역 / 우: 지갑주소) */
@@ -239,8 +241,8 @@
   min-width: 100px;
 }
 
-.red { color: #169279; } /* 입금 (민트/초록 계열로 변경 추천 or 빨강 유지) */
-.blue { color: #333; }   /* 출금 (검정 or 회색) */
+.red { color: #ff4d4f; } /* 입금 (민트/초록 계열로 변경 추천 or 빨강 유지) */
+.blue { color: #1e88e5; }   /* 출금 (검정 or 회색) */
 
 /* 지갑 주소 박스 스타일 */
 .addressBox {
