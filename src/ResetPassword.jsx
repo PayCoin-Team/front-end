@@ -1,18 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import common from './Common.module.css';
 import styles from './ResetPassword.module.css';
 import eyeIcon from './component/eye.svg';
 import UsdtLogo from './component/UsdtLogo.svg';
 
-// ⭐ [수정 1] api 인스턴스 import
+// api 인스턴스 및 번역 데이터 import
 import api from './utils/api';
 import { translations } from './utils/translations'; 
 
 const ResetPassword = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
-    const language = localStorage.getItem('appLanguage') || 'ko';
+    const [language, setLanguage] = useState(localStorage.getItem('appLanguage') || 'ko');
+
+    // 실시간 언어 변경 감지
+    useEffect(() => {
+        const handleLanguageChange = () => {
+            setLanguage(localStorage.getItem('appLanguage') || 'ko');
+        };
+        window.addEventListener('languageChange', handleLanguageChange);
+        return () => window.removeEventListener('languageChange', handleLanguageChange);
+    }, []);
+
     const t = translations[language];
 
     // 입력 상태 변수
@@ -36,8 +46,7 @@ const ResetPassword = () => {
     const isPasswordValid = passwordRegex.test(password);
     const isConfirmValid = password === confirmPassword && confirmPassword.length > 0;
 
-    // [API 1] 이메일 인증번호 발송 (POST /auth/password/send-code)
-    // 명세서: email은 (query) 파라미터
+    // [API 1] 이메일 인증번호 발송
     const handleSendEmail = async () => {
         setEmailError("");
         setEmailSuccess("");
@@ -47,7 +56,6 @@ const ResetPassword = () => {
             return;
         }
         try {
-            // ⭐ [수정] query parameter 사용
             await api.post('/auth/password/send-code', null, {
                 params: { email: email }
             });
@@ -56,12 +64,11 @@ const ResetPassword = () => {
             setIsEmailSent(true);
         } catch (error) {
             console.error(error);
-            setEmailError(t.errorEmailSendFail || "이메일 발송에 실패했습니다.");
+            setEmailError(t.errorEmailSendFail || t.errorEmailSendFailDefault);
         }
     };
 
-    // [API 2] 인증번호 확인 (POST /auth/password/verify-code)
-    // 명세서: email, code 모두 (query) 파라미터
+    // [API 2] 인증번호 확인
     const handleVerifyCode = async () => {
         setAuthCodeError("");
         
@@ -70,50 +77,44 @@ const ResetPassword = () => {
             return;
         }
         try {
-            // ⭐ [수정] query parameter 사용
             await api.post('/auth/password/verify-code', null, {
                 params: { 
-                    email: email, // 명세서에 email도 필요하다고 되어 있음
+                    email: email, 
                     code: authCode 
                 }
             });
             
-            // 200 OK면 성공
             setIsVerified(true);
             setAuthCodeError(""); 
         } catch (error) {
             console.error(error);
-            setAuthCodeError(t.errorVerifyFail || "인증번호가 일치하지 않습니다.");
+            setAuthCodeError(t.errorVerifyFail || t.errorVerifyCodeMatch);
         }
     };
 
-    // [API 3] 비밀번호 재설정 (PATCH /auth/password/reset)
-    // 명세서: email, newPassword 모두 (query) 파라미터
+    // [API 3] 비밀번호 재설정
     const handleResetPassword = async () => {
         setPasswordError("");
         
         if (!isPasswordValid || !isConfirmValid) return;
         
         try {
-            // ⭐ [수정] PATCH 메서드 & query parameter 사용
             await api.patch('/auth/password/reset', null, {
                 params: { 
-                    email: email,        // 이메일로 식별
+                    email: email,
                     newPassword: password 
                 }
             });
             
-            // 성공 시 완료 화면(Step 3)으로
             setStep(3); 
         } catch (error) {
             console.error(error);
-            setPasswordError(t.errorResetFail || "비밀번호 변경에 실패했습니다.");
+            setPasswordError(t.errorResetFail || t.errorResetFailDefault);
         }
     };
 
     return (
         <div className={common.layout}>
-            {/* 헤더 */}
             <div className={styles.header}>
                 {step !== 3 && (
                     <button className={styles.backButton} onClick={() => step === 1 ? navigate(-1) : setStep(1)}>
@@ -129,7 +130,6 @@ const ResetPassword = () => {
                     <>
                         <h2 className={styles.mainTitle}>{t.resetPw}</h2>
                         
-                        {/* 이메일 입력 */}
                         <div className={styles.inputGroup}>
                             <div className={styles.inputBox}>
                                 <input 
@@ -152,7 +152,6 @@ const ResetPassword = () => {
                             {emailSuccess && <p className={styles.successMessage}>{emailSuccess}</p>}
                         </div>
 
-                        {/* 인증코드 입력 */}
                         <div className={styles.inputGroup}>
                             <div className={styles.inputBox}>
                                 <input 
@@ -174,7 +173,6 @@ const ResetPassword = () => {
                             {authCodeError && <p className={styles.errorMessage}>{authCodeError}</p>}
                         </div>
 
-                        {/* 다음 단계 버튼 */}
                         <button 
                             className={`${styles.fullButton1} ${isVerified ? styles.activeFullBtn : ''}`} 
                             onClick={() => isVerified && setStep(2)}
@@ -190,7 +188,6 @@ const ResetPassword = () => {
                     <>
                         <h2 className={styles.mainTitle}>{t.resetPw}</h2>
                         
-                        {/* 비밀번호 */}
                         <div className={styles.inputGroup}>
                             <div className={styles.inputLabel}>{t.newPwLabel}</div>
                             <div className={styles.underlineInput}>
@@ -206,7 +203,6 @@ const ResetPassword = () => {
                             </div>
                         </div>
 
-                        {/* 비밀번호 확인 */}
                         <div className={styles.inputGroup}>
                             <div className={styles.inputLabel}>{t.newPwConfirmLabel}</div>
                             <div className={styles.underlineInput}>

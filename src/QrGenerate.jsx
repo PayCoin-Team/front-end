@@ -5,6 +5,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import common from './Common.module.css';
 import styles from './QrGenerate.module.css';
 import api from './utils/api'; 
+import { translations } from './utils/translations';
 
 // 아이콘 및 이미지
 import UsdtLogo from './component/UsdtLogo.svg';
@@ -14,6 +15,18 @@ import navUserIcon from './assets/nav_user.svg';
 
 const QrGenerate = () => {
     const navigate = useNavigate();
+    const [language, setLanguage] = useState(localStorage.getItem('appLanguage') || 'ko');
+
+    // 실시간 언어 변경 감지
+    useEffect(() => {
+        const handleLanguageChange = () => {
+            setLanguage(localStorage.getItem('appLanguage') || 'ko');
+        };
+        window.addEventListener('languageChange', handleLanguageChange);
+        return () => window.removeEventListener('languageChange', handleLanguageChange);
+    }, []);
+
+    const t = translations[language];
     
     // 상태 관리
     const [walletAddress, setWalletAddress] = useState('');
@@ -23,23 +36,19 @@ const QrGenerate = () => {
     useEffect(() => {
         const fetchWalletAddress = async () => {
             try {
-                // ✅ 내부 지갑 정보를 주는 API 호출
                 const response = await api.get('/wallets/users/me', {
                     params: { _t: new Date().getTime() }
                 });
 
                 if (response.data && response.data.publicAddress) {
-                    // ⭐ [수정됨] 무조건 '내부 지갑 주소(publicAddress)'만 사용합니다.
-                    // 외부 지갑(externalAddress)이 있든 말든 신경 쓰지 않습니다.
-                    console.log("✅ QR용 내부 지갑 주소:", response.data.publicAddress);
                     setWalletAddress(response.data.publicAddress);
                 } else {
-                    alert("내부 지갑 정보를 찾을 수 없습니다.");
+                    alert(t.errorNoInternalWallet);
                     navigate('/home'); 
                 }
             } catch (error) {
                 console.error("지갑 주소 조회 실패:", error);
-                alert("지갑 정보를 불러오는데 실패했습니다.");
+                alert(t.errorWalletFetchFail);
                 navigate('/home');
             } finally {
                 setLoading(false);
@@ -47,7 +56,7 @@ const QrGenerate = () => {
         };
 
         fetchWalletAddress();
-    }, [navigate]);
+    }, [navigate, t]);
 
     return (
         <div className={common.layout}>
@@ -68,11 +77,11 @@ const QrGenerate = () => {
                 {/* 3. QR 코드 영역 */}
                 <div className={styles.qrContainer}>
                     {loading ? (
-                        <div className={styles.loadingText}>QR 생성 중...</div>
+                        <div className={styles.loadingText}>{t.generatingQr}</div>
                     ) : (
                         <QRCodeCanvas 
-                            value={walletAddress} // 내부 지갑 주소가 들어갑니다.
-                            size={240}            
+                            value={walletAddress} 
+                            size={240}             
                             level={"H"}           
                             bgColor={"#ffffff"}   
                             fgColor={"#000000"}   
@@ -84,7 +93,6 @@ const QrGenerate = () => {
                 {/* 4. 지갑 주소 텍스트 */}
                 <p className={styles.walletAddress}>
                     {loading ? "Loading..." : 
-                        // 주소가 너무 길면 중간 생략, 짧으면 그대로 표시
                         walletAddress.length > 20 
                         ? `${walletAddress.substring(0, 8)}...${walletAddress.slice(-8)}`
                         : walletAddress
@@ -97,10 +105,10 @@ const QrGenerate = () => {
                         className={styles.copyBtn}
                         onClick={() => {
                             navigator.clipboard.writeText(walletAddress);
-                            alert("내부 지갑 주소가 복사되었습니다.");
+                            alert(t.copyInternalAddrSuccess);
                         }}
                     >
-                        주소 복사
+                        {t.copyAddrBtn}
                     </button>
                 )}
             </div>
@@ -108,16 +116,16 @@ const QrGenerate = () => {
             {/* 5. 하단 네비게이션 바 */}
             <nav className={common.bottomNav}>
                 <div className={common.navItem} onClick={() => navigate('/home')}>
-                    <img src={navHomeIcon} className={common.navImg} alt="홈" />
-                    <span className={common.navText}>홈</span>
+                    <img src={navHomeIcon} className={common.navImg} alt={t.home} />
+                    <span className={common.navText}>{t.home}</span>
                 </div>
                 <div className={`${common.navItem} ${common.active}`}>
-                    <img src={navPayIcon} className={common.navImg} alt="결제" />
-                    <span className={common.navText}>결제</span>
+                    <img src={navPayIcon} className={common.navImg} alt={t.payNav} />
+                    <span className={common.navText}>{t.payNav}</span>
                 </div>
                 <div className={common.navItem} onClick={() => navigate('/mypage')}>
-                    <img src={navUserIcon} className={common.navImg} alt="마이페이지" />
-                    <span className={common.navText}>마이페이지</span>
+                    <img src={navUserIcon} className={common.navImg} alt={t.myPage} />
+                    <span className={common.navText}>{t.myPage}</span>
                 </div>
             </nav>
         </div>

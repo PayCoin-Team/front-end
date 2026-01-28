@@ -15,7 +15,17 @@ import { translations } from './utils/translations';
 
 const WithdrawScreen = () => {
   const navigate = useNavigate();
-  const language = localStorage.getItem('appLanguage') || 'ko';
+  const [language, setLanguage] = useState(localStorage.getItem('appLanguage') || 'ko');
+
+  // 실시간 언어 변경 감지
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      setLanguage(localStorage.getItem('appLanguage') || 'ko');
+    };
+    window.addEventListener('languageChange', handleLanguageChange);
+    return () => window.removeEventListener('languageChange', handleLanguageChange);
+  }, []);
+
   const t = translations[language] || translations['ko'];
 
   const [step, setStep] = useState('input');
@@ -32,7 +42,7 @@ const WithdrawScreen = () => {
     const fetchWalletInfo = async () => {
       try {
         const res = await api.get('/wallets/users/me');
-        console.log("💰 내 지갑 정보 응답:", res.data); // 데이터 확인용
+        console.log("💰 내 지갑 정보 응답:", res.data); 
 
         if (res.data) {
            let addr = "";
@@ -40,7 +50,6 @@ const WithdrawScreen = () => {
            if (Array.isArray(ext) && ext.length > 0) addr = ext[0];
            else if (typeof ext === 'string') addr = ext;
 
-           // 서버에서 주는 이름이 amount 일수도, balance 일수도 있어서 둘 다 체크
            const serverBalance = res.data.amount ?? res.data.balance ?? 0;
 
            setMyWallet({
@@ -49,7 +58,7 @@ const WithdrawScreen = () => {
            });
 
            if (!addr) {
-             alert("연동된 외부 지갑이 없습니다.");
+             alert(t.errorNoExternalWallet);
              navigate('/home');
            }
         }
@@ -59,51 +68,44 @@ const WithdrawScreen = () => {
       }
     };
     fetchWalletInfo();
-  }, [navigate]);
+  }, [navigate, t]);
 
-  // [API] 출금 신청 (Polling 없이 즉시 완료 처리)
+  // [API] 출금 신청
   const handleWithdraw = async () => {
-    // 1. 유효성 검사
     if (!amount || Number(amount) <= 0) {
-      alert("올바른 금액을 입력해주세요.");
+      alert(t.alertInputAmount);
       return;
     }
 
     if (Number(amount) > myWallet.balance) {
-      alert("잔액이 부족합니다.");
+      alert(t.errorInsufficientBalance);
       return;
     }
     
     try {
       setStep('loading');
 
-      // 2. 출금 요청 (POST)
       const response = await api.post('/transaction/withdraw', {
         amount: Number(amount),
         walletAddress: myWallet.externalAddress
       });
 
-      // 3. 응답 처리 (Polling 제거됨)
-      // 서버가 200(OK)이나 201(Created)을 주면 무조건 성공으로 간주
       if (response.status === 201 || response.status === 200) {
         console.log("✅ 출금 요청 성공:", response.data);
-        
-        // 기다리지 않고 바로 성공 화면으로 전환!
         setStep('success');
       } 
 
     } catch (error) {
       console.error("에러 발생:", error);
-      let msg = "오류가 발생했습니다.";
+      let msg = t.alertErrorGeneral;
       
       if (error.response && error.response.data) {
           msg = JSON.stringify(error.response.data);
-          // 에러 메시지 파싱
           if (typeof error.response.data === 'string') msg = error.response.data;
           if (error.response.data.message) msg = error.response.data.message;
       }
 
-      alert(`오류: ${msg}`);
+      alert(`${msg}`);
       setStep('input');
     }
   };
@@ -113,7 +115,7 @@ const WithdrawScreen = () => {
       {step === 'input' && (
         <header className={styles.header}>
           <button className={styles.backBtn} onClick={() => navigate(-1)}>←</button>
-          <h2 className={styles.title}>출금하기</h2>
+          <h2 className={styles.title}>{t.withdrawTitle}</h2>
           <div style={{ width: 24 }}></div>
         </header>
       )}
@@ -122,7 +124,7 @@ const WithdrawScreen = () => {
         {step === 'input' && (
           <>
             <div className={styles.mainLabel} style={{marginBottom:'10px'}}>
-                출금할 금액 <span style={{fontSize:'0.9rem', color:'#888', fontWeight:'normal'}}>(잔액: {myWallet.balance.toLocaleString()} USDT)</span>
+                {t.withdrawAmountLabel} <span style={{fontSize:'0.9rem', color:'#888', fontWeight:'normal'}}>{t.withdrawBalancePrefix}{myWallet.balance.toLocaleString()} USDT)</span>
             </div>
             
             <div className={styles.inputWrapper}>
@@ -158,7 +160,7 @@ const WithdrawScreen = () => {
 
             <div className={styles.btnWrapper}>
               <button className={styles.submitBtn} onClick={handleWithdraw}>
-                출금하기
+                {t.btnWithdraw}
               </button>
             </div>
           </>
@@ -169,7 +171,7 @@ const WithdrawScreen = () => {
             <div className={styles.logoArea}>
               <img src={usdtLogo} alt="USDT" className={styles.logoImg} />
             </div>
-            <p className={styles.statusText}>출금 요청 중입니다...<br/><span style={{fontSize:'14px', color:'#999'}}>잠시만 기다려주세요.</span></p>
+            <p className={styles.statusText}>{t.statusWithdrawing}<br/><span style={{fontSize:'14px', color:'#999'}}>{t.waitMoment}</span></p>
           </div>
         )}
 
@@ -178,28 +180,27 @@ const WithdrawScreen = () => {
             <div className={styles.logoArea}>
               <img src={usdtLogo} alt="USDT" className={styles.logoImg} />
             </div>
-            <p className={styles.statusText}>출금 신청 완료!</p>
+            <p className={styles.statusText}>{t.statusWithdrawRequestComplete}</p>
             <p className={styles.amountText}>- {Number(amount).toLocaleString()} USDT</p>
             <p className={styles.descText}>
-                외부 지갑으로 전송이 시작되었습니다.<br/>
-                잠시 후 지갑을 확인해주세요.
+                {t.withdrawStartDesc}
             </p>
-            <button className={styles.confirmBtn} onClick={() => navigate('/home')}>확인</button>
+            <button className={styles.confirmBtn} onClick={() => navigate('/home')}>{t.confirm}</button>
           </div>
         )}
       </div>
 
       <nav className={common.bottomNav}>
         <div className={common.navItem} onClick={() => navigate('/home')}>
-            <img src={navHomeIcon} className={common.navImg} alt="Home" />
+            <img src={navHomeIcon} className={common.navImg} alt={t.home} />
             <span className={common.navText}>{t.home}</span>
         </div>
         <div className={common.navItem} onClick={() => navigate('/pay')}>
-            <img src={navPayIcon} className={common.navImg} alt="Pay" />
+            <img src={navPayIcon} className={common.navImg} alt={t.payNav} />
             <span className={common.navText}>{t.payNav}</span>
         </div>
         <div className={common.navItem} onClick={() => navigate('/mypage')}>
-            <img src={navUserIcon} className={common.navImg} alt="MyPage" />
+            <img src={navUserIcon} className={common.navImg} alt={t.myPage} />
             <span className={common.navText}>{t.myPage}</span>
         </div>
       </nav>

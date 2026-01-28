@@ -13,20 +13,24 @@ import usdtLogo from './component/UsdtLogo.svg';
 import api from './utils/api';
 import { translations } from './utils/translations';
 
-// =========================================================
-// 🔧 [최종 확정 설정] 이 주소 조합이 정답입니다.
-// =========================================================
-
 // 1. USDT 컨트랙트 (Base58 포맷)
 const USDT_CONTRACT_ADDRESS = "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf";
-
 // 2. 서버 지갑 주소 (Hex 포맷)
 const SERVER_WALLET_ADDRESS = "410d9dc139bfb641d58517da42876ec4022cce7865";
 
-
 const ChargeScreen = () => {
   const navigate = useNavigate();
-  const language = localStorage.getItem('appLanguage') || 'ko';
+  const [language, setLanguage] = useState(localStorage.getItem('appLanguage') || 'ko');
+
+  // 실시간 언어 변경 감지
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      setLanguage(localStorage.getItem('appLanguage') || 'ko');
+    };
+    window.addEventListener('languageChange', handleLanguageChange);
+    return () => window.removeEventListener('languageChange', handleLanguageChange);
+  }, []);
+
   const t = translations[language] || translations['ko'];
 
   const [step, setStep] = useState('input');
@@ -56,7 +60,7 @@ const ChargeScreen = () => {
            if (addr) {
              setMyExternalAddress(addr);
            } else {
-             alert(t.alertConnectFirst || "외부 지갑 연동이 필요합니다.");
+             alert(t.alertConnectFirst);
              navigate('/home');
            }
         }
@@ -68,38 +72,33 @@ const ChargeScreen = () => {
     fetchWalletInfo();
   }, [navigate, t]);
 
-  // [API] 상태 확인 (GET 요청: /transaction/deposit/{id}/{txHash})
+  // [API] 상태 확인
   const pollTransactionStatus = async (transactionId, txHash) => {
     const now = Date.now();
     
     // 60초 타임아웃
     if (now - startTimeRef.current > 60000) {
-        alert("입금 확인이 지연되고 있습니다.\n잠시 후 거래 내역을 확인해주세요.");
+        alert(t.alertDepositDelay);
         setStep('input'); 
         return;
     }
 
     try {
-        // 백엔드 명세서에 맞춘 경로 파라미터 방식
         const response = await api.get(`/transaction/deposit/${transactionId}/${txHash}`);
         const { status } = response.data;
-
-        console.log("Polling Status:", status);
 
         if (status === 'COMPLETED') {
             setStep('success');
         } else if (status === 'FAILED') {
-            alert("입금 처리에 실패했습니다.");
+            alert(t.alertDepositFail);
             setStep('input');
         } else {
-            // 아직 완료 안 됐으면 3초 뒤 재시도
             pollingTimerRef.current = setTimeout(() => {
                 pollTransactionStatus(transactionId, txHash);
             }, 3000);
         }
     } catch (error) {
         console.error("Polling Error:", error);
-        // 에러 발생 시에도 잠시 후 재시도
         pollingTimerRef.current = setTimeout(() => {
             pollTransactionStatus(transactionId, txHash);
         }, 3000);
@@ -108,83 +107,64 @@ const ChargeScreen = () => {
 
   const handleCharge = async () => {
     if (!amount || Number(amount) <= 0) {
-      alert("올바른 금액을 입력해주세요.");
+      alert(t.alertInputAmount);
       return;
     }
     
     if (!window.tronWeb || !window.tronWeb.ready) {
-        alert("TronLink 지갑이 연결되지 않았습니다.");
+        alert(t.alertTronLinkNotConnected);
         return;
     }
 
     try {
       setStep('loading');
 
-      // =========================================================
-      // 📡 [STEP 1] 서버에 입금 신청 (POST)
-      // =========================================================
-      console.log("1. 입금 신청 시작 (POST)...");
-      
+      // 📡 [STEP 1] 서버에 입금 신청
       const initResponse = await api.post('/transaction/deposit', {
         amount: Number(amount),
         walletAddress: myExternalAddress
       });
 
-      // 서버로부터 주문 번호(transactionId) 획득
       const transactionId = initResponse.data.transactionId;
-      console.log("✅ 입금 신청 완료. Transaction ID:", transactionId);
 
       if (!transactionId) {
-        throw new Error("서버에서 거래 ID를 받지 못했습니다.");
+        throw new Error(t.errorNoTxId);
       }
 
-
-      // =========================================================
-      // 🚀 [STEP 2] 블록체인 전송 (확정된 주소 사용)
-      // =========================================================
-      console.log("2. 블록체인 전송 시작...");
-
+      // 🚀 [STEP 2] 블록체인 전송
       const amountInSun = BigInt(Math.floor(Number(amount) * 1_000_000)).toString();
       const issuerBase58 = window.tronWeb.defaultAddress.base58;
 
-      // ⚠️ 사용자님 확정 설정: USDT(Base58) + Server(Hex)
       const transactionObj = await window.tronWeb.transactionBuilder.triggerSmartContract(
-        USDT_CONTRACT_ADDRESS, // Base58
+        USDT_CONTRACT_ADDRESS, 
         "transfer(address,uint256)", 
         { feeLimit: 100_000_000 }, 
         [
-          { type: 'address', value: SERVER_WALLET_ADDRESS }, // Hex
+          { type: 'address', value: SERVER_WALLET_ADDRESS }, 
           { type: 'uint256', value: amountInSun }
         ],
         issuerBase58 
       );
 
       if (!transactionObj.result || !transactionObj.result.result) {
-        throw new Error("블록체인 거래 생성 실패");
+        throw new Error(t.errorBlockchainFail);
       }
 
       const signedTx = await window.tronWeb.trx.sign(transactionObj.transaction);
-      if (!signedTx.signature) throw new Error("서명이 취소되었습니다.");
+      if (!signedTx.signature) throw new Error("cancelled");
 
       const broadcast = await window.tronWeb.trx.sendRawTransaction(signedTx);
-      if (!broadcast.result) throw new Error("전송 실패 (네트워크 오류)");
+      if (!broadcast.result) throw new Error(t.errorBroadcastFail);
 
       const txHash = broadcast.txid; 
-      console.log("✅ 전송 성공! TxHash:", txHash);
 
-
-      // =========================================================
-      // 📡 [STEP 3] 입금 확인 요청 (GET)
-      // =========================================================
-      console.log("3. 입금 확인 요청 (Polling)...");
-
+      // 📡 [STEP 3] 입금 확인 요청
       startTimeRef.current = Date.now();
-      // transactionId와 txHash를 함께 전달하여 확인
       pollTransactionStatus(transactionId, txHash);
 
     } catch (error) {
       console.error("에러 발생:", error);
-      let msg = "오류가 발생했습니다.";
+      let msg = t.alertErrorGeneral;
       
       if (error.response && error.response.data) {
           msg = JSON.stringify(error.response.data);
@@ -195,9 +175,9 @@ const ChargeScreen = () => {
       }
 
       if (msg.includes('cancelled') || msg.includes('취소')) {
-          alert("전송을 취소하셨습니다.");
+          alert(t.alertCancelTx);
       } else {
-          alert(`오류: ${msg}`);
+          alert(`${msg}`);
       }
       setStep('input');
     }
@@ -208,7 +188,7 @@ const ChargeScreen = () => {
       {step === 'input' && (
         <header className={styles.header}>
           <button className={styles.backBtn} onClick={() => navigate(-1)}>←</button>
-          <h2 className={styles.title}>{t.chargeTitle || "충전하기"}</h2>
+          <h2 className={styles.title}>{t.chargeTitle}</h2>
           <div style={{ width: 24 }}></div>
         </header>
       )}
@@ -216,17 +196,16 @@ const ChargeScreen = () => {
       <div className={`${styles.container} ${common.fadeIn} ${step !== 'input' ? styles.centerMode : ''}`}>
         {step === 'input' && (
           <>
-            <h1 className={styles.mainLabel}>{t.chargeLabel || "충전할 금액"}</h1>
+            <h1 className={styles.mainLabel}>{t.chargeLabel}</h1>
             <div className={styles.inputWrapper}>
               <input 
                 type="number" 
-                min="0"  // 👈 [수정 1] 스피너가 0 이하로 내려가지 않도록 설정
+                min="0"
                 placeholder="0"
                 className={styles.chargeInput}
                 value={amount}
                 onChange={(e) => {
                     const val = e.target.value;
-                    // 👈 [수정 2] 값이 없거나(지울 때), 0보다 크거나 같을 때만 입력 허용
                     if (val === '' || Number(val) >= 0) {
                         setAmount(val);
                     }
@@ -251,7 +230,7 @@ const ChargeScreen = () => {
 
             <div className={styles.btnWrapper}>
               <button className={styles.submitBtn} onClick={handleCharge}>
-                {t.chargeBtn || "충전하기"}
+                {t.chargeBtn}
               </button>
             </div>
           </>
@@ -262,7 +241,7 @@ const ChargeScreen = () => {
             <div className={styles.logoArea}>
               <img src={usdtLogo} alt="USDT" className={styles.logoImg} />
             </div>
-            <p className={styles.statusText}>충전 진행 중입니다...<br/><span style={{fontSize:'14px', color:'#999'}}>지갑에서 서명을 완료해주세요.</span></p>
+            <p className={styles.statusText}>{t.statusCharging}<br/><span style={{fontSize:'14px', color:'#999'}}>{t.statusSignWallet}</span></p>
           </div>
         )}
 
@@ -271,24 +250,24 @@ const ChargeScreen = () => {
             <div className={styles.logoArea}>
               <img src={usdtLogo} alt="USDT" className={styles.logoImg} />
             </div>
-            <p className={styles.statusText}>충전 완료!</p>
+            <p className={styles.statusText}>{t.statusChargeComplete}</p>
             <p className={styles.amountText}>+ {Number(amount).toLocaleString()} USDT</p>
-            <button className={styles.confirmBtn} onClick={() => navigate('/home')}>확인</button>
+            <button className={styles.confirmBtn} onClick={() => navigate('/home')}>{t.confirm}</button>
           </div>
         )}
       </div>
 
       <nav className={common.bottomNav}>
         <div className={common.navItem} onClick={() => navigate('/home')}>
-            <img src={navHomeIcon} className={common.navImg} alt="Home" />
+            <img src={navHomeIcon} className={common.navImg} alt={t.home} />
             <span className={common.navText}>{t.home}</span>
         </div>
         <div className={common.navItem} onClick={() => navigate('/pay')}>
-            <img src={navPayIcon} className={common.navImg} alt="Pay" />
+            <img src={navPayIcon} className={common.navImg} alt={t.payNav} />
             <span className={common.navText}>{t.payNav}</span>
         </div>
         <div className={common.navItem} onClick={() => navigate('/mypage')}>
-            <img src={navUserIcon} className={common.navImg} alt="MyPage" />
+            <img src={navUserIcon} className={common.navImg} alt={t.myPage} />
             <span className={common.navText}>{t.myPage}</span>
         </div>
       </nav>

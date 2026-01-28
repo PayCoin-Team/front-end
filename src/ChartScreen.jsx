@@ -5,13 +5,26 @@ import {
 } from 'recharts';
 import common from './Common.module.css';
 import styles from './ChartScreen.module.css';
+import { translations } from './utils/translations';
 
 const ChartScreen = () => {
   const navigate = useNavigate();
+  const [language, setLanguage] = useState(localStorage.getItem('appLanguage') || 'ko');
 
-  // 🔑 API 키
+  // 실시간 언어 변경 감지
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      setLanguage(localStorage.getItem('appLanguage') || 'ko');
+    };
+    window.addEventListener('languageChange', handleLanguageChange);
+    return () => window.removeEventListener('languageChange', handleLanguageChange);
+  }, []);
+
+  const t = translations[language] || translations['ko'];
+
+  // 🔑 API 키 설정
   const CRYPTOCOMPARE_API_KEY = 'ef6a8399b16ac4f8b9459453a4608472c259ad794c28a999b2700ef995e19dc7';
-  const TWELVEDATA_API_KEY = '0afb94f7ca964f9dbbd39ddeaaf69fb0'; // 사진 속 키 적용
+  const TWELVEDATA_API_KEY = '0afb94f7ca964f9dbbd39ddeaaf69fb0'; 
   
   const timeOptions = { '1D': '1D', '1W': '1W', '1M': '1M', '1Y': '1Y' };
   const [activeTime, setActiveTime] = useState('1D'); 
@@ -25,30 +38,22 @@ const ChartScreen = () => {
   const [currentRate, setCurrentRate] = useState(0);
   const [priceChange24h, setPriceChange24h] = useState(0);
 
-  // 🧠 [핵심] 데이터 캐싱 저장소 (API 호출 절약용)
-  // 구조: { 'CNY-1D': { rate: ..., chart: [...], timestamp: 12345678 } }
   const dataCache = useRef({});
 
   const currencyInfo = {
     KRW: { country: 'kr', name: 'South Korea', code: 'KRW', source: 'CRYPTO' },
     USD: { country: 'us', name: 'USA', code: 'USD', source: 'CRYPTO' },
     JPY: { country: 'jp', name: 'Japan', code: 'JPY', source: 'CRYPTO' },
-    CNY: { country: 'cn', name: 'China', code: 'CNY', source: 'FOREX', symbol: 'USD/CNY' },
     VND: { country: 'vn', name: 'Vietnam', code: 'VND', source: 'FOREX', symbol: 'USD/VND' },
   };
 
   const currentInfo = currencyInfo[selectedCurrency] || currencyInfo['KRW'];
 
-  // =========================================================
-  // 🔄 [초기화] 통화 변경 시
-  // =========================================================
   useEffect(() => {
-      // 탭을 바꿀 때 캐시가 있으면 로딩 없이 즉시 보여줌
       const cacheKey = `${selectedCurrency}-${activeTime}`;
       const cached = dataCache.current[cacheKey];
       const now = Date.now();
 
-      // 캐시가 유효하면(1분 이내) 초기화하지 않고 유지
       if (cached && (now - cached.timestamp < 60000)) {
           return; 
       }
@@ -57,27 +62,21 @@ const ChartScreen = () => {
       setCurrentRate(0);
       setPriceChange24h(0);
       setLoading(true);
-  }, [selectedCurrency]);
+  }, [selectedCurrency, activeTime]);
 
 
-  // =========================================================
-  // 📡 [API] 데이터 통합 조회 (캐싱 로직 포함)
-  // =========================================================
   useEffect(() => {
       const fetchData = async () => {
           const cacheKey = `${selectedCurrency}-${activeTime}`;
           const now = Date.now();
 
-          // 1. 캐시 확인 (Twelve Data의 호출 제한을 피하기 위해 필수)
           if (dataCache.current[cacheKey]) {
               const cached = dataCache.current[cacheKey];
-              // 1분(60,000ms) 지나지 않았으면 저장된 데이터 사용
               if (now - cached.timestamp < 60000) {
                   setCurrentRate(cached.rate);
                   setPriceChange24h(cached.change);
                   setChartData(cached.chart);
                   setLoading(false);
-                  console.log(`[Cache Used] ${cacheKey}`); // 디버깅용
                   return; 
               }
           }
@@ -88,11 +87,9 @@ const ChartScreen = () => {
               let newChange = 0;
               let newChartData = [];
 
-              // 🅰️ 그룹 A: CryptoCompare (KRW, USD, JPY)
               if (currentInfo.source === 'CRYPTO') {
                   const targetCode = currentInfo.code;
                   
-                  // 차트 설정
                   let endpoint = 'histohour';
                   let limit = 24;
                   if (activeTime === '1D') { endpoint = 'histominute'; limit = 144; }
@@ -123,7 +120,6 @@ const ChartScreen = () => {
                       });
                   }
               } 
-              // 🅱️ 그룹 B: Twelve Data (CNY, VND)
               else {
                   const symbol = currentInfo.symbol;
                   let interval = '5min';
@@ -138,10 +134,7 @@ const ChartScreen = () => {
                   const response = await fetch(url);
                   const json = await response.json();
 
-                  // 에러 체크 (429 Rate Limit 등)
                   if (json.status === 'error') {
-                      console.warn(`API Error (${symbol}):`, json.message);
-                      // 에러가 났는데 캐시에 옛날 데이터라도 있으면 그거라도 보여줌 (UX 방어)
                       if (dataCache.current[cacheKey]) {
                           const stale = dataCache.current[cacheKey];
                           setCurrentRate(stale.rate);
@@ -172,12 +165,10 @@ const ChartScreen = () => {
                   }
               }
 
-              // 데이터 상태 업데이트
               setCurrentRate(newRate);
               setPriceChange24h(newChange);
               setChartData(newChartData);
 
-              // 2. 캐시에 저장 (중요: 성공했을 때만 저장)
               if (newRate > 0) {
                   dataCache.current[cacheKey] = {
                       timestamp: Date.now(),
@@ -195,17 +186,12 @@ const ChartScreen = () => {
       };
 
       fetchData();
-      
-      // 자동 갱신 주기를 1분으로 늘려서 API 보호
       const interval = setInterval(fetchData, 60000); 
       return () => clearInterval(interval);
 
-  }, [activeTime, selectedCurrency]); 
+  }, [activeTime, selectedCurrency, currentInfo]); 
 
 
-  // =========================================================
-  // 🧮 UI 렌더링
-  // =========================================================
   const convertedValue = usdtAmount * currentRate;
   const isPositive = priceChange24h >= 0;
 
@@ -264,7 +250,7 @@ const ChartScreen = () => {
                     {isPositive ? '+' : ''}{priceChange24h ? Math.abs(priceChange24h).toFixed(2) : '0.00'}%
                 </span>
                 <span style={{fontSize:'0.8rem', color:'#888', marginLeft:'5px'}}>
-                    (기간 변동)
+                    {t.priceChangePeriod}
                 </span>
             </div>
         </div>
@@ -280,7 +266,7 @@ const ChartScreen = () => {
             <div className={styles.chartWrapper}>
               {loading && chartData.length === 0 ? (
                   <div style={{height:'100%', display:'flex', alignItems:'center', justifyContent:'center', color:'#ccc', fontSize:'0.9rem'}}>
-                      데이터 로딩 중...
+                      {t.chartLoading}
                   </div>
               ) : chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -311,7 +297,7 @@ const ChartScreen = () => {
                   </ResponsiveContainer>
               ) : (
                   <div style={{height:'100%', display:'flex', alignItems:'center', justifyContent:'center', color:'#ccc', fontSize:'0.8rem'}}>
-                      데이터를 불러올 수 없습니다.<br/>(잠시 후 다시 시도해주세요)
+                      {t.chartError}
                   </div>
               )}
             </div>
@@ -333,7 +319,7 @@ const ChartScreen = () => {
                 </div>
             </div>
             <p className={styles.infoText}>
-                {currentInfo.source === 'CRYPTO' ? '실시간 코인 시세 (CryptoCompare)' : '실시간 외환 시세 (Twelve Data)'}
+                {currentInfo.source === 'CRYPTO' ? t.realtimeCrypto : t.realtimeForex}
             </p>
         </div>
       </div>

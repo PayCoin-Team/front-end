@@ -6,14 +6,14 @@ import usdtLogoPath from './component/UsdtLogo.svg';
 import { translations, flags } from './utils/translations.jsx';
 
 const SplashScreen = () => {
+    // [수정] 초기 상태를 'en'이 아니라 LocalStorage에서 바로 읽어오거나 
+    // 기본값을 설정하여 깜빡임을 방지합니다.
+    const [selectedLang, setSelectedLang] = useState(localStorage.getItem('appLanguage') || 'en');
     const [isAppReady, setIsAppReady] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [selectedLang, setSelectedLang] = useState('en'); 
     
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
-
-    // (기존의 긴 translations 객체와 flags 객체는 삭제됨)
 
     useEffect(() => {
         const timer = setTimeout(() => setIsAppReady(true), 1500);
@@ -21,15 +21,16 @@ const SplashScreen = () => {
         const checkLanguage = () => {
             const savedLang = localStorage.getItem('appLanguage');
             
-            // translations 객체에 해당 언어가 있는지 확인
             if (savedLang && translations[savedLang]) {
                 setSelectedLang(savedLang);
             } else {
                 const browserLang = (navigator.language || navigator.userLanguage).substring(0, 2).toLowerCase();
+                // 베트남어(vi)를 포함하여 지원하는 언어인지 확인
                 if (translations[browserLang]) {
                     setSelectedLang(browserLang);
                     localStorage.setItem('appLanguage', browserLang);
                 } else {
+                    // 지원하지 않는 언어면 기본값 'en'
                     setSelectedLang('en');
                     localStorage.setItem('appLanguage', 'en');
                 }
@@ -106,7 +107,7 @@ const SplashScreen = () => {
 
             <div className={styles.topSection}>
                 <img src={usdtLogoPath} alt="Logo" className={styles.logoImage} />
-                <h1 className={styles.title}>CrossPay</h1>
+                <h1 className={styles.title}>TsPay</h1>
             </div>
 
             {isAppReady && (
