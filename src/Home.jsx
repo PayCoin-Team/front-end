@@ -34,7 +34,9 @@ const Home = () => {
   // ⭐ [최종 완성 로직]
   // 백엔드가 externalAddress 필드를 주므로, 이것만 믿으면 됩니다!
   // 값이 있으면(null이 아니면) 연동된 것입니다.
+  const isAdmin = walletInfo?.role === 'ROLE_ADMIN';
   const isConnected = !!walletInfo?.externalAddress;
+  
 
   const currencyMetadata = {
     KRW: { country: 'kr' },
@@ -115,21 +117,37 @@ const Home = () => {
     <div className={common.layout}>
       {/* 헤더 */}
       <header className={styles.header}>
-        <div className={styles.logoRow}>
-          <img src={LogoIcon} alt="로고" className={styles.logoImg} />
-          <h1 className={styles.logo}>CrossPay</h1>
-        </div>
-        <div className={styles.headerButtons}>
-            <button className={`${styles.topBtn} ${styles.greenBtn}`} onClick={() => navigate('/wallet')}>
-              <img src={topWalletIcon} alt="지갑" className={styles.topBtnIcon} />
-              {isConnected ? "지갑 연동됨" : t.walletConnect}
-            </button>
-            <button className={`${styles.topBtn} ${isConnected ? styles.greenBtn : styles.grayBtn}`} onClick={() => isConnected ? navigate('/chart') : alert("지갑 연동 후 이용 가능합니다.")}> 
-              <img src={chartIcon} alt="차트" className={styles.topBtnIcon} />
-              {t.usdtChart}
-           </button>
-        </div>
-      </header>
+  <div className={styles.logoRow}>
+    <img src={LogoIcon} alt="로고" className={styles.logoImg} />
+    <h1 className={styles.logo}>CrossPay</h1>
+  </div>
+  
+  <div className={styles.headerButtons}>
+    {/* 1. 왼쪽: 지갑 연동 버튼 */}
+    <button className={`${styles.topBtn} ${styles.greenBtn}`} onClick={() => navigate('/wallet')}>
+      <img src={topWalletIcon} alt="지갑" className={styles.topBtnIcon} />
+      {isConnected ? "지갑 연동됨" : t.walletConnect}
+    </button>
+    
+    {/* 2. 오른쪽: 차트 버튼과 관리자 버튼을 세로로 정렬 */}
+    <div className={styles.buttonStack}>
+      <button 
+        className={`${styles.topBtn} ${isConnected ? styles.greenBtn : styles.grayBtn}`} 
+        onClick={() => isConnected ? navigate('/chart') : alert("지갑 연동 후 이용 가능합니다.")}
+      > 
+        <img src={chartIcon} alt="차트" className={styles.topBtnIcon} />
+        {t.usdtChart}
+      </button>
+
+      {/* 관리자일 때만 차트 버튼 바로 아래에 렌더링 */}
+      {isAdmin && (
+        <button className={`${styles.topBtn} ${styles.greenBtn}`} onClick={() => navigate('/admin')}>
+          관리자 대시보드
+        </button>
+      )}
+    </div>
+  </div>
+</header>
 
       {/* 메인 콘텐츠 */}
       <div className={`${styles.mainContent} ${common.fadeIn}`}>
