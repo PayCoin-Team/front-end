@@ -16,37 +16,47 @@
   gap: 20px;
 }
 
+/* --- 상단 통계 카드 --- */
+.statsRow {
+  display: flex;
+  gap: 20px;
+}
+
 .statCard {
   flex: 1;
   background: white;
   border-radius: 12px;
-  padding: 24px;
+  /* 패딩을 좌우 20px로 조정하여 왼쪽 여백 확보 */
+  padding: 24px 20px; 
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  justify-content: center; /* 수직 중앙 정렬은 유지 */
+  
+  /* [핵심 수정] 가로축 정렬을 왼쪽(flex-start)으로 변경 */
+  align-items: flex-start; 
+  text-align: left; 
 }
 
 .statLabel {
   color: #666;
   font-size: 14px;
-  margin-bottom: 12px;
-  width: 100%;
-  text-align: left;
+  margin-bottom: 8px; /* 간격 살짝 줄임 */
+  font-weight: 500;
+  /* width: 100%; text-align: left; 제거 (이미 부모가 정렬함) */
 }
 
 .statValue {
   font-size: 32px;
-  font-weight: 600;
+  font-weight: 700;
   color: #333;
+  margin: 0;
 }
 
 .statValue span {
   font-size: 16px;
-  font-weight: 400;
-  color: #888;
+  font-weight: 500; /* 굵기 조정 */
+  color: #169279;
   margin-left: 4px;
 }
 
