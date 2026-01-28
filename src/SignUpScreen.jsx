@@ -32,7 +32,7 @@ const SignUpScreen = () => {
     const [id, setId] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [vertification, setVertification] = useState(""); // 인증번호 입력값은 유지 (API 전송용)
+    const [vertification, setVertification] = useState(""); 
 
     const [isIdChecked, setIsIdChecked] = useState(false);
     const [isEmailSent, setIsEmailSent] = useState(false);
@@ -49,7 +49,7 @@ const SignUpScreen = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,}$/; 
 
-    // 1. 아이디 중복 확인 (GET /auth/check-username)
+    // 1. 아이디 중복 확인
     const checkIdDuplicate = async () => {
         setIdError(""); 
         if (!id) { setIdError(t.alertInputId); return; }
@@ -68,7 +68,7 @@ const SignUpScreen = () => {
         }
     };
 
-    // 2. 이메일 인증코드 전송 (POST /auth/signup/send-code)
+    // 2. 이메일 인증코드 전송
     const sendEmailCode = async () => {
         setEmailError("");
         if (!emailRegex.test(email)) { setEmailError(t.errorEmailFormat); return; }
@@ -78,11 +78,11 @@ const SignUpScreen = () => {
             setIsEmailSent(true);
             setEmailError("");
         } catch (error) {
-            setEmailError(t.alertEmailError || "이메일 전송에 실패했습니다.");
+            setEmailError(t.alertEmailError || t.errorEmailSendFailDefault);
         }
     };
 
-    // 3. 회원가입 및 최종 검증 (POST /auth/join)
+    // 3. 회원가입 및 최종 검증
     const handleNext = async () => {
         if (step === 1) {
             let isNameValid = true;
@@ -94,17 +94,16 @@ const SignUpScreen = () => {
         } else if (step === 2) {
             let isValid = true;
             
-            if (!isEmailSent) { setEmailError(t.alertSendEmailFirst || "이메일 인증을 먼저 진행해주세요."); isValid = false; }
+            if (!isEmailSent) { setEmailError(t.alertSendEmailFirst); isValid = false; }
             if (!isIdChecked) { setIdError(t.alertCheckIdFirst); isValid = false; }
             if (!passwordRegex.test(password)) { setPasswordError(t.errorPasswordFormat); isValid = false; }
             else setPasswordError("");
             if (password !== confirmPassword) { setConfirmError(t.errorPasswordMatch); isValid = false; }
             else setConfirmError("");
-            if (!vertification) { alert("메일로 받은 인증번호를 입력해주세요."); isValid = false; }
+            if (!vertification) { alert(t.alertInputVerifyCodeJoin); isValid = false; }
 
             if (isValid) {
                 try {
-                    // API 명세서 Body 구성
                     const requestData = {
                         username: id,
                         email: email,
@@ -112,7 +111,7 @@ const SignUpScreen = () => {
                         checkPassword: confirmPassword, 
                         firstName: firstName,
                         lastName: lastName,
-                        code: vertification // 화면에서 받은 인증번호를 여기서 백엔드로 전송
+                        code: vertification 
                     };
 
                     const response = await api.post('/auth/join', requestData);
@@ -123,7 +122,7 @@ const SignUpScreen = () => {
                     }
                 } catch (error) {
                     if (error.response && error.response.status === 400) {
-                        alert("인증번호가 일치하지 않거나 입력값이 잘못되었습니다.");
+                        alert(t.errorInvalidVerifyCode);
                     } else if (error.response && error.response.status === 409) {
                         alert(t.errorIdDuplicate);
                     } else {
@@ -175,7 +174,6 @@ const SignUpScreen = () => {
                             <p className={styles.errorMessage}>{emailError}</p>
                         </div>
 
-                        {/* ⭐ 인증번호 확인 버튼이 사라지고 입력란만 남음 (가입 버튼 클릭 시 함께 전송됨) */}
                         <div className={styles.inputWrapper}>
                             <label className={styles.inputLabel}>{t.verifyCode} <span className={styles.required}>*</span></label>
                             <input type="text" className={styles.nameInput}
