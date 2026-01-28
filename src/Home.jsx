@@ -111,7 +111,7 @@ const Home = () => {
       <header className={styles.header}>
         <div className={styles.logoRow}>
           <img src={LogoIcon} alt="Logo" className={styles.logoImg} />
-          <h1 className={styles.logo}>CrossPay</h1>
+          <h1 className={styles.logo}>TsPay</h1>
         </div>
         
         <div className={styles.headerButtons}>
