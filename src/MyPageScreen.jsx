@@ -167,7 +167,7 @@ const MyPageScreen = () => {
         <div className={`${styles.content} ${common.fadeIn}`}>
             <div className={styles.brandLogo}>
                 <img src={UsdtLogo} alt="USDT Logo" className={styles.usdtIcon} />
-                <h1 className={styles.logoText}>CrossPay</h1>
+                <h1 className={styles.logoText}>TsPay</h1>
             </div>
         </div>
       </header>
