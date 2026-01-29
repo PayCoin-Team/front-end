@@ -49,9 +49,6 @@ const Home = () => {
     KRW: { country: 'kr' },
     USD: { country: 'us' },
     JPY: { country: 'jp' },
-    CNY: { country: 'cn' },
-    GBP: { country: 'gb' },
-    EUR: { country: 'eu' },
     VND: { country: 'vn' },
   };
 
