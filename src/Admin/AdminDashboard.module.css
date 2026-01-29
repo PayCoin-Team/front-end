@@ -119,15 +119,19 @@
   display: grid;
   grid-template-columns: 2fr 1.2fr;
   gap: 20px;
-  min-height: 500px; /* 최소 높이 확보 */
+  
+  /* [수정] 최소 높이가 아니라 '고정 높이'를 주어야 자식 요소가 넘칠 때 스크롤이 생깁니다. */
+  height: 520px; 
 }
+
 .chartsColumn {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  height: 100%;
+  overflow: hidden; /* 영역 밖으로 나가는 것 방지 */
 }
 
-/* 5. [수정됨] 차트 컨테이너 및 내부 요소 스타일 */
+/* 5. 차트 컨테이너 스타일 */
 .chartContainer {
   background: white;
   padding: 25px;
@@ -136,21 +140,22 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 400px;
+  
+  /* [수정] 부모 높이에 맞춤 */
+  height: 100%; 
+  overflow: hidden;
 }
 
-/* 차트 헤더 (가격 정보) */
+/* 차트 헤더 */
 .chartHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 20px;
+  flex-shrink: 0; /* 높이 고정 */
 }
 
-.priceWrapper {
-  display: flex;
-  flex-direction: column;
-}
+.priceWrapper { display: flex; flex-direction: column; }
 
 .currentPrice {
   font-size: 2rem;
@@ -161,12 +166,7 @@
   align-items: baseline;
   gap: 8px;
 }
-
-.currentPrice span {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #888;
-}
+.currentPrice span { font-size: 1.2rem; font-weight: 500; color: #888; }
 
 .priceChange {
   font-size: 1rem;
@@ -176,25 +176,19 @@
   align-items: center;
   gap: 8px;
 }
-
 .plus { color: #d32f2f; }
 .minus { color: #1976d2; }
+.periodText { font-size: 0.85rem; color: #adb5bd; font-weight: normal; }
 
-.periodText {
-  font-size: 0.85rem;
-  color: #adb5bd;
-  font-weight: normal;
-}
-
-/* 차트 탭 (1D, 1W...) */
+/* 차트 탭 */
 .timeTab {
   display: flex;
   gap: 15px;
   margin-bottom: 15px;
   border-bottom: 1px solid #f1f3f5;
   padding-bottom: 10px;
+  flex-shrink: 0;
 }
-
 .tabItem {
   font-size: 0.9rem;
   font-weight: 600;
@@ -202,31 +196,32 @@
   cursor: pointer;
   padding-bottom: 5px;
 }
-
-.tabItem.active {
-  color: #333;
-  border-bottom: 2px solid #333;
-}
+.tabItem.active { color: #333; border-bottom: 2px solid #333; }
 
 /* 실제 차트 영역 */
 .chartWrapper {
   flex: 1;
   width: 100%;
-  min-height: 300px;
+  min-height: 0; /* 줄어들 수 있게 허용 */
 }
 
 /* 6. AI 비서 스타일 */
-.aiColumn { height: 100%; }
+.aiColumn { 
+  height: 100%; 
+  border-radius: 16px;
+  overflow: hidden; /* 높이 고정 필수 */
+}
+
 .aiContainer {
   background: white;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.03);
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: hidden;
+  height: 100%; /* 부모(520px)를 꽉 채움 */
   border: 1px solid #f0f0f0;
 }
+
 .aiHeader {
   background-color: #4caf50;
   color: white;
@@ -236,20 +231,22 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0; /* 헤더 크기 고정 */
 }
+
 .chatWindow {
-  flex: 1;
+  flex: 1; /* 남은 공간 모두 차지 */
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  overflow-y: auto; /* 스크롤 설정 (기존에 있음) */
   background-color: #fafafa;
-
-  /* 👇 [추가] 최대 높이를 지정하여 이 이상 커지지 않고 스크롤이 생기게 함 */
-  max-height: 400px; 
-  /* 필요하다면 height: 400px; 로 고정해버려도 됩니다. */
+  
+  /* [핵심 수정] */
+  overflow-y: auto; /* 내용 넘치면 스크롤 */
+  min-height: 0;    /* ⭐ 이 속성이 있어야 flex 자식이 내용물보다 작아지면서 스크롤이 생깁니다 */
 }
+
 .message {
   max-width: 85%;
   padding: 12px 16px;
@@ -271,6 +268,7 @@
   border: 1px solid #eee;
   border-bottom-left-radius: 2px;
 }
+
 .suggestions {
   padding: 15px;
   display: flex;
@@ -278,6 +276,7 @@
   flex-wrap: wrap;
   background: white;
   border-top: 1px solid #eee;
+  flex-shrink: 0; /* 크기 고정 */
 }
 .suggestions button {
   padding: 6px 12px;
@@ -298,6 +297,7 @@
   gap: 10px;
   border-top: 1px solid #eee;
   background: white;
+  flex-shrink: 0; /* 크기 고정 */
 }
 .inputArea input {
   flex: 1;
