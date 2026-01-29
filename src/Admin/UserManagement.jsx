@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api'; 
 import styles from './UserManagement.module.css';
-import usdtLogo from '../component/UsdtLogo.svg'; // USDT 로고 임포트
+import usdtLogo from '../component/UsdtLogo.svg'; 
 
 const UserManagement = () => {
   // --- State 관리 ---
@@ -15,8 +15,8 @@ const UserManagement = () => {
   });
 
   // 날짜 및 드롭다운 상태
-  const [currentYear, setCurrentYear] = useState(2026);
-  const [currentMonth, setCurrentMonth] = useState(1);
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [isYearOpen, setIsYearOpen] = useState(false);
   const [isMonthOpen, setIsMonthOpen] = useState(false);
 
@@ -30,15 +30,21 @@ const UserManagement = () => {
     fetchUserCounts(); 
   }, []);
 
-  // --- [2] 선택된 유저 변경 시 ---
-  const selectedUserId = selectedUser?.userId || selectedUser?.username;
-
+  // --- [2] 선택된 유저 변경 및 날짜 변경 시 데이터 조회 (핵심 수정 부분) ---
   useEffect(() => {
-    if (selectedUserId) {
-      fetchUserDetail(selectedUserId);
-      fetchUserHistory(selectedUserId);
+    // selectedUser가 존재할 때만 실행
+    if (selectedUser) {
+      // API 호출 시 사용할 ID 결정 (userId가 있으면 우선 사용, 없으면 username)
+      const idToUse = selectedUser.userId || selectedUser.username;
+      
+      fetchUserDetail(idToUse);
+      fetchUserHistory(idToUse);
     }
-  }, [selectedUserId, currentYear, currentMonth]);
+    
+    // [중요] 의존성 배열에서 변하는 값(userId)을 제거하고, 
+    // 유저 고유 식별자(username)와 날짜만 넣어서 무한 호출 방지
+  }, [selectedUser?.username, currentYear, currentMonth]);
+
 
   // 날짜 이동 핸들러
   const handlePrevMonth = () => {
@@ -64,10 +70,10 @@ const UserManagement = () => {
     try {
       const response = await api.get(`/admin/users/${userId}`);
       if (response.data) {
+          // 기존 정보 유지하면서 새로운 정보(balance 등) 업데이트
           setSelectedUser(prev => ({
               ...prev,
-              balance: response.data.balance,
-              publicAddress: response.data.publicAddress,
+              ...response.data
           }));
       }
     } catch (error) {
@@ -101,6 +107,8 @@ const UserManagement = () => {
       });
       const userList = response.data?.content || response.data || [];
       setUsers(userList);
+      
+      // 목록 로딩 후 선택된 유저가 없다면 첫 번째 유저 자동 선택
       if (userList.length > 0 && !selectedUser) {
         setSelectedUser(userList[0]); 
       }
@@ -144,6 +152,8 @@ const UserManagement = () => {
       const id = selectedUser.userId || selectedUser.username;
       await api.patch(`/admin/users/${id}/status`);
       alert(`상태가 변경되었습니다.`);
+      
+      // 상태 변경 후 데이터 갱신
       fetchUserList();
       fetchUserCounts();
       fetchUserDetail(id);
@@ -297,13 +307,11 @@ const UserManagement = () => {
               
               {history.length > 0 ? (
                 history.map((tx, index) => {
-                  const isReceive = tx.type === '받기';
+                  const isReceive = tx.type === '받기' || tx.type === 'DEPOSIT'; // 타입 체크 로직 보강
                   
                   return (
-                    <div key={tx.id || index} className={styles.historyItem}>
+                    <div key={tx.historyId || tx.txId || index} className={styles.historyItem}>
                       
-                      {/* [수정됨] USDT 로고 적용 */}
-                      {/* 기존 클래스 제거하고 스타일 직접 적용하여 로고 중앙 정렬 */}
                       <div className={styles.txIcon} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#eef7f5'}}>
                         <img src={usdtLogo} alt="USDT" style={{width: '24px', height: '24px'}} />
                       </div>
@@ -318,7 +326,7 @@ const UserManagement = () => {
                       </div>
                       
                       <div style={{fontSize: '12px', color: '#999', marginLeft: '10px'}}>
-                        {formatTime(tx.time)}
+                        {formatTime(tx.time || tx.createdAt)}
                       </div>
                     </div>
                   );
