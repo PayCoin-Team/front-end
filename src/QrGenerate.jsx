@@ -71,7 +71,7 @@ const QrGenerate = () => {
                 {/* 2. 브랜드 로고 영역 */}
                 <div className={styles.brandLogo}>
                     <img src={UsdtLogo} alt="USDT Logo" className={styles.usdtIcon} />
-                    <h1 className={styles.logoText}>CrossPay</h1>
+                    <h1 className={styles.logoText}>TsPay</h1>
                 </div>
 
                 {/* 3. QR 코드 영역 */}

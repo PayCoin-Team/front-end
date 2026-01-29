@@ -1,6 +1,7 @@
 /* 1. 상단 헤더 */
 .header {
   padding: 15px 20px;
+  padding-bottom: 0px;
   display: flex;
   justify-content: space-between;
   align-items: center; /* 버튼들이 세로로 늘어나도 중앙 정렬 유지 */
