@@ -251,7 +251,7 @@ const ChargeScreen = () => {
               <img src={usdtLogo} alt="USDT" className={styles.logoImg} />
             </div>
             <p className={styles.statusText}>{t.statusChargeComplete}</p>
-            <p className={styles.amountText}>+ {Number(amount).toLocaleString()} USDT</p>
+            <p className={styles.amountText}>{Number(amount).toLocaleString()} USDT</p>
             <button className={styles.confirmBtn} onClick={() => navigate('/home')}>{t.confirm}</button>
           </div>
         )}
