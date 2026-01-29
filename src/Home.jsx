@@ -41,7 +41,7 @@ const Home = () => {
   const [selectedCurrency, setSelectedCurrency] = useState('KRW'); 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // 관리자 여부 및 지갑 연동 여부 확인
+  // 관리자 여부 및 외부 지갑 연동 여부 확인
   const isAdmin = walletInfo?.role === 'ROLE_ADMIN';
   const isConnected = !!walletInfo?.externalAddress;
 
@@ -92,9 +92,12 @@ const Home = () => {
     if (walletInfo?.balance) fetchConversion();
   }, [walletInfo, selectedCurrency]);
 
+  // [수정됨] 내부 지갑 주소(publicAddress) 복사 기능
   const handleCopyAddress = () => {
-    if (!isConnected) return;
-    const addr = walletInfo.externalAddress;
+    // publicAddress가 없으면 리턴
+    if (!walletInfo?.publicAddress) return; 
+    
+    const addr = walletInfo.publicAddress; 
     navigator.clipboard.writeText(addr);
     alert(`${t.copyAlert}\n📋 ${addr}`);
   };
@@ -115,7 +118,7 @@ const Home = () => {
         </div>
         
         <div className={styles.headerButtons}>
-          {/* 지갑 연동 버튼 */}
+          {/* 지갑 연동 버튼 (외부 지갑 기준 상태 표시) */}
           <button className={`${styles.topBtn} ${styles.greenBtn}`} onClick={() => navigate('/wallet')}>
             <img src={topWalletIcon} alt="Wallet" className={styles.topBtnIcon} />
             {isConnected ? t.walletConnected : t.walletConnect}
@@ -170,12 +173,19 @@ const Home = () => {
             </div>
           </div>
           
-          <div className={styles.walletAddress} onClick={handleCopyAddress} title={isConnected ? t.copyTooltip : ""}>
+          {/* [수정됨] 내부 지갑 주소(publicAddress) 표시 및 복사 영역 */}
+          <div 
+            className={styles.walletAddress} 
+            onClick={handleCopyAddress} 
+            title={walletInfo?.publicAddress ? t.copyTooltip : ""}
+            style={{ cursor: walletInfo?.publicAddress ? 'pointer' : 'default' }}
+          >
              <img src={walletAddressIcon} className={styles.addressIconImg} alt="Address" />
-             {isConnected 
-                ? ` ${walletInfo.externalAddress.substring(0, 6)}...${walletInfo.externalAddress.slice(-4)}` 
+             {/* publicAddress가 있으면 보여주고 없으면 연결 필요 메시지 */}
+             {walletInfo?.publicAddress 
+                ? ` ${walletInfo.publicAddress}` 
                 : ` ${t.needConnect}`}
-             {isConnected && <span className={styles.copyHint}> {t.copyHint}</span>}
+             {walletInfo?.publicAddress && <span className={styles.copyHint}> {t.copyHint}</span>}
           </div>
 
           <div className={styles.cardBottom} onClick={() => handleMenuClick('/withdraw')}>
