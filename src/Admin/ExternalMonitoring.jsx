@@ -196,7 +196,7 @@ const ExternalMonitoring = () => {
                     </div>
                     <div className={styles.txInfo}>
                       <div className={styles.txTitle}>
-                        {tx.externalAddress || "???"}에게 {isDeposit ? '충전' : '출금'}
+                        {tx.externalAddress || "???"}에서 {isDeposit ? '충전' : '출금'}요청
                       </div>
                       <div className={styles.txTime}>
                           {currentDate.month}.{new Date(tx.createdAt).getDate()} • {formatTime(tx.createdAt)}
