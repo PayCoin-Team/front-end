@@ -64,8 +64,10 @@
   margin-bottom: 40px;
   background-color: #f9fdfc;
   text-align: center;
-  padding: 20px;
+  padding: 0; /* 패딩 제거: 카메라 영상이 꽉 차게 */
+  overflow: hidden; /* 영상이 테두리 밖으로 나가지 않게 */
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  position: relative;
 }
 
 .scanIcon {
@@ -245,4 +247,16 @@
   opacity: 0;             /* 눈에만 안 보임 */
   pointer-events: none;   /* 클릭 불가 */
   transform: translateY(10px); /* 살짝 아래에 위치 */
+}
+
+/* 카메라 영상 자체를 박스 크기에 강제로 맞춤 */
+#reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important; /* 비율 유지하며 꽉 채움 */
+}
+
+/* 라이브러리가 생성하는 불필요한 레이어 숨김 */
+#reader img {
+  display: none !important;
 }
