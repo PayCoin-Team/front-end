@@ -181,7 +181,7 @@ const WithdrawScreen = () => {
               <img src={usdtLogo} alt="USDT" className={styles.logoImg} />
             </div>
             <p className={styles.statusText}>{t.statusWithdrawRequestComplete}</p>
-            <p className={styles.amountText}>- {Number(amount).toLocaleString()} USDT</p>
+            <p className={styles.amountText}>{Number(amount).toLocaleString()} USDT</p>
             <p className={styles.descText}>
                 {t.withdrawStartDesc}
             </p>
